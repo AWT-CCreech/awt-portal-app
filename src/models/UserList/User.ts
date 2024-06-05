@@ -1,0 +1,54 @@
+export interface User {
+    id: number;
+    companyId?: number;
+    groupId?: number;
+    teamGroup?: string;
+    inProd?: number;
+    active?: number;
+    activeSales?: number;
+    canSchedule?: number;
+    callReporting?: number;
+    activityReporting?: number;
+    salesTeam?: string;
+    salesTeam2?: string;
+    salesTeam3?: string;
+    salesTeam4?: string; // Uses for reporting purposes for reps associated with multiple accounts
+    rwTeamName?: string;
+    rwUserId?: string;
+    fname?: string;
+    lname?: string;
+    mname?: string;
+    uname?: string;
+    hdpw?: string;
+    jobTitle?: string;
+    deptId?: number;
+    mgrId?: number;
+    skillLevel?: string;
+    email?: string;
+    email2?: string;
+    email3?: string;
+    locationId?: number;
+    zoomPref?: number;
+    activityPref?: string;
+    isMgr?: number;
+    onHdstaff?: number;
+    crtDate?: Date;
+    modDate?: Date;
+    lastLogin?: Date;
+    loginCnt?: number;
+    savePw?: number;
+    machineName?: string;
+    newPortal?: number;
+    timeClock?: number;
+    accessIds?: string;
+    startPage?: string;
+    startPage2?: string;
+    startPage3?: string;
+    startPage4?: string;
+    startPage5?: string;
+    ipaddress?: string;
+    extension?: string;
+    mobilePhone?: string;
+    directPhone?: string;
+  }
+  
