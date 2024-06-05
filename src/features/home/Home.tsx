@@ -17,12 +17,21 @@ const Home: React.FC = () => {
           <Button
             variant="contained"
             sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
+            onClick={() => navigate('/dropship')}
+          >
+            Drop Ship
+          </Button>
+        </Grid>
+        <Grid item xs={3} textAlign="center">
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
             onClick={() => navigate('/massmailer')}
           >
             Mass Mailer
           </Button>
         </Grid>
-        <Grid item xs={3} textAlign="center">
+        {/* <Grid item xs={3} textAlign="center">
           <Button
             variant="contained"
             sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
@@ -30,7 +39,7 @@ const Home: React.FC = () => {
           >
             Time Tracker
           </Button>
-        </Grid>
+        </Grid> */}
         <Grid item xs={3} textAlign="center">
           <Button
             variant="contained"
@@ -38,15 +47,6 @@ const Home: React.FC = () => {
             onClick={() => navigate('/mastersearch')}
           >
             Master Search
-          </Button>
-        </Grid>
-        <Grid item xs={3} textAlign="center">
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
-            onClick={() => navigate('/dropship')}
-          >
-            Drop Ship
           </Button>
         </Grid>
         <Grid item xs={3} textAlign="center">

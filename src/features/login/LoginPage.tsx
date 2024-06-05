@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, FormEvent, useState } from 'react';
+import React, { useContext, FormEvent, useState } from 'react';
 import { Container, Box, TextField, Button, Typography, CircularProgress, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
@@ -14,10 +14,16 @@ const LoginPage: React.FC = () => {
   const [hiddenLoginError, setHiddenLoginError] = useState(true);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setPageLoading(true);
-    agent.UserLogins.authenticate({ username, password, isPasswordEncrypted: false }).then(response => {
+    try {
+      const response = await agent.UserLogins.authenticate({
+        username,
+        password,
+        isPasswordEncrypted: false,
+        userid: "", // Ensure this field is included if required
+      });
       setPageLoading(false);
       localStorage.setItem('username', response.username);
       localStorage.setItem('password', response.password);
@@ -27,16 +33,12 @@ const LoginPage: React.FC = () => {
       } else {
         navigate('/');
       }
-    });
+    } catch (error) {
+      setPageLoading(false);
+      console.error('Error during authentication:', error);
+      setHiddenLoginError(false);
+    }
   };
-
-  if (pageLoading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="90vh">
-        <CircularProgress size={60} />
-      </Box>
-    );
-  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -79,15 +81,31 @@ const LoginPage: React.FC = () => {
           {!hiddenLoginError && (
             <Alert severity="error">Username or Password is not correct</Alert>
           )}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="success"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Login
-          </Button>
+          <Box sx={{ position: 'relative', width: '100%' }}>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="success"
+              sx={{ mt: 3, mb: 2 }}
+              disabled={pageLoading} // Disable button while loading
+            >
+              {pageLoading ? ' ' : 'Login'}
+            </Button>
+            {pageLoading && (
+              <CircularProgress
+                size={24}
+                sx={{
+                  color: 'white',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  marginTop: '-12px',
+                  marginLeft: '-12px',
+                }}
+              />
+            )}
+          </Box>
         </Box>
       </Box>
     </Container>

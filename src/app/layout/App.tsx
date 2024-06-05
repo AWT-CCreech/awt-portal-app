@@ -31,10 +31,10 @@ const App: React.FC = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<LoginPage />} />
       <Route element={<PrivateRoute />}>
-        <Route path="/MassMailer" element={<MassMailer />} />
-        <Route path="/TimeTracker" element={<TimeTrackerPage />} />
-        <Route path="/MasterSearch" element={<MasterSearch />} />
         <Route path="/DropShip" element={<DropShip />} />
+        <Route path="/MassMailer" element={<MassMailer />} />
+        {/* <Route path="/TimeTracker" element={<TimeTrackerPage />} /> */}
+        <Route path="/MasterSearch" element={<MasterSearch />} />
         <Route path="/UserList" element={<UserListPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />

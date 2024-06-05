@@ -32,6 +32,10 @@ const requests = {
     delete: (url: string) => axios.delete(url).then(responseBody)
 }
 
+const UserLogins = {
+    authenticate: (loginInfo: Object): Promise<LoginInfo> => requests.post('/UserLogins', loginInfo)
+}
+
 const MassMailerEmailTemplates = {
     templatesForUser: (user: string): Promise<IMassMailerEmailTemplate[]> => requests.get(`/MassMailerEmailTemplates/${user}`)
 }
@@ -54,9 +58,6 @@ const MassMailerEmailOuts = {
     sendEmail: (body: Object) => requests.post('/MassMailerEmailOuts', body)
 }
 
-const UserLogins = {
-    authenticate: (loginInfo: Object): Promise<LoginInfo> => requests.post('/UserLogins', loginInfo)
-}
 
 const MassMailerUsers = {
     getAll: (): Promise<IMassMailerUser[]> => requests.get('/MassMailerUsers')
