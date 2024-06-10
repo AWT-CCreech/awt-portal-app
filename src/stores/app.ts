@@ -1,10 +1,19 @@
-import { observable, action } from "mobx";
+import { observable, action, makeObservable } from "mobx";
 import { createContext } from "react";
 
 class AppState {
-    @observable pageLoading: boolean = false;
+  pageLoading: boolean = false;
 
-    @action setPageLoading = (pl: boolean) => this.pageLoading = pl;
+  constructor() {
+    makeObservable(this, {
+      pageLoading: observable,
+      setPageLoading: action,
+    });
+  }
+
+  setPageLoading = (pl: boolean) => {
+    this.pageLoading = pl;
+  };
 }
 
 export default createContext(new AppState());

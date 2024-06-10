@@ -97,9 +97,9 @@ const DropShip = {
 }
 
 // Function to fetch users
-const fetchUsers = async (): Promise<User[]> => {
+const fetchUserList = async (): Promise<User[]> => {
     try {
-        const response = await requests.get('/User/GetUsers');
+        const response = await requests.get('/UserList/GetUserList');
         return response as User[];
     } catch (error) {
         console.error('Error fetching users', error);
@@ -110,7 +110,7 @@ const fetchUsers = async (): Promise<User[]> => {
 // Function to add a new user
 const addUser = async (newUser: User): Promise<User> => {
     try {
-        const response = await requests.post('/User/AddUser', newUser);
+        const response = await requests.post('/UserList/AddUser', newUser);
         return response as User;
     } catch (error) {
         console.error('Error adding user', error);
@@ -121,7 +121,7 @@ const addUser = async (newUser: User): Promise<User> => {
 // Function to update a user
 const updateUser = async (uid: number, updatedUser: User): Promise<User> => {
     try {
-        const response = await requests.put(`/User/UpdateUser/${uid}`, updatedUser);
+        const response = await requests.put(`/UserList/UpdateUser/${uid}`, updatedUser);
         return response as User;
     } catch (error) {
         console.error('Error updating user', error);
@@ -132,7 +132,7 @@ const updateUser = async (uid: number, updatedUser: User): Promise<User> => {
 // Function to delete a user
 const deleteUser = async (uid: number): Promise<void> => {
     try {
-        await requests.delete(`/User/DeleteUser/${uid}`);
+        await requests.delete(`/UserList/DeleteUser/${uid}`);
     } catch (error) {
         console.error('Error deleting user', error);
         throw error;
@@ -155,5 +155,5 @@ const massMailerModules = {
     DropShip
 };
 
-export { fetchUsers, addUser, updateUser, deleteUser };
+export { fetchUserList, addUser, updateUser, deleteUser };
 export default massMailerModules;

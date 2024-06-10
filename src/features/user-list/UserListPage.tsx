@@ -5,7 +5,7 @@ import {
   Snackbar, Alert, CircularProgress, Button, IconButton, Tooltip, Typography, Divider, TableSortLabel 
 } from '@mui/material';
 import { Add, Delete, GetApp } from '@mui/icons-material';
-import { fetchUsers, addUser, updateUser, deleteUser } from '../../app/api/agent';
+import { fetchUserList, addUser, updateUser, deleteUser } from '../../app/api/agent';
 import { User } from '../../models/UserList/User';
 import PageHeader from '../../sharedComponents/PageHeader';
 import * as XLSX from 'xlsx';
@@ -28,7 +28,7 @@ const UserListPage: React.FC = () => {
   useEffect(() => {
     const getUsers = async () => {
       try {
-        const data = await fetchUsers();
+        const data = await fetchUserList();
         setUsers(data);
       } catch (err) {
         setError('Failed to fetch users');
