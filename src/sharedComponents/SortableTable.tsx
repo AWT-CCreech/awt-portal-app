@@ -33,7 +33,7 @@ interface IProps {
   tableData: object[];
   columns?: string[];
   columnNames?: string[];
-  func?: (row: any) => JSX.Element[];
+  func?: (row: any) => React.JSX.Element[];
   headerBackgroundColor?: string;
   hoverColor?: string;
 }

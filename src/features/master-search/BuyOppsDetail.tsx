@@ -16,7 +16,7 @@ interface IProps {
 }
 
 const BuyOppsDetail: React.FC<IProps> = ({ buyOppDetails, partJumpTo }) => {
-  const func = (obj: any): JSX.Element[] => {
+  const func = (obj: any): React.JSX.Element[] => {
     const entryDateString = getDateString(new Date(obj.entryDate));
     return [
       <TableCell key="detailId">

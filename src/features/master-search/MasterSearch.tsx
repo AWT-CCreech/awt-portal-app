@@ -76,7 +76,7 @@ const MasterSearch: React.FC<IProps> = () => {
       Uname: localStorage.getItem('username'),
     };
 
-    let tempSearchResult: JSX.Element[] = [];
+    let tempSearchResult: React.JSX.Element[] = [];
 
     if (viewBy === 'event') {
       if (searchFor === 1 || searchFor === 3) {

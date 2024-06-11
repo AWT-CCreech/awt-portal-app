@@ -16,7 +16,7 @@ interface IProps {
 }
 
 const ContactSearch: React.FC<IProps> = ({ contacts }) => {
-  const func = (obj: any): JSX.Element[] => {
+  const func = (obj: any): React.JSX.Element[] => {
     const openDetail = () => {
       window.open(
         `http://10.0.0.8:81/inet/CAM/CAM_DashBoard.asp?ContactID=${obj.id}&ActiveTabA=0&ActiveInfoTab=0`

@@ -15,7 +15,7 @@ interface IProps {
 }
 
 const SellOppsEvent: React.FC<IProps> = ({ sellOppEvents }) => {
-  const func = (obj: any): JSX.Element[] => {
+  const func = (obj: any): React.JSX.Element[] => {
     const entryDateString = getDateString(new Date(obj.entryDate));
     return [
       <TableCell key="eventId">
