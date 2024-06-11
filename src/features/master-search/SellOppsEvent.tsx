@@ -34,7 +34,7 @@ const SellOppsEvent: React.FC<IProps> = ({ sellOppEvents }) => {
       <TableCell key="soldOrLost">{obj.soldOrLost}</TableCell>,
       <TableCell key="uname">{obj.uname}</TableCell>,
       <TableCell key="quoteId">
-        {obj.quoteId !== 0 ? (
+        {obj.quoteId > 0 ? (
           <a
             href={`http://10.0.0.8:81/inet/Quotes/qtViewQuote.asp?QuoteID=${obj.quoteId}&EventID=${obj.eventId}&UpdFlag=0&QuoteUpdate=0`}
             style={{ textDecoration: 'underline' }}
