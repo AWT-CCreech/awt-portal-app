@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Box,
   Button,
@@ -74,10 +74,24 @@ const SearchBox: React.FC<IProps> = ({
   setChkActive,
   getResultSets,
 }) => {
+  const searchInput1Ref = useRef<HTMLInputElement>(null);
+  const searchInput2Ref = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
-    document.getElementById('searchInput1')?.focus();
-    document.getElementById('searchInput2')?.focus();
-  }, [searchFor, viewBy, chkID, chkSONo, chkPartNo, chkPartDesc, chkPONo, chkMfg, chkCompany, chkInvNo, chkActive]);
+    const searchInput = searchFor === 4 ? searchInput2Ref.current : searchInput1Ref.current;
+    searchInput?.focus();
+
+    const handleEnterPress = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        getResultSets();
+      }
+    };
+
+    window.addEventListener('keydown', handleEnterPress);
+    return () => {
+      window.removeEventListener('keydown', handleEnterPress);
+    };
+  }, [searchFor, viewBy, chkID, chkSONo, chkPartNo, chkPartDesc, chkPONo, chkMfg, chkCompany, chkInvNo, chkActive, getResultSets]);
 
   useEffect(() => {
     if (searchFor === 2) {
@@ -117,12 +131,12 @@ const SearchBox: React.FC<IProps> = ({
                     <FormLabel>With:</FormLabel>
                     <Input
                       id="searchInput1"
+                      inputRef={searchInput1Ref}
                       startAdornment={
                         <InputAdornment position="start">
                           <SearchIcon />
                         </InputAdornment>
                       }
-                      autoFocus
                       autoComplete="off"
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
@@ -248,12 +262,13 @@ const SearchBox: React.FC<IProps> = ({
                     <FormLabel>Name:</FormLabel>
                     <Input
                       id="searchInput2"
+                      inputRef={searchInput2Ref}
                       startAdornment={
                         <InputAdornment position="start">
                           <SearchIcon />
                         </InputAdornment>
                       }
-                      autoFocus
+                      autoComplete="off"
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
                     />
@@ -274,7 +289,7 @@ const SearchBox: React.FC<IProps> = ({
             );
         })()}
         <Grid item xs={12}>
-          <Button variant="contained" color="success" onClick={getResultSets}>
+          <Button variant="contained" color="primary" onClick={getResultSets}>
             Submit
           </Button>
         </Grid>

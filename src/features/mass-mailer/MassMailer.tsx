@@ -47,6 +47,7 @@ const MassMailer: React.FC = () => {
     agent.UserLogins.authenticate({
       username: localStorage.getItem('username'),
       password: localStorage.getItem('password'),
+      userid: localStorage.getItem('userid'),
       isPasswordEncrypted: true,
     }).then(response => {
       if (response.username === '') {

@@ -182,7 +182,7 @@ const EmailProperties: React.FC<IProps> = ({
               value={emailBody}
               placeholder="Type your email body here..."
               onChange={(event) => setEmailBody(event.target.value)}
-              style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }}
+              className="email-body-textarea"
             />
           </Container>
         </Grid>

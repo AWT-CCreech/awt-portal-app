@@ -28,7 +28,7 @@ const AddCC: React.FC<IProps> = ({ CC, setCC }) => {
         <DialogTitle>Copy email to people outside of Airway</DialogTitle>
         <DialogContent>
           <Grid container spacing={2} direction="column" alignItems="center">
-            <Grid item>
+            <Grid item marginTop={1}>
               <TextField
                 label="Name"
                 variant="outlined"
