@@ -17,7 +17,7 @@ const PageHeader: React.FC<IProps> = ({ pageName, pageHref }) => {
   const navigate = useNavigate();
 
   return (
-    <Container maxWidth={false} style={{ padding: '15px 100px 15px 100px', backgroundColor: 'mintCream' }}>
+    <Container maxWidth={false} style={{ padding: '15px 100px 15px 100px', backgroundColor: 'whiteSmoke' }}>
       <Grid container alignItems="center">
         <Grid item xs={8}>
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
