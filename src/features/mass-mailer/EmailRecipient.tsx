@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import {
   Box,
   Button,
@@ -21,6 +21,7 @@ import agent from '../../app/api/agent';
 import { IMassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
 import VendorListItem from './components/VendorListItem';
 import SelectedVendor from './components/SelectedVendor';
+import './style/EmailRecipient.css';
 
 interface IProps {
   selectedVendors: IMassMailerVendor[];
@@ -34,7 +35,7 @@ interface MfgOption {
 }
 
 const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors }) => {
-  const [mfgOptions, setMfgOptions] = useState<MfgOption[]>([{ key: 'All', value: 'All', text: 'All' }]);
+  const [mfgOptions, setMfgOptions] = useState<MfgOption[]>([]);
   const [vendorsToSelect, setVendorsToSelect] = useState<IMassMailerVendor[]>([]);
   const [vendorListSelectedPage, setVendorListSelectedPage] = useState<number>(1);
   const [mfg, setMfg] = useState<string>('All');
@@ -42,6 +43,24 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
   const [fne, setFne] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchValue, setSearchValue] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    // Fetch initial vendors and manufacturer options
+    agent.MassMailerVendors.vendorList('All', false, false).then((response) => {
+      setVendorsToSelect(response);
+    });
+
+    agent.MassMailerManufacturers.manufacturerList().then((response) => {
+      const options = response.map((mfg: string) => ({
+        key: mfg,
+        value: mfg,
+        text: mfg,
+      }));
+      setMfgOptions([{ key: 'All', value: 'All', text: 'All' }, ...options]);
+      setLoading(false);
+    });
+  }, []);
 
   const handleMfgChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
@@ -124,17 +143,11 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
   };
 
   useEffect(() => {
-    agent.MassMailerVendors.vendorList('All', false, false).then((response) => {
-      setVendorsToSelect(response);
-    });
-  }, []);
-
-  useEffect(() => {
     setVendorListSelectedPage(currentPage);
   }, [currentPage]);
 
   return (
-    <Box sx={{ marginTop: 6 }}>
+    <Box className="email-recipient-container">
       <Box sx={{ paddingBottom: 2 }}>
         <Typography variant="h6">Select Who Should Receive This Mailer</Typography>
       </Box>
@@ -142,18 +155,26 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
         <Grid container spacing={2}>
           <Grid item xs={4}>
             <FormControl fullWidth>
-              <InputLabel>List by Mfg</InputLabel>
-              <Select
-                id="massmailer-mfg"
-                value={mfg}
-                onChange={handleMfgChange}
-              >
-                {mfgOptions.map((option) => (
-                  <MenuItem key={option.key} value={option.value}>
-                    {option.text}
+              <InputLabel sx={{ textDecoration: 'none' }}>List by Mfg</InputLabel>
+              {loading ? (
+                <Select id="massmailer-mfg" value="" disabled>
+                  <MenuItem value="" disabled>
+                    Loading...
                   </MenuItem>
-                ))}
-              </Select>
+                </Select>
+              ) : (
+                <Select
+                  id="massmailer-mfg"
+                  value={mfg}
+                  onChange={handleMfgChange}
+                >
+                  {mfgOptions.map((option) => (
+                    <MenuItem key={option.key} value={option.value}>
+                      {option.text}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
             </FormControl>
           </Grid>
           <Grid item xs={2}>

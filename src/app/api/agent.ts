@@ -25,76 +25,75 @@ const responseBody = (response: AxiosResponse) => response.data;
 
 const requests = {
     get: (url: string) => axios.get(url).then(responseBody),
-    getWithParams: (url: string, body: Object) => axios.get(url, { params: body}).then(responseBody),
+    getWithParams: (url: string, body: Object) => axios.get(url, { params: body }).then(responseBody),
     post: (url: string, body: Object) => axios.post(url, body).then(responseBody),
     postNoBody: (url: string) => axios.post(url).then(responseBody),
     put: (url: string, body: Object) => axios.put(url, body).then(responseBody),
     delete: (url: string) => axios.delete(url).then(responseBody)
-}
+};
 
 const UserLogins = {
     authenticate: (loginInfo: Object): Promise<LoginInfo> => requests.post('/UserLogins', loginInfo)
-}
+};
 
 const MassMailerEmailTemplates = {
     templatesForUser: (user: string): Promise<IMassMailerEmailTemplate[]> => requests.get(`/MassMailerEmailTemplates/${user}`)
-}
+};
 
 const MassMailerManufacturers = {
     manufacturerList: (): Promise<string[]> => requests.get('/MassMailerManufacturers')
-}
+};
 
 const MassMailerVendors = {
     vendorList: (mfg: string, anc: boolean, fne: boolean): Promise<IMassMailerVendor[]> => {
-        return requests.get(`/MassMailerVendors/${mfg}/${anc}/${fne}`)
+        return requests.get(`/MassMailerVendors/${mfg}/${anc}/${fne}`);
     }
-}
+};
 
 const MassMailerPartItems = {
     partItemsForUser: (user: string): Promise<IMassMailerPartItem[]> => requests.get(`/MassMailerPartItems/${user}`)
-}
+};
 
 const MassMailerEmailOuts = {
     sendEmail: (body: Object) => requests.post('/MassMailerEmailOuts', body)
-}
-
+};
 
 const MassMailerUsers = {
     getAll: (): Promise<IMassMailerUser[]> => requests.get('/MassMailerUsers')
-}
+};
 
 const MassMailerFileUpload = {
     upload: (body: FormData): Promise<string[]> => requests.post('/MassMailerFileUpload', body),
     clear: (username: string): Promise<any> => requests.get(`/MassMailerFileUpload/${username}`)
-}
+};
 
 const MassMailerClearPartItems = {
     clear: (userid: string): Promise<any> => requests.get(`/MassMailerClearPartItems/${userid}`)
-}
+};
 
 const TimeTrackers = {
-    get: (userId: string): Promise<TimeTracker> => requests.get(`/TimeTrackers/${userId}`),    
+    get: (userId: string): Promise<TimeTracker> => requests.get(`/TimeTrackers/${userId}`),
     update: (body: TimeTracker): Promise<TimeTracker> => requests.put('/TimeTrackers', body),
-    getAllInPeriod: (userId: string, previousPeriod: boolean): Promise<TimeTracker[]> => 
-            requests.get(`/PeriodTimeTrackers?userId=${userId}&previousPeriod=${previousPeriod}`),
+    getAllInPeriod: (userId: string, previousPeriod: boolean): Promise<TimeTracker[]> =>
+        requests.get(`/PeriodTimeTrackers?userId=${userId}&previousPeriod=${previousPeriod}`),
     sendEmailReport: (body: Object) => requests.post('/TimeTrackerReportSender', body),
     isApproved: (userId: string, previousPeriod: boolean) => requests.get(`/TimeTrackerApprovals?userId=${userId}&previousPeriod=${previousPeriod}`),
     approve: (approvals: object) => requests.post('/TimeTrackerApprovals', approvals)
-}
+};
 
 const MasterSearches = {
-    getSellOppEvents: (input: SearchInput): Promise<SellOppEvent[]> => requests.getWithParams('/SellOppEvents',input),
-    getSellOppDetails: (input: SearchInput): Promise<SellOppDetail[]> => requests.getWithParams('/SellOppDetails',input),
-    getBuyOppEvents: (input: SearchInput): Promise<BuyOppEvent[]> => requests.getWithParams('/BuyOppEvents',input),
-    getBuyOppDetails: (input: SearchInput): Promise<BuyOppDetail[]> => requests.getWithParams('/BuyOppDetails',input),
+    getSellOppEvents: (input: SearchInput): Promise<SellOppEvent[]> => requests.getWithParams('/SellOppEvents', input),
+    getSellOppDetails: (input: SearchInput): Promise<SellOppDetail[]> => requests.getWithParams('/SellOppDetails', input),
+    getBuyOppEvents: (input: SearchInput): Promise<BuyOppEvent[]> => requests.getWithParams('/BuyOppEvents', input),
+    getBuyOppDetails: (input: SearchInput): Promise<BuyOppDetail[]> => requests.getWithParams('/BuyOppDetails', input),
     getContacts: (searchValue: string, active: boolean): Promise<MasterSearchContact[]> => requests.getWithParams('/MasterSearchContacts', { searchValue, active })
-}
+};
 
 const DropShip = {
     getDropShipInfo: (poNum: string): Promise<any> => requests.get(`/DropShipInfo/${poNum}`),
     sendDropShipEmail: (emailInput: object) => requests.post('/SendDropShipEmail', emailInput),
     getAllDropShipSalesReps: () => requests.get(`/DropShipSalesReps`)
-}
+};
 
 // Function to fetch users
 const fetchUserList = async (): Promise<User[]> => {
@@ -106,7 +105,7 @@ const fetchUserList = async (): Promise<User[]> => {
         throw error;
     }
 };
-  
+
 // Function to add a new user
 const addUser = async (newUser: User): Promise<User> => {
     try {
@@ -138,7 +137,6 @@ const deleteUser = async (uid: number): Promise<void> => {
         throw error;
     }
 };
-  
 
 const massMailerModules = {
     MassMailerEmailTemplates,
