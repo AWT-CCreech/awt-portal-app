@@ -1,11 +1,7 @@
-import React, { useContext } from 'react';
-import { Container, Grid, Breadcrumbs, Button, Typography, Box } from '@mui/material';
-import HomeIcon from '@mui/icons-material/Home';
+import React from 'react';
+import { Container, Grid, Typography, Box } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import UserInfo from '../stores/userInfo';
-import { handleLogOut } from '../utils/authentication';
-import { useNavigate } from 'react-router-dom';
+import PortalMenu from './PortalMenu';  // Import the new collapsible menu
 
 interface IProps {
   pageName: string;
@@ -13,13 +9,27 @@ interface IProps {
 }
 
 const PageHeader: React.FC<IProps> = ({ pageName, pageHref }) => {
-  const { setUserName, setPassWord } = useContext(UserInfo);
-  const navigate = useNavigate();
+  const username = localStorage.getItem('username');
 
   return (
-    <Container maxWidth={false} style={{ padding: '15px 100px 15px 100px', backgroundColor: 'whiteSmoke' }}>
+    <Container maxWidth={false} style={{ padding: '15px 100px', backgroundColor: 'whiteSmoke' }}>
       <Grid container alignItems="center">
-        <Grid item xs={8}>
+        <Grid item xs={6} style={{ display: 'flex', alignItems: 'center' }}>
+          <PortalMenu />
+          <Typography variant="h6" component="div" style={{ marginLeft: '15px', color: '#1976d2' }}>
+            {pageName}
+          </Typography>
+        </Grid>
+        <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <Box display="flex" alignItems="center">
+            <Typography variant="h6" component="div" style={{ display: 'inline-flex', alignItems: 'center', color: '#1976d2' }}>
+              <AccountCircleIcon fontSize="small" style={{ marginRight: '3px' }} />
+              {username}
+            </Typography>
+          </Box>
+        </Grid>
+        {/* Uncomment this section if you need to reimplement the breadcrumbs */}
+        {/* <Grid item xs={12} style={{ marginTop: '15px' }}>
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
             <a href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
               <HomeIcon fontSize="small"/>
@@ -29,24 +39,7 @@ const PageHeader: React.FC<IProps> = ({ pageName, pageHref }) => {
               {pageName}
             </a>
           </Breadcrumbs>
-        </Grid>
-        <Grid item xs={4} style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-          <Box display="flex" alignItems="center">
-            <Typography variant="h6" component="div" style={{ display: 'inline-flex', alignItems: 'center', color: 'darkBlue' }}>
-              <AccountCircleIcon fontSize="small" style={{ marginRight: '3px' }} />
-              {localStorage.getItem('username')}
-            </Typography>
-            <Button
-              variant="contained"
-              color="error"
-              size="small"
-              onClick={() => handleLogOut(navigate, setUserName, setPassWord)}
-              style={{ marginLeft: '15px' }}
-            >
-              Log Out
-            </Button>
-          </Box>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Container>
   );
