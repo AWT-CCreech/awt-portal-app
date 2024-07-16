@@ -40,14 +40,17 @@ const MassMailer: React.FC = () => {
 
   useEffect(() => {
     agent.MassMailerUsers.getAll().then(setAllUsers);
-    agent.MassMailerFileUpload.clear(localStorage.getItem('username') ?? '');
+    const username = localStorage.getItem('username') ?? '';
+    agent.MassMailerFileUpload.clear(username);
   }, []);
 
   useEffect(() => {
+    const username = localStorage.getItem('username') ?? '';
+    const password = localStorage.getItem('password') ?? '';
+
     agent.UserLogins.authenticate({
-      username: localStorage.getItem('username'),
-      password: localStorage.getItem('password'),
-      userid: localStorage.getItem('userid'),
+      username,
+      password,
       isPasswordEncrypted: true,
     }).then(response => {
       if (response.username === '') {
@@ -89,13 +92,13 @@ const MassMailer: React.FC = () => {
     const obj = {
       Subject: emailSubject,
       Body: finalBody,
-      SenderUserName: localStorage.getItem('username'),
+      SenderUserName: localStorage.getItem('username') ?? '',
       RecipientIds: recipients.map(recipient => recipient.id),
       RecipientEmails: recipients.map(recipient => recipient.email),
       RecipientNames: recipients.map(recipient => recipient.contact),
       RecipientCompanies: recipients.map(recipient => recipient.company),
       AttachFiles: attachFiles,
-      Password: localStorage.getItem('password'),
+      Password: localStorage.getItem('password') ?? '',
       CCEmails: CC.map(cc => cc.email),
       CCNames: CC.map(cc => cc.fullName),
       items: selectedPartItems,
