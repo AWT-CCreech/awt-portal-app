@@ -64,8 +64,8 @@ const SellOppsEvent: React.FC<IProps> = ({ sellOppEvents }) => {
                 tableData={sellOppEvents}
                 columns={['eventId', 'entryDate', 'company', 'manufacturer', 'soldOrLost', 'uname', 'quoteId']}
                 columnNames={['EID', 'Entry Date', 'Customer', 'Mfg', 'Status', 'Sales Rep', 'Quote']}
-                headerBackgroundColor="#73e5eb"
-                hoverColor="#ccffcc"
+                headerBackgroundColor="#1976d2"
+                hoverColor="#f5f5f5"
                 func={func}
               />
             ) : (

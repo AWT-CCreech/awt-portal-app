@@ -87,8 +87,8 @@ const SellOppsDetail: React.FC<IProps> = ({ sellOppDetails }) => {
                   'Sales Rep',
                   'Quote',
                 ]}
-                headerBackgroundColor="#73e5eb"
-                hoverColor="#ccffcc"
+                headerBackgroundColor="#1976d2"
+                hoverColor="#f5f5f5"
                 func={func}
               />
             ) : (
