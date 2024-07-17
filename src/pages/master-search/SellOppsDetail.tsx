@@ -4,7 +4,8 @@ import {
   Paper,
   Divider,
   Typography,
-  TableCell
+  TableCell,
+  Link
 } from '@mui/material';
 import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
 import SortableTable from '../../components/SortableTable';
@@ -19,13 +20,14 @@ const SellOppsDetail: React.FC<IProps> = ({ sellOppDetails }) => {
     const entryDateString = getDateString(new Date(obj.entryDate));
     return [
       <TableCell key="requestId">
-        <a
+        <Link
           href={`http://10.0.0.8:81/inet/Sales/EditRequestDetail_V2.asp?RequestID=${obj.requestId}&Name=${obj.contact}&EventID=${obj.eventId}&ContactID=${obj.contactId}&cancelflag=2`}
+          underline="hover"
           target="_new"
           rel="noopener noreferrer"
         >
           {obj.requestId}
-        </a>
+        </Link>
       </TableCell>,
       <TableCell key="entryDate">{entryDateString}</TableCell>,
       <TableCell key="company">{obj.company}</TableCell>,
@@ -38,14 +40,14 @@ const SellOppsDetail: React.FC<IProps> = ({ sellOppDetails }) => {
       <TableCell key="uname">{obj.uname}</TableCell>,
       <TableCell key="quoteId">
         {obj.quoteId > 0 ? (
-          <a
+          <Link
             href={`http://10.0.0.8:81/inet/Quotes/qtViewQuote.asp?QuoteID=${obj.quoteId}&EventID=${obj.eventId}&UpdFlag=0&QuoteUpdate=0`}
-            style={{ textDecoration: 'underline' }}
+            underline="hover"
             target="_blank"
             rel="noopener noreferrer"
           >
             {`Q-${obj.eventId}-${obj.version}`}
-          </a>
+          </Link>
         ) : (
           'none'
         )}
@@ -56,7 +58,7 @@ const SellOppsDetail: React.FC<IProps> = ({ sellOppDetails }) => {
   return (
     <Box sx={{ width: '100%', maxWidth: '100%', marginTop: 3 }}>
       <Paper elevation={3} sx={{ width: '100%', boxShadow: 3 }}>
-        <Box p={2}>
+        <Box sx={{ p: 2 }}>
           <Typography variant="h6" gutterBottom>
             Sell Opp Details
           </Typography>

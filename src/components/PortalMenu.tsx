@@ -28,6 +28,26 @@ const MenuHeader = styled('div')({
   zIndex: 1000, // Ensure it stays above other content
 });
 
+const LogoContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+const LogoImage = styled('img')({
+  width: '24px',
+  height: '24px',
+  marginRight: '8px',
+});
+
+const LogoText = styled('span')({
+  fontSize: '24px',
+});
+
+const IconButtonContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
 const ListItemCustom = styled(ListItemButton)({
   padding: '10px 20px',
   '&:hover': {
@@ -102,10 +122,7 @@ const ScrollbarContainer = styled('div')({
 });
 
 const PortalMenu: React.FC = () => {
-  const [drawerOpen, setDrawerOpen] = useState<boolean>(() => {
-    const savedState = localStorage.getItem('drawerOpen');
-    return savedState ? JSON.parse(savedState) : false;
-  });
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
   const [favorites, setFavorites] = useState<string[]>(() => {
     const savedFavorites = localStorage.getItem('favorites');
@@ -135,7 +152,9 @@ const PortalMenu: React.FC = () => {
   const { setUserName, setPassWord } = userInfo;
 
   useEffect(() => {
-    localStorage.setItem('drawerOpen', JSON.stringify(drawerOpen));
+    if (drawerOpen !== false) {
+      localStorage.setItem('drawerOpen', JSON.stringify(drawerOpen));
+    }
   }, [drawerOpen]);
 
   useEffect(() => {
@@ -195,11 +214,11 @@ const PortalMenu: React.FC = () => {
             <IconButton onClick={handleDrawerToggle} sx={{ color: 'black' }}>
               <ArrowBackIos />
             </IconButton>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <img src={logo} alt="AWT" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
-              <span style={{fontSize: '24px'}}>AWT PORTAL</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <LogoContainer>
+              <LogoImage src={logo} alt="AWT" />
+              <LogoText>AWT PORTAL</LogoText>
+            </LogoContainer>
+            <IconButtonContainer>
               <IconButton sx={{ color: 'grey' }}>
                 <Settings />
               </IconButton>
@@ -212,7 +231,7 @@ const PortalMenu: React.FC = () => {
               >
                 <PowerSettingsNew />
               </IconButton>
-            </div>
+            </IconButtonContainer>
           </MenuHeader>
           <List>
             {favorites.length > 0 && (

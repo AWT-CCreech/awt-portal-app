@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import ClockInAndOut from './ClockInAndOut';
 import TimeSheet from './TimeSheet';
-import { Container, Divider, CircularProgress } from '@mui/material';
+import { Container, Divider, CircularProgress, Box } from '@mui/material';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import { observer } from 'mobx-react-lite';
 import agent from '../../app/api/agent';
@@ -37,7 +37,6 @@ const TimeTrackerPage: React.FC = () => {
   ]);
 
   useEffect(() => {
-
     const userid = localStorage.getItem('userid');
     if (userid !== null && !supervisorIds.includes(userid)) {
       agent.TimeTrackers.get(localStorage.getItem('userid')!.trim()).then((response) =>
@@ -61,27 +60,21 @@ const TimeTrackerPage: React.FC = () => {
       <div>
         <PageHeader pageName="Time Tracker" pageHref="/timetracker" />
         <Divider />
-        <Container maxWidth="xl" style={{ padding: '40px 100px 150px 100px' }}>
-          {(() => {
-            if (supervisorIds.includes(localStorage.getItem('userid') ?? '')) {
-              return (
-                <SupervisorApproval
-                  previousPeriod={previousPeriod}
-                  selectedSuperviseeId={selectedSuperviseeId}
-                  setSelectedSuperviseeId={setSelectedSuperviseeId}
-                  trackersInPeriod={trackersInPeriod}
-                  setTrackersInPeriod={setTrackersInPeriod}
-                />
-              );
-            } else {
-              return (
-                <ClockInAndOut
-                  todayTimeTrack={todayTimeTrack}
-                  setTodayTimeTrack={setTodayTimeTrack}
-                />
-              );
-            }
-          })()}
+        <Container maxWidth="xl" sx={{ padding: '40px 100px 150px 100px' }}>
+          {supervisorIds.includes(localStorage.getItem('userid') ?? '') ? (
+            <SupervisorApproval
+              previousPeriod={previousPeriod}
+              selectedSuperviseeId={selectedSuperviseeId}
+              setSelectedSuperviseeId={setSelectedSuperviseeId}
+              trackersInPeriod={trackersInPeriod}
+              setTrackersInPeriod={setTrackersInPeriod}
+            />
+          ) : (
+            <ClockInAndOut
+              todayTimeTrack={todayTimeTrack}
+              setTodayTimeTrack={setTodayTimeTrack}
+            />
+          )}
 
           <TimeSheet
             trackersInPeriod={trackersInPeriod}
@@ -94,9 +87,9 @@ const TimeTrackerPage: React.FC = () => {
     );
   } else {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <CircularProgress size="large" />
-      </div>
+      </Box>
     );
   }
 };

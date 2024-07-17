@@ -8,6 +8,7 @@ import {
   Divider,
   TableCell,
   Typography,
+  Link,
 } from '@mui/material';
 
 interface IProps {
@@ -20,14 +21,14 @@ const BuyOppsEvent: React.FC<IProps> = ({ buyOppEvents, partJumpTo }) => {
     const entryDateString = getDateString(new Date(obj.entryDate));
     return [
       <TableCell key="eventId">
-        <a
+        <Link
           href={`http://10.0.0.8:81/inet/BuyingOpps/BuyingOppEvent.asp?EventID=${obj.eventId}&PartJumpTo=${partJumpTo}`}
-          style={{ textDecoration: 'underline' }}
+          underline="hover"
           target="_blank"
           rel="noopener noreferrer"
         >
           {obj.eventId}
-        </a>
+        </Link>
       </TableCell>,
       <TableCell key="entryDate">{entryDateString}</TableCell>,
       <TableCell key="company">{obj.company}</TableCell>,
@@ -41,7 +42,7 @@ const BuyOppsEvent: React.FC<IProps> = ({ buyOppEvents, partJumpTo }) => {
   return (
     <Box sx={{ width: '100%', maxWidth: '100%', marginTop: 3 }}>
       <Paper elevation={3} sx={{ width: '100%', boxShadow: 3 }}>
-        <Box p={2}>
+        <Box sx={{ p: 2 }}>
           <Typography variant="h6" gutterBottom>
             Buy Opp Events
           </Typography>
