@@ -7,7 +7,7 @@ import {
 import { Add, Delete, GetApp } from '@mui/icons-material';
 import { fetchUserList, addUser, updateUser, deleteUser } from '../../app/api/agent';
 import { User } from '../../models/UserList/User';
-import PageHeader from '../../sharedComponents/PageHeader';
+import PageHeader from '../../components/PageHeader';
 import * as XLSX from 'xlsx';
 import './style/UserListPage.css';
 

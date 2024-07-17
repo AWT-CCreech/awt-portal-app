@@ -11,7 +11,7 @@ import { observer } from 'mobx-react-lite';
 import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
 import AppState from '../../stores/app';
 import { trim } from 'lodash';
-import PageHeader from '../../sharedComponents/PageHeader';
+import PageHeader from '../../components/PageHeader';
 import {
   Box,
   Button,
@@ -47,12 +47,15 @@ const MassMailer: React.FC = () => {
   useEffect(() => {
     const username = localStorage.getItem('username') ?? '';
     const password = localStorage.getItem('password') ?? '';
-
+    const userid = localStorage.getItem('userid') ?? '';
+  
     agent.UserLogins.authenticate({
+      userid,
       username,
       password,
       isPasswordEncrypted: true,
-    }).then(response => {
+    })
+    .then(response => {
       if (response.username === '') {
         localStorage.setItem('username', '');
         localStorage.setItem('userid', '');
@@ -60,6 +63,14 @@ const MassMailer: React.FC = () => {
         setUserName('');
         setPassWord('');
         navigate('/Login');
+      }
+    })
+    .catch(error => {
+      console.error('Error authenticating user: ' + username, error);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        console.error('Response headers:', error.response.headers);
       }
     });
   }, [navigate, setUserName, setPassWord]);

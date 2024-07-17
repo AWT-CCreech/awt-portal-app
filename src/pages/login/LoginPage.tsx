@@ -67,6 +67,7 @@ const LoginPage: React.FC = () => {
         userid: "", // Ensure this field is included if required
       });
       console.log('Authentication successful:', response);
+      // Save to LocalStorage only after successful login
       localStorage.setItem('username', response.username);
       localStorage.setItem('password', response.password);
       localStorage.setItem('userid', response.userid);

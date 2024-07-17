@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { List, ListItemText, ListItemIcon, Collapse, Drawer, IconButton, Divider, ListItemButton, CssBaseline } from '@mui/material';
-import { ExpandLess, ExpandMore, Menu, Star, StarBorder, Folder, FolderOpen, ArrowBackIos, Settings, AccountCircle, Logout } from '@mui/icons-material';
+import { ExpandLess, ExpandMore, Menu, Star, StarBorder, Folder, FolderOpen, ArrowBackIos, Settings, AccountCircle, PowerSettingsNew } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { grey, blue } from '@mui/material/colors';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { handleLogOut } from '../utils/authentication'; 
 import UserInfoContext from '../stores/userInfo'; 
-
-// Import the favicon
-import favicon from './images/logo.png';
+import logo from '../assets/images/logo.png';
 
 const drawerWidth = 510;
 
@@ -198,11 +196,11 @@ const PortalMenu: React.FC = () => {
               <ArrowBackIos />
             </IconButton>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <img src={favicon} alt="favicon" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
-              <span>AWT Portal</span>
+              <img src={logo} alt="AWT" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+              <span style={{fontSize: '24px'}}>AWT PORTAL</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <IconButton sx={{ color: 'black' }}>
+              <IconButton sx={{ color: 'grey' }}>
                 <Settings />
               </IconButton>
               <IconButton sx={{ color: 'black' }}>
@@ -212,7 +210,7 @@ const PortalMenu: React.FC = () => {
                 sx={{ color: 'black' }}
                 onClick={() => handleLogOut(navigate, setUserName, setPassWord)}
               >
-                <Logout />
+                <PowerSettingsNew />
               </IconButton>
             </div>
           </MenuHeader>

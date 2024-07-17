@@ -7,7 +7,7 @@ import {
   TableCell
 } from '@mui/material';
 import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
-import SortableTable from '../../sharedComponents/SortableTable';
+import SortableTable from '../../components/SortableTable';
 import { getDateString } from '../../utils/stringManipulation';
 
 interface IProps {

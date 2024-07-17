@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { createContext } from "react";
 
 class UserInfo {
@@ -8,21 +8,6 @@ class UserInfo {
     constructor() {
         makeAutoObservable(this);
         this.loadFromLocalStorage();
-
-        // Automatically save to local storage when the username or password changes
-        reaction(
-            () => this.username,
-            username => {
-                localStorage.setItem('username', username);
-            }
-        );
-
-        reaction(
-            () => this.password,
-            password => {
-                localStorage.setItem('password', password);
-            }
-        );
     }
 
     setUserName = (u: string) => {

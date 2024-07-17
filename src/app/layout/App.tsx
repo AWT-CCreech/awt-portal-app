@@ -1,15 +1,15 @@
 import React, { useEffect, useContext } from 'react';
 import './App.css';
-import MassMailer from '../../features/mass-mailer/MassMailer';
+import MassMailer from '../../pages/mass-mailer/MassMailer';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import LoginPage from '../../features/login/LoginPage';
-import Home from '../../features/home/Home';
-import NotFoundPage from '../../features/exception-pages/NotFoundPage';
+import LoginPage from '../../pages/login/LoginPage';
+import Home from '../../pages/home/Home';
+import NotFoundPage from '../../pages/exception-pages/NotFoundPage';
 import UserInfoContext from '../../stores/userInfo';
-import PrivateRoute from '../../sharedComponents/PrivateRoute';
-import MasterSearch from '../../features/master-search/MasterSearch';
-import DropShip from '../../features/dropship/DropShip';
-import UserListPage from '../../features/user-list/UserListPage';
+import PrivateRoute from '../../components/PrivateRoute';
+import MasterSearch from '../../pages/master-search/MasterSearch';
+import DropShip from '../../pages/dropship/DropShip';
+import UserListPage from '../../pages/user-list/UserListPage';
 import setDocumentTitle from '../../utils/setDocumentTitle';
 
 const App: React.FC = () => {

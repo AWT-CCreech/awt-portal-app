@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@mui/material';
 import SellOppEvent from '../../models/MasterSearch/SellOppEvent';
-import SortableTable from '../../sharedComponents/SortableTable';
+import SortableTable from '../../components/SortableTable';
 import { getDateString } from '../../utils/stringManipulation';
 
 interface IProps {

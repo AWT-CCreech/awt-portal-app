@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import PageHeader from '../../sharedComponents/PageHeader';
+import PageHeader from '../../components/PageHeader';
 import BuyOppsEvent from './BuyOppsEvent';
 import SellOppsEvent from './SellOppsEvent';
 import SellOppsDetail from './SellOppsDetail';

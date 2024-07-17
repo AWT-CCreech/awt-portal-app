@@ -5,7 +5,7 @@ import { Container, Divider, CircularProgress } from '@mui/material';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import { observer } from 'mobx-react-lite';
 import agent from '../../app/api/agent';
-import PageHeader from '../../sharedComponents/PageHeader';
+import PageHeader from '../../components/PageHeader';
 import SupervisorApproval from './SupervisorApproval';
 import AppState from '../../stores/app';
 import { useNavigate } from 'react-router-dom';

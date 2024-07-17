@@ -19,6 +19,7 @@ export const handleLogOut = (
 ) => {
   localStorage.setItem('username', '');
   localStorage.setItem('password', '');
+  localStorage.setItem('userid', '');
   setUserName('');
   setPassWord('');
   navigate('/login');

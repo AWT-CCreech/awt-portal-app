@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Grid, Typography, Box } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import PortalMenu from './PortalMenu';  // Import the new collapsible menu
+import PortalMenu from './PortalMenu';
 
 interface IProps {
   pageName: string;
@@ -12,7 +12,7 @@ const PageHeader: React.FC<IProps> = ({ pageName, pageHref }) => {
   const username = localStorage.getItem('username');
 
   return (
-    <Container maxWidth={false} style={{ padding: '15px 100px', backgroundColor: 'whiteSmoke' }}>
+    <Container maxWidth={false} style={{ padding: '15px 50px', backgroundColor: 'whiteSmoke' }}>
       <Grid container alignItems="center">
         <Grid item xs={6} style={{ display: 'flex', alignItems: 'center' }}>
           <PortalMenu />

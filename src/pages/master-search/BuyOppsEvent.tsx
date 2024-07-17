@@ -1,6 +1,6 @@
 import React from 'react';
 import BuyOppEvent from '../../models/MasterSearch/BuyOppEvent';
-import SortableTable from '../../sharedComponents/SortableTable';
+import SortableTable from '../../components/SortableTable';
 import { getDateString } from '../../utils/stringManipulation';
 import {
   Box,

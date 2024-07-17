@@ -1,6 +1,6 @@
 import React from 'react';
 import MasterSearchContact from '../../models/MasterSearch/MasterSearchContact';
-import SortableTable from '../../sharedComponents/SortableTable';
+import SortableTable from '../../components/SortableTable';
 import {
   Box,
   Paper,

@@ -3,7 +3,7 @@ import { Container, Grid, Box, Chip, Divider, TextField, Button, Typography, Cir
 import DeleteIcon from '@mui/icons-material/Delete';
 import agent from '../../app/api/agent';
 import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
-import PageHeader from '../../sharedComponents/PageHeader';
+import PageHeader from '../../components/PageHeader';
 import RecipientPopUp from './RecipientPopUp';
 
 const DropShip = () => {
