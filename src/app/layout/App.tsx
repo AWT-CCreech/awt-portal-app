@@ -4,10 +4,11 @@ import MassMailer from '../../pages/mass-mailer/MassMailer';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import LoginPage from '../../pages/login/LoginPage';
 import Home from '../../pages/home/Home';
-import NotFoundPage from '../../pages/exception-pages/NotFoundPage';
+import NotFound from '../../pages/exception-pages/NotFound'
 import UserInfoContext from '../../stores/userInfo';
 import PrivateRoute from '../../components/PrivateRoute';
 import MasterSearch from '../../pages/master-search/MasterSearch';
+import OpenSalesOrderReport from '../../pages/open-so-report/OpenSalesOrderReport'
 import DropShip from '../../pages/dropship/DropShip';
 import UserListPage from '../../pages/user-list/UserListPage';
 import setDocumentTitle from '../../utils/setDocumentTitle';
@@ -33,9 +34,10 @@ const App: React.FC = () => {
         <Route path="/dropship" element={<DropShip />} />
         <Route path="/massmailer" element={<MassMailer />} />
         <Route path="/mastersearch" element={<MasterSearch />} />
+        <Route path="/opensalesorderreport" element={<OpenSalesOrderReport />} />
         <Route path="/userlist" element={<UserListPage />} />
       </Route>
-      <Route path="*" element={<NotFoundPage />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
