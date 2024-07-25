@@ -16,13 +16,13 @@ const PageHeader: React.FC<IProps> = ({ pageName, pageHref }) => {
       <Grid container alignItems="center">
         <Grid item xs={6} style={{ display: 'flex', alignItems: 'center' }}>
           <PortalMenu />
-          <Typography variant="h6" component="div" style={{ marginLeft: '15px', color: '#1976d2' }}>
+          <Typography variant="h6" component="div" style={{ marginLeft: '15px', color: '#004780' }}>
             {pageName}
           </Typography>
         </Grid>
         <Grid item xs={6} style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
           <Box display="flex" alignItems="center">
-            <Typography variant="h6" component="div" style={{ display: 'inline-flex', alignItems: 'center', color: '#1976d2' }}>
+            <Typography variant="h6" component="div" style={{ display: 'inline-flex', alignItems: 'center', color: '#004780' }}>
               <AccountCircleIcon fontSize="small" style={{ marginRight: '3px' }} />
               {username}
             </Typography>
