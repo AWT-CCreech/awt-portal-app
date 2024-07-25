@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, { useReducer, useEffect } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, TableSortLabel, Paper, TableContainer } from '@mui/material';
-import { toPascalCase, toLowerFirstLetter } from '../utils/stringManipulation';
+import { toPascalCase, toLowerFirstLetter } from '../utils/dataManipulation';
 import styled from 'styled-components';
 
 function reducer(state: any, action: any) {
@@ -68,7 +68,7 @@ const StyledTableCell = styled(TableCell)`
 
 // Styled component for TableCell in TableHead to make text white and change hover color
 const HeaderTableCell = styled(StyledTableCell)`
-  color: white;
+  color: white !important;
 
   & .MuiTableSortLabel-root:hover {
     color: lightgray;
