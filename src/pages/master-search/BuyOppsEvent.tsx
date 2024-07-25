@@ -1,7 +1,7 @@
 import React from 'react';
 import BuyOppEvent from '../../models/MasterSearch/BuyOppEvent';
 import SortableTable from '../../components/SortableTable';
-import { getDateString } from '../../utils/stringManipulation';
+import { getDateString } from '../../utils/dataManipulation';
 import {
   Box,
   Paper,
@@ -53,7 +53,7 @@ const BuyOppsEvent: React.FC<IProps> = ({ buyOppEvents, partJumpTo }) => {
                 tableData={buyOppEvents}
                 columns={['eventId', 'entryDate', 'company', 'manufacturer', 'technology', 'frequency', 'uname']}
                 columnNames={['EID', 'Entry Date', 'Seller', 'Mfg', 'Technology', 'Frequency', 'Purch Rep']}
-                headerBackgroundColor="#1976d2"
+                headerBackgroundColor="#384959"
                 hoverColor="#f5f5f5"
                 func={func}
               />

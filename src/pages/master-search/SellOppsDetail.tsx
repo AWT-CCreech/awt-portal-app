@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
 import SortableTable from '../../components/SortableTable';
-import { getDateString } from '../../utils/stringManipulation';
+import { getDateString } from '../../utils/dataManipulation';
 
 interface IProps {
   sellOppDetails: SellOppDetail[];
@@ -89,7 +89,7 @@ const SellOppsDetail: React.FC<IProps> = ({ sellOppDetails }) => {
                   'Sales Rep',
                   'Quote',
                 ]}
-                headerBackgroundColor="#1976d2"
+                headerBackgroundColor="#384959"
                 hoverColor="#f5f5f5"
                 func={func}
               />

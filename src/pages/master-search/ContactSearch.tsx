@@ -59,7 +59,7 @@ const ContactSearch: React.FC<IProps> = ({ contacts }) => {
                 tableData={contacts}
                 columns={['contact', 'company', 'state', 'phoneMain', 'activeStatus']}
                 columnNames={['Contact', 'Company', 'State', 'PhoneMain', 'Active']}
-                headerBackgroundColor="#1976d2"
+                headerBackgroundColor="#384959"
                 hoverColor="#f5f5f5"
                 func={func}
               />

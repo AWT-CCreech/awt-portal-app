@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import SellOppEvent from '../../models/MasterSearch/SellOppEvent';
 import SortableTable from '../../components/SortableTable';
-import { getDateString } from '../../utils/stringManipulation';
+import { getDateString } from '../../utils/dataManipulation';
 
 interface IProps {
   sellOppEvents: SellOppEvent[];
@@ -65,7 +65,7 @@ const SellOppsEvent: React.FC<IProps> = ({ sellOppEvents }) => {
                 tableData={sellOppEvents}
                 columns={['eventId', 'entryDate', 'company', 'manufacturer', 'soldOrLost', 'uname', 'quoteId']}
                 columnNames={['EID', 'Entry Date', 'Customer', 'Mfg', 'Status', 'Sales Rep', 'Quote']}
-                headerBackgroundColor="#1976d2"
+                headerBackgroundColor="#384959"
                 hoverColor="#f5f5f5"
                 func={func}
               />
