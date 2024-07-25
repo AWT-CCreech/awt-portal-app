@@ -18,3 +18,11 @@ export function getDateString(date: Date) {
                 + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) 
                 + '/' + date.getFullYear());
 }
+
+export function formatAmount(amount: number) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+    }).format(amount);
+}
