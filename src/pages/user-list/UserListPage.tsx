@@ -5,8 +5,8 @@ import {
   Snackbar, Alert, CircularProgress, Button, IconButton, Tooltip, Typography, Divider, TableSortLabel 
 } from '@mui/material';
 import { Add, Delete, GetApp } from '@mui/icons-material';
-import { fetchUserList, addUser, updateUser, deleteUser } from '../../app/api/agent';
-import { User } from '../../models/UserList/User';
+import Modules from '../../app/api/agent';
+import { User } from '../../models/User';
 import PageHeader from '../../components/PageHeader';
 import * as XLSX from 'xlsx';
 import './style/UserListPage.css';
@@ -28,7 +28,7 @@ const UserListPage: React.FC = () => {
   useEffect(() => {
     const getUsers = async () => {
       try {
-        const data = await fetchUserList();
+        const data = await Modules.UserList.fetchUserList();
         setUsers(data);
       } catch (err) {
         setError('Failed to fetch users');
@@ -55,7 +55,7 @@ const UserListPage: React.FC = () => {
     setError(null);  
     setSuccess(null);
     try {
-      const addedUser = await addUser(selectedUser as User);
+      const addedUser = await Modules.UserList.addUser(selectedUser as User);
       setUsers([...users, addedUser]);
       setModalOpen(false);
       setSelectedUser({});
@@ -80,7 +80,7 @@ const UserListPage: React.FC = () => {
     setSuccess(null);
     try {
       if (selectedUser.id) {
-        const updated = await updateUser(selectedUser.id, selectedUser as User);
+        const updated = await Modules.UserList.updateUser(selectedUser.id, selectedUser as User);
         setUsers(users.map(user => (user.id === updated.id ? updated : user)));
         setModalOpen(false);
         setSelectedUser({});
@@ -98,7 +98,7 @@ const UserListPage: React.FC = () => {
     setError(null);  
     setSuccess(null);
     try {
-      await deleteUser(uid);
+      await Modules.UserList.deleteUser(uid);
       setUsers(users.filter(user => user.id !== uid));
       setSuccess(`Deleted ${userToDelete?.uname}!`);
     } catch (err) {
