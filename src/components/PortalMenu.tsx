@@ -1,31 +1,66 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { List, ListItemText, ListItemIcon, Collapse, Drawer, IconButton, Divider, ListItemButton, CssBaseline } from '@mui/material';
-import { ExpandLess, ExpandMore, Menu, Star, StarBorder, Folder, FolderOpen, ArrowBackIos, Settings, AccountCircle, PowerSettingsNew } from '@mui/icons-material';
+import {
+  List,
+  ListItemText,
+  ListItemIcon,
+  Collapse,
+  Drawer,
+  IconButton,
+  Divider,
+  ListItemButton,
+  CssBaseline,
+  Tooltip,
+} from '@mui/material';
+import {
+  ExpandLess,
+  ExpandMore,
+  Menu,
+  Star,
+  StarBorder,
+  Folder,
+  FolderOpen,
+  ArrowBackIos,
+  Settings,
+  AccountCircle,
+  PowerSettingsNew,
+} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { grey, blue } from '@mui/material/colors';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import { handleLogOut } from '../utils/authentication'; 
-import UserInfoContext from '../stores/userInfo'; 
-import logo from '../assets/images/logo.png';
+import { handleLogOut } from '../utils/authentication';
+import UserInfoContext from '../stores/userInfo';
+import logo from '../assets/images/fullLogo.png';
 
-const drawerWidth = 510;
+const drawerWidth = 300;
 
 const DrawerPaper = {
   width: drawerWidth,
-  backgroundColor: '#f5f5f5', // Light background color
-  color: 'black',
+  backgroundColor: '#ffffff', // Light background color
+  color: grey[900],
   overflowX: 'hidden',
 };
+
+const TitleRow = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '60px',
+  padding: '16px',
+  backgroundColor: grey[200],
+  position: 'sticky',
+  top: 0,
+  zIndex: 1001,
+});
 
 const MenuHeader = styled('div')({
   display: 'flex',
   alignItems: 'center',
   padding: '16px',
-  justifyContent: 'space-between', // Updated to space-between to accommodate the new buttons
-  backgroundColor: grey[300],
+  justifyContent: 'space-between', 
+  backgroundColor: grey[200],
   position: 'sticky',
-  top: 0,
-  zIndex: 1000, // Ensure it stays above other content
+  top: '60px', // Adjust the top value to be below the TitleRow
+  zIndex: 1000,
 });
 
 const LogoContainer = styled('div')({
@@ -34,13 +69,8 @@ const LogoContainer = styled('div')({
 });
 
 const LogoImage = styled('img')({
-  width: '24px',
-  height: '24px',
+  height: '36px',
   marginRight: '8px',
-});
-
-const LogoText = styled('span')({
-  fontSize: '24px',
 });
 
 const IconButtonContainer = styled('div')({
@@ -50,58 +80,63 @@ const IconButtonContainer = styled('div')({
 
 const ListItemCustom = styled(ListItemButton)({
   padding: '10px 20px',
+  borderRadius: '8px',
+  margin: '4px 0',
   '&:hover': {
-    backgroundColor: grey[200],
+    backgroundColor: grey[100],
   },
 });
 
 const ListItemTextCustom = styled(ListItemText)({
-  color: 'black',
+  color: grey[900],
+  fontWeight: '500',
 });
 
 const ListItemIconCustom = styled(ListItemIcon)({
-  color: 'black',
+  color: grey[900],
 });
 
 const ListItemFavorite = styled(ListItemButton)({
   padding: '10px 20px',
-  backgroundColor: blue[100],
+  backgroundColor: blue[50],
+  borderRadius: '8px',
+  margin: '4px 0',
   '&:hover': {
-    backgroundColor: blue[200],
-  },
-});
-
-const ListItemMain = styled(ListItemButton)({
-  padding: '10px 20px',
-  backgroundColor: grey[200],
-  '&:hover': {
-    backgroundColor: grey[300],
+    backgroundColor: blue[100],
   },
 });
 
 const NestedListItem = styled(ListItemButton)({
   paddingLeft: '40px',
+  borderRadius: '8px',
+  margin: '4px 0',
+  '&:hover': {
+    backgroundColor: grey[100],
+  },
 });
 
 const SectionHeader = styled('div')({
   backgroundColor: grey[300],
   padding: '10px 20px',
+  borderRadius: '8px',
+  margin: '8px 0',
 });
 
 const SectionHeaderText = styled(ListItemText)({
-  color: 'black',
+  color: grey[900],
   fontWeight: 'bold',
 });
 
 const FavoritesHeader = styled(SectionHeader)({
   backgroundColor: blue[500],
+  color: 'white',
 });
 
 const MainHeader = styled(SectionHeader)({
-  backgroundColor: grey[500],
+  backgroundColor: grey[300],
+  color: 'white',
 });
 
-// Custom scrollbar styles using MUI
 const ScrollbarContainer = styled('div')({
   overflowY: 'auto',
   height: '100%',
@@ -131,20 +166,22 @@ const PortalMenu: React.FC = () => {
 
   const [openFolders, setOpenFolders] = useState<{ [key: string]: boolean }>(() => {
     const savedFolders = localStorage.getItem('openFolders');
-    return savedFolders ? JSON.parse(savedFolders) : {
-      accounting: false,
-      cam: false,
-      commissions: false,
-      consignment: false,
-      helpDesk: false,
-      inventory: false,
-      it: false,
-      operations: false,
-      purchasing: false,
-      receiving: false,
-      sales: false,
-      shipping: false,
-    };
+    return savedFolders
+      ? JSON.parse(savedFolders)
+      : {
+          accounting: false,
+          cam: false,
+          commissions: false,
+          consignment: false,
+          helpDesk: false,
+          inventory: false,
+          it: false,
+          operations: false,
+          purchasing: false,
+          receiving: false,
+          sales: false,
+          shipping: false,
+        };
   });
 
   const navigate = useNavigate();
@@ -172,10 +209,10 @@ const PortalMenu: React.FC = () => {
   };
 
   const handleNavigation = (path: string) => {
-    setDrawerOpen(false); // Minimize the menu immediately
+    setDrawerOpen(false);
     setTimeout(() => {
       navigate(path);
-    }, 300); // Delay navigation slightly to ensure drawer closes first
+    }, 300);
   };
 
   const handleFolderToggle = (folder: string) => {
@@ -183,9 +220,9 @@ const PortalMenu: React.FC = () => {
   };
 
   const handleFavoriteToggle = (app: string) => {
-    setFavorites(prevFavorites =>
+    setFavorites((prevFavorites) =>
       prevFavorites.includes(app)
-        ? prevFavorites.filter(fav => fav !== app)
+        ? prevFavorites.filter((fav) => fav !== app)
         : [...prevFavorites, app]
     );
   };
@@ -193,15 +230,19 @@ const PortalMenu: React.FC = () => {
   const isFavorite = (app: string) => favorites.includes(app);
 
   const getFolderTitle = (folder: string) => {
-    return folder === 'it' ? 'IT' : folder === 'cam' ? 'CAM' : folder.charAt(0).toUpperCase() + folder.slice(1);
+    return folder === 'it'
+      ? 'IT'
+      : folder === 'cam'
+      ? 'CAM'
+      : folder.charAt(0).toUpperCase() + folder.slice(1);
   };
 
-  const formatPath = (path: string) => path.toLowerCase().replace(/\s+/g, '-');
+  const formatPath = (path: string) => path.toLowerCase().replace(/\s+/g, '');
 
   return (
     <ThemeProvider theme={createTheme()}>
       <CssBaseline />
-      <IconButton onClick={handleDrawerToggle} sx={{ color: 'black' }}>
+      <IconButton onClick={handleDrawerToggle} sx={{ color: grey[900] }}>
         <Menu />
       </IconButton>
       <Drawer
@@ -210,27 +251,34 @@ const PortalMenu: React.FC = () => {
         sx={{ '& .MuiDrawer-paper': DrawerPaper }}
       >
         <ScrollbarContainer>
-          <MenuHeader>
-            <IconButton onClick={handleDrawerToggle} sx={{ color: 'black' }}>
-              <ArrowBackIos />
-            </IconButton>
+          <TitleRow>
             <LogoContainer>
               <LogoImage src={logo} alt="AWT" />
-              <LogoText>AWT PORTAL</LogoText>
             </LogoContainer>
+          </TitleRow>
+          <MenuHeader>
+            <IconButton onClick={handleDrawerToggle} sx={{ color: grey[900] }}>
+              <ArrowBackIos />
+            </IconButton>
             <IconButtonContainer>
-              <IconButton sx={{ color: 'grey' }}>
-                <Settings />
-              </IconButton>
-              <IconButton sx={{ color: 'black' }}>
-                <AccountCircle />
-              </IconButton>
-              <IconButton
-                sx={{ color: 'black' }}
-                onClick={() => handleLogOut(navigate, setUserName, setPassWord)}
-              >
-                <PowerSettingsNew />
-              </IconButton>
+              <Tooltip title="Settings">
+                <IconButton sx={{ color: grey[900] }}>
+                  <Settings />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Account">
+                <IconButton sx={{ color: grey[900] }}>
+                  <AccountCircle />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Logout">
+                <IconButton
+                  sx={{ color: grey[900] }}
+                  onClick={() => handleLogOut(navigate, setUserName, setPassWord)}
+                >
+                  <PowerSettingsNew />
+                </IconButton>
+              </Tooltip>
             </IconButtonContainer>
           </MenuHeader>
           <List>
@@ -245,8 +293,17 @@ const PortalMenu: React.FC = () => {
                     onClick={() => handleNavigation(`/${formatPath(favorite)}`)}
                   >
                     <ListItemTextCustom primary={favorite} />
-                    <ListItemIconCustom onClick={(e) => { e.stopPropagation(); handleFavoriteToggle(favorite); }}>
-                      {isFavorite(favorite) ? <Star sx={{ color: blue[700] }} /> : <StarBorder sx={{ color: blue[700] }} />}
+                    <ListItemIconCustom
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleFavoriteToggle(favorite);
+                      }}
+                    >
+                      {isFavorite(favorite) ? (
+                        <Star sx={{ color: blue[800] }} />
+                      ) : (
+                        <StarBorder sx={{ color: blue[800] }} />
+                      )}
                     </ListItemIconCustom>
                   </ListItemFavorite>
                 ))}
@@ -256,30 +313,42 @@ const PortalMenu: React.FC = () => {
             <MainHeader>
               <SectionHeaderText primary="Main" />
             </MainHeader>
-            <ListItemMain
-              onClick={() => handleNavigation('/mastersearch')}
-            >
+            <ListItemCustom onClick={() => handleNavigation('/mastersearch')}>
               <ListItemTextCustom primary="Master Search" />
-              <ListItemIconCustom onClick={(e) => { e.stopPropagation(); handleFavoriteToggle('Master Search'); }}>
-                {isFavorite('Master Search') ? <Star sx={{ color: blue[700] }} /> : <StarBorder sx={{ color: blue[700] }} />}
+              <ListItemIconCustom
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFavoriteToggle('Master Search');
+                }}
+              >
+                {isFavorite('Master Search') ? (
+                  <Star sx={{ color: blue[800] }} />
+                ) : (
+                  <StarBorder sx={{ color: blue[800] }} />
+                )}
               </ListItemIconCustom>
-            </ListItemMain>
-            <ListItemMain
-              onClick={() => handleNavigation('/userlist')}
-            >
+            </ListItemCustom>
+            <ListItemCustom onClick={() => handleNavigation('/userlist')}>
               <ListItemTextCustom primary="User List" />
-              <ListItemIconCustom onClick={(e) => { e.stopPropagation(); handleFavoriteToggle('User List'); }}>
-                {isFavorite('User List') ? <Star sx={{ color: blue[700] }} /> : <StarBorder sx={{ color: blue[700] }} />}
+              <ListItemIconCustom
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFavoriteToggle('User List');
+                }}
+              >
+                {isFavorite('User List') ? (
+                  <Star sx={{ color: blue[800] }} />
+                ) : (
+                  <StarBorder sx={{ color: blue[800] }} />
+                )}
               </ListItemIconCustom>
-            </ListItemMain>
+            </ListItemCustom>
             <Divider />
             <Collapse in={drawerOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
                 {Object.keys(openFolders).map((folder) => (
                   <div key={folder}>
-                    <ListItemCustom
-                      onClick={() => handleFolderToggle(folder)}
-                    >
+                    <ListItemCustom onClick={() => handleFolderToggle(folder)}>
                       <ListItemIconCustom>
                         {openFolders[folder] ? <FolderOpen /> : <Folder />}
                       </ListItemIconCustom>
@@ -312,19 +381,34 @@ const PortalMenu: React.FC = () => {
                           onClick={() => handleNavigation(`/${formatPath(folder + ' item1')}`)}
                         >
                           <ListItemTextCustom primary={`${getFolderTitle(folder)} Item 1`} />
-                          <ListItemIconCustom onClick={(e) => { e.stopPropagation(); handleFavoriteToggle(`${getFolderTitle(folder)} Item 1`); }}>
-                            {isFavorite(`${getFolderTitle(folder)} Item 1`) ? <Star sx={{ color: blue[700] }} /> : <StarBorder sx={{ color: blue[700] }} />}
+                          <ListItemIconCustom
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleFavoriteToggle(`${getFolderTitle(folder)} Item 1`);
+                            }}
+                          >
+                            {isFavorite(`${getFolderTitle(folder)} Item 1`) ? (
+                              <Star sx={{ color: blue[800] }} />
+                            ) : (
+                              <StarBorder sx={{ color: blue[800] }} />
+                            )}
                           </ListItemIconCustom>
                         </NestedListItem>
-                        <NestedListItem
-                          onClick={() => handleNavigation(`/${formatPath(folder + ' item2')}`)}
-                        >
+                        <NestedListItem onClick={() => handleNavigation(`/${formatPath(folder + ' item2')}`)}>
                           <ListItemTextCustom primary={`${getFolderTitle(folder)} Item 2`} />
-                          <ListItemIconCustom onClick={(e) => { e.stopPropagation(); handleFavoriteToggle(`${getFolderTitle(folder)} Item 2`); }}>
-                            {isFavorite(`${getFolderTitle(folder)} Item 2`) ? <Star sx={{ color: blue[700] }} /> : <StarBorder sx={{ color: blue[700] }} />}
+                          <ListItemIconCustom
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleFavoriteToggle(`${getFolderTitle(folder)} Item 2`);
+                            }}
+                          >
+                            {isFavorite(`${getFolderTitle(folder)} Item 2`) ? (
+                              <Star sx={{ color: blue[800] }} />
+                            ) : (
+                              <StarBorder sx={{ color: blue[800] }} />
+                            )}
                           </ListItemIconCustom>
                         </NestedListItem>
-                        {/* Add more items as needed */}
                       </List>
                     </Collapse>
                   </div>
