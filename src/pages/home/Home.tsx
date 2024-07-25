@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { isAuthenticated } from '../../utils/authentication';
-import { Container, Grid, Button, Box } from '@mui/material';
+import { Container, Grid, Button } from '@mui/material';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -47,6 +47,15 @@ const Home: React.FC = () => {
             onClick={() => navigate('/mastersearch')}
           >
             Master Search
+          </Button>
+        </Grid>
+        <Grid item xs={3} textAlign="center">
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
+            onClick={() => navigate('/opensalesorderreport')}
+          >
+            Open SO Report
           </Button>
         </Grid>
         <Grid item xs={3} textAlign="center">
