@@ -2,19 +2,22 @@ import axios, { AxiosResponse } from 'axios';
 import { IMassMailerEmailTemplate } from '../../models/MassMailer/MassMailerEmailTemplate';
 import { IMassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
 import { IMassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
-import { LoginInfo } from '../../models/LoginInfo';
 import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
-import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
-import SearchInput from '../../models/MasterSearch/SearchInput';
-import SellOppEvent from '../../models/MasterSearch/SellOppEvent';
-import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
 import BuyOppEvent from '../../models/MasterSearch/BuyOppEvent';
 import BuyOppDetail from '../../models/MasterSearch/BuyOppDetail';
+import LoginInfo from '../../models/Login/LoginInfo';
 import MasterSearchContact from '../../models/MasterSearch/MasterSearchContact';
-import { User } from '../../models/UserList/User';
+import MasterSearchInput from '../../models/MasterSearch/SearchInput';
+import OpenSalesOrder from '../../models/OpenSalesOrder';
+import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
+import SellOppEvent from '../../models/MasterSearch/SellOppEvent';
+import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
+import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
+import { User } from '../../models/User';
+import { ActiveSalesReps } from '../../models/OpenSOReport/ActiveSalesReps';
 
-const devURL = "http://localhost:5001/api";
-const prodURL = "http://10.0.0.8:82/api";
+const devURL = "http://localhost:5001/api"; //http://10.0.0.27/api
+const prodURL = "http://10.0.0.8:82/api"; //http://10.0.0.8/api
 
 if (process.env.NODE_ENV === "development")
     axios.defaults.baseURL = devURL;
@@ -82,10 +85,10 @@ const TimeTrackers = {
 };
 
 const MasterSearches = {
-    getSellOppEvents: (input: SearchInput): Promise<SellOppEvent[]> => requests.getWithParams('/SellOppEvents', input),
-    getSellOppDetails: (input: SearchInput): Promise<SellOppDetail[]> => requests.getWithParams('/SellOppDetails', input),
-    getBuyOppEvents: (input: SearchInput): Promise<BuyOppEvent[]> => requests.getWithParams('/BuyOppEvents', input),
-    getBuyOppDetails: (input: SearchInput): Promise<BuyOppDetail[]> => requests.getWithParams('/BuyOppDetails', input),
+    getSellOppEvents: (input: MasterSearchInput): Promise<SellOppEvent[]> => requests.getWithParams('/SellOppEvents', input),
+    getSellOppDetails: (input: MasterSearchInput): Promise<SellOppDetail[]> => requests.getWithParams('/SellOppDetails', input),
+    getBuyOppEvents: (input: MasterSearchInput): Promise<BuyOppEvent[]> => requests.getWithParams('/BuyOppEvents', input),
+    getBuyOppDetails: (input: MasterSearchInput): Promise<BuyOppDetail[]> => requests.getWithParams('/BuyOppDetails', input),
     getContacts: (searchValue: string, active: boolean): Promise<MasterSearchContact[]> => requests.getWithParams('/MasterSearchContacts', { searchValue, active })
 };
 
@@ -95,50 +98,77 @@ const DropShip = {
     getAllDropShipSalesReps: () => requests.get(`/DropShipSalesReps`)
 };
 
-// Function to fetch users
-const fetchUserList = async (): Promise<User[]> => {
-    try {
-        const response = await requests.get('/UserList/GetUserList');
-        return response as User[];
-    } catch (error) {
-        console.error('Error fetching users', error);
-        throw error;
+const UserList = {
+    // Function to fetch users
+    fetchUserList: async (): Promise<User[]> => {
+        try {
+            const response = await requests.get('/UserList/GetUserList');
+            return response as User[];
+        } catch (error) {
+            console.error('Error fetching users', error);
+            throw error;
+        }
+    },
+
+    // Function to add a new user
+    addUser: async (newUser: User): Promise<User> => {
+        try {
+            const response = await requests.post('/UserList/AddUser', newUser);
+            return response as User;
+        } catch (error) {
+            console.error('Error adding user', error);
+            throw error;
+        }
+    },
+
+    // Function to update a user
+    updateUser: async (uid: number, updatedUser: User): Promise<User> => {
+        try {
+            const response = await requests.put(`/UserList/UpdateUser/${uid}`, updatedUser);
+            return response as User;
+        } catch (error) {
+            console.error('Error updating user', error);
+            throw error;
+        }
+    },
+
+    // Function to delete a user
+    deleteUser: async (uid: number): Promise<void> => {
+        try {
+            await requests.delete(`/UserList/DeleteUser/${uid}`);
+        } catch (error) {
+            console.error('Error deleting user', error);
+            throw error;
+        }
     }
 };
 
-// Function to add a new user
-const addUser = async (newUser: User): Promise<User> => {
-    try {
-        const response = await requests.post('/UserList/AddUser', newUser);
-        return response as User;
-    } catch (error) {
-        console.error('Error adding user', error);
-        throw error;
+const SalesReps = {
+    fetchActiveSalesReps: async (): Promise<ActiveSalesReps[]> => {
+        try {
+            const response = await requests.get('/SalesRep/GetSalesReps');
+            return response as ActiveSalesReps[];
+        } catch (error) {
+            console.error('Error fetching sales reps', error);
+            throw error;
+        }
     }
 };
 
-// Function to update a user
-const updateUser = async (uid: number, updatedUser: User): Promise<User> => {
-    try {
-        const response = await requests.put(`/UserList/UpdateUser/${uid}`, updatedUser);
-        return response as User;
-    } catch (error) {
-        console.error('Error updating user', error);
-        throw error;
+// Function to fetch open sales orders
+const OpenSalesOrders = {
+    fetchOpenSalesOrders: async (params: OpenSalesOrderSearchInput): Promise<OpenSalesOrder[]> => {
+        try {
+            const response = await requests.getWithParams('/OpenSalesOrder/GetOpenSalesOrders', params);
+            return response as OpenSalesOrder[];
+        } catch (error) {
+            console.error('Error fetching open sales orders', error);
+            throw error;
+        }
     }
 };
 
-// Function to delete a user
-const deleteUser = async (uid: number): Promise<void> => {
-    try {
-        await requests.delete(`/UserList/DeleteUser/${uid}`);
-    } catch (error) {
-        console.error('Error deleting user', error);
-        throw error;
-    }
-};
-
-const massMailerModules = {
+const Modules = {
     MassMailerEmailTemplates,
     MassMailerManufacturers,
     MassMailerVendors,
@@ -150,8 +180,10 @@ const massMailerModules = {
     MassMailerClearPartItems,
     TimeTrackers,
     MasterSearches,
-    DropShip
+    DropShip,
+    UserList,
+    OpenSalesOrders,
+    SalesReps,
 };
 
-export { fetchUserList, addUser, updateUser, deleteUser };
-export default massMailerModules;
+export default Modules;
