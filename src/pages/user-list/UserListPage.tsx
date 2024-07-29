@@ -9,7 +9,7 @@ import Modules from '../../app/api/agent';
 import { User } from '../../models/User';
 import PageHeader from '../../components/PageHeader';
 import * as XLSX from 'xlsx';
-import './style/UserListPage.css';
+import '../styles/user-list/UserListPage.css';
 
 const UserListPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
