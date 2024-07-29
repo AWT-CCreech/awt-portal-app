@@ -23,7 +23,7 @@ import SelectedFile from './components/SelectedFile';
 import CcPopUp from './CCPopUp';
 import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
 import AddCC from './AddCC';
-import './style/EmailProperties.css';
+import '../styles/mass-mailer/EmailProperties.css';
 
 interface IProps {
   emailBody: string;
