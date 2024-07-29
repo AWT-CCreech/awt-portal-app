@@ -15,6 +15,7 @@ import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import { User } from '../../models/User';
 import { ActiveSalesReps } from '../../models/OpenSOReport/ActiveSalesReps';
+import { ActiveSalesTeams } from '../../models/OpenSOReport/ActiveSalesTeams';
 
 const devURL = "http://localhost:5001/api"; //http://10.0.0.27/api
 const prodURL = "http://10.0.0.8:82/api"; //http://10.0.0.8/api
@@ -146,10 +147,22 @@ const UserList = {
 const SalesReps = {
     fetchActiveSalesReps: async (): Promise<ActiveSalesReps[]> => {
         try {
-            const response = await requests.get('/SalesRep/GetSalesReps');
+            const response = await requests.get('/Sales/GetSalesReps');
             return response as ActiveSalesReps[];
         } catch (error) {
             console.error('Error fetching sales reps', error);
+            throw error;
+        }
+    }
+};
+
+const SalesTeams = {
+    fetchActiveSalesTeams: async (): Promise<ActiveSalesTeams[]> => {
+        try {
+            const response = await requests.get('/Sales/GetSalesTeams');
+            return response as ActiveSalesTeams[];
+        } catch (error) {
+            console.error('Error fetching sales teams', error);
             throw error;
         }
     }
@@ -184,6 +197,7 @@ const Modules = {
     UserList,
     OpenSalesOrders,
     SalesReps,
+    SalesTeams,
 };
 
 export default Modules;

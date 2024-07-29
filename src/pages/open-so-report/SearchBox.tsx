@@ -2,6 +2,7 @@ import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react';
 import { Box, Button, TextField, Grid, Checkbox, FormControlLabel, Select, MenuItem, InputLabel, FormControl, SelectChangeEvent } from '@mui/material';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
 import { ActiveSalesReps } from '../../models/OpenSOReport/ActiveSalesReps';
+import { ActiveSalesTeams } from '../../models/OpenSOReport/ActiveSalesTeams';
 import Modules from '../../app/api/agent';
 
 interface SearchBoxProps {
@@ -12,6 +13,7 @@ interface SearchBoxProps {
 
 const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, getResultSets }) => {
   const [salesReps, setSalesReps] = useState<ActiveSalesReps[]>([]);
+  const [salesTeams, setSalesTeams] = useState<ActiveSalesTeams[]>([]);
 
   useEffect(() => {
     const fetchSalesReps = async () => {
@@ -28,7 +30,22 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
       }
     };
 
+    const fetchSalesTeams = async () => {
+      try {
+        const teams = await Modules.SalesTeams.fetchActiveSalesTeams();
+        console.log('Fetched sales teams:', teams);
+        if(Array.isArray(teams)) {
+          setSalesTeams(teams);
+        } else {
+          console.error('Unexpected data format:', teams);
+        }
+      } catch (error) {
+        console.error('Error fetching sales teams', error);
+      }
+    };
+
     fetchSalesReps();
+    fetchSalesTeams();
 
     const today = new Date();
     const lastYear = new Date();
@@ -112,7 +129,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
         </Grid>
 
         <Grid item xs={12} sm={4}>
-          <FormControl fullWidth>
+        <FormControl fullWidth>
             <InputLabel id="salesTeam-label">Sales Team</InputLabel>
             <Select
               labelId="salesTeam-label"
@@ -120,8 +137,11 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
               value={searchParams.salesTeam || 'All'}
               onChange={handleSelectChange}
             >
-              <MenuItem value="All">All</MenuItem>
-              {/* Add more sales teams as needed */}
+              {salesTeams.map((team) => (
+                <MenuItem key={team.litem} value={team.litem}>
+                  {team.litem}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Grid>
