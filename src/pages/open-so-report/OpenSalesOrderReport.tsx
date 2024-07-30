@@ -27,7 +27,7 @@ const OpenSalesOrderReport: React.FC = () => {
   const getResultSets = async () => {
     setLoading(true);
     try {
-      const response = await agent.OpenSalesOrders.fetchOpenSalesOrders(searchParams);
+      const response = await agent.OpenSalesOrderReport.fetchOpenSalesOrders(searchParams);
       setSearchResult(response);
       setUniqueSalesOrders(new Set(response.map(order => order.sonum)).size);
       setTotalItems(response.length);
@@ -47,7 +47,7 @@ const OpenSalesOrderReport: React.FC = () => {
     <div>
       <PageHeader pageName="Open Sales Order Report" pageHref="/opensalesorderreport" />
       <Divider />
-      <Container sx={{ padding: { xs: '20px', md: '40px 20px 40px 20px' }, maxWidth: '100%' }}>
+      <Container sx={{ padding: { xs: '20px', md: '20px 20px 20px 20px' }, maxWidth: '100%' }}>
         <Grid container justifyContent="center">
           <Grid item xs={12}>
             <SearchBox
@@ -65,8 +65,8 @@ const OpenSalesOrderReport: React.FC = () => {
                 </Typography>
               </Box>
             ) : searchResult.length > 0 ? (
-              <Box sx={{ maxHeight: '36vh', overflowY: 'auto', width: '100%', p: { xs: 1, md: 2 }, boxShadow: 3, bgcolor: 'background.paper', boxSizing: 'border-box' }}>
-                <SearchResults results={searchResult} />
+              <Box sx={{ maxHeight: '40vh', overflowY: 'auto', boxShadow: 3 }}>
+                <SearchResults results={searchResult} groupBySo={searchParams.chkGroupBySo || false} />
               </Box>
             ) : (
               <Typography variant="h6" align="center" mt={2}>
