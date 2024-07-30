@@ -1,8 +1,8 @@
-import _ from 'lodash';
 import React, { useReducer, useEffect } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, TableSortLabel, Paper, TableContainer } from '@mui/material';
-import { toPascalCase, toLowerFirstLetter } from '../utils/dataManipulation';
+import _ from 'lodash';
 import styled from 'styled-components';
+import { toPascalCase, toLowerFirstLetter } from '../utils/dataManipulation';
 
 function reducer(state: any, action: any) {
   switch (action.type) {
@@ -38,35 +38,30 @@ interface IProps {
   hoverColor?: string;
 }
 
-// Styled component for Paper with rounded corners
 const RoundedPaper = styled(Paper)`
   border-radius: 8px;
-  overflow: hidden; /* Ensures that child elements respect the rounded corners */
+  overflow: hidden;
 `;
 
-// Styled component for the Table to ensure rounded corners
 const StyledTable = styled(Table)`
-  border-collapse: separate; /* Ensures that borders don't collapse and rounds correctly */
-  overflow: hidden; /* Ensures that child elements respect the rounded corners */
+  border-collapse: separate;
+  overflow: hidden;
   border-radius: 8px;
 `;
 
-// Styled component for hover effect
 const StyledTableRow = styled(TableRow)<{ hovercolor?: string }>`
   &:hover {
     background-color: ${props => props.hovercolor ?? 'none'} !important;
   }
 `;
 
-// Styled component for TableCell to prevent text wrapping
 const StyledTableCell = styled(TableCell)`
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  min-width: 100px; /* Adjust the minimum width as needed */
+  min-width: 100px;
 `;
 
-// Styled component for TableCell in TableHead to make text white and change hover color
 const HeaderTableCell = styled(StyledTableCell)`
   color: white !important;
 
