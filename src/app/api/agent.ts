@@ -144,7 +144,7 @@ const UserList = {
     }
 };
 
-const SalesReps = {
+const OpenSalesOrderReport = {
     fetchActiveSalesReps: async (): Promise<ActiveSalesReps[]> => {
         try {
             const response = await requests.get('/Sales/GetSalesReps');
@@ -153,10 +153,8 @@ const SalesReps = {
             console.error('Error fetching sales reps', error);
             throw error;
         }
-    }
-};
-
-const SalesTeams = {
+    },
+    
     fetchActiveSalesTeams: async (): Promise<ActiveSalesTeams[]> => {
         try {
             const response = await requests.get('/Sales/GetSalesTeams');
@@ -165,11 +163,9 @@ const SalesTeams = {
             console.error('Error fetching sales teams', error);
             throw error;
         }
-    }
-};
-
-// Function to fetch open sales orders
-const OpenSalesOrders = {
+    },
+    
+    // Function to fetch open sales orders
     fetchOpenSalesOrders: async (params: OpenSalesOrderSearchInput): Promise<OpenSalesOrder[]> => {
         try {
             const response = await requests.getWithParams('/OpenSalesOrder/GetOpenSalesOrders', params);
@@ -195,9 +191,7 @@ const Modules = {
     MasterSearches,
     DropShip,
     UserList,
-    OpenSalesOrders,
-    SalesReps,
-    SalesTeams,
+    OpenSalesOrderReport
 };
 
 export default Modules;
