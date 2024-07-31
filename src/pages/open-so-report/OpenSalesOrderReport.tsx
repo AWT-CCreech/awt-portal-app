@@ -46,7 +46,6 @@ const OpenSalesOrderReport: React.FC = () => {
   return (
     <div>
       <PageHeader pageName="Open Sales Order Report" pageHref="/opensalesorderreport" />
-      <Divider />
       <Container sx={{ padding: { xs: '20px', md: '20px 20px 20px 20px' }, maxWidth: '100%' }}>
         <Grid container justifyContent="center">
           <Grid item xs={12}>

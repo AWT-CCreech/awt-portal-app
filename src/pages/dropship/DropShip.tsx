@@ -98,7 +98,6 @@ const DropShip = () => {
   return (
     <div>
       <PageHeader pageName="Drop Ship" pageHref="/dropship" />
-      <Divider/>
       <Container>
         <Box my={4}>
           <Grid container spacing={3} justifyContent="center">

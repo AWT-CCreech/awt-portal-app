@@ -114,7 +114,6 @@ const MasterSearch: React.FC<IProps> = () => {
   return (
     <div>
       <PageHeader pageName="Master Search" pageHref="/mastersearch" />
-      <Divider />
       <Container sx={{ padding: { xs: '20px', md: '40px 20px 40px 20px' }, maxWidth: '100%' }}>
         <Grid container justifyContent="center">
           <Grid item xs={12}>

@@ -59,7 +59,6 @@ const TimeTrackerPage: React.FC = () => {
     return (
       <div>
         <PageHeader pageName="Time Tracker" pageHref="/timetracker" />
-        <Divider />
         <Container maxWidth="xl" sx={{ padding: '40px 100px 150px 100px' }}>
           {supervisorIds.includes(localStorage.getItem('userid') ?? '') ? (
             <SupervisorApproval

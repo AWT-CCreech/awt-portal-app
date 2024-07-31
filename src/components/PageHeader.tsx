@@ -20,6 +20,7 @@ const PageHeader: React.FC<IProps> = ({ pageName, pageHref }) => {
         position: 'sticky',
         top: 0,
         zIndex: 1100, // Ensure it's above other elements
+        borderBottom: '1px solid rgb(0, 0, 0, 0.12)',
       }}
     >
       <Grid container alignItems="center">

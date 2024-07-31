@@ -160,7 +160,6 @@ const UserListPage: React.FC = () => {
   return (
     <div>
       <PageHeader pageName="User List" pageHref="/userlist" />
-      <Divider />
       <Paper className="padded user-table-paper">
         <div className="header-container">
           <Typography variant="h5">AWT User List</Typography>

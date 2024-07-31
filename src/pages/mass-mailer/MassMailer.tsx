@@ -148,7 +148,6 @@ const MassMailer: React.FC = () => {
   return (
     <div>
       <PageHeader pageName="Mass Mailer" pageHref="/massmailer" />
-      <Divider />
       <Container maxWidth="lg" sx={{ padding: '40px 100px' }}>
         <EmailProperties
           emailBody={emailBody}
