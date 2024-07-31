@@ -10,7 +10,6 @@ import ContactSearch from './ContactSearch';
 import {
   Box,
   Container,
-  Divider,
   CircularProgress,
   Grid,
   Typography,

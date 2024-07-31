@@ -7,7 +7,6 @@ import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
 import {
   Box,
   Container,
-  Divider,
   CircularProgress,
   Grid,
   Typography,
