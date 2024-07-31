@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Container, Grid, Box, Chip, Divider, TextField, Button, Typography, CircularProgress, Alert } from '@mui/material';
+import { Container, Grid, Box, Chip, TextField, Button, Typography, CircularProgress, Alert } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import agent from '../../app/api/agent';
 import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
