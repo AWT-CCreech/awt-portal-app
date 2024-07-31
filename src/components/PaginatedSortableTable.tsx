@@ -1,5 +1,16 @@
 import React, { useReducer, useEffect, useState } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell, TableSortLabel, Paper, TableContainer, TablePagination, Box } from '@mui/material';
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableSortLabel,
+  Paper,
+  TableContainer,
+  TablePagination,
+  Box,
+} from '@mui/material';
 import _ from 'lodash';
 import styled from 'styled-components';
 import { toPascalCase, toLowerFirstLetter } from '../utils/dataManipulation';
@@ -7,17 +18,14 @@ import { toPascalCase, toLowerFirstLetter } from '../utils/dataManipulation';
 function reducer(state: any, action: any) {
   switch (action.type) {
     case 'CHANGE_SORT':
-      if (state.column === action.column) {
-        return {
-          ...state,
-          data: Array.from(state.data).reverse(),
-          direction: state.direction === 'asc' ? 'desc' : 'asc',
-        };
-      }
+      const isSameColumn = state.column === action.column;
+      const direction = isSameColumn && state.direction === 'asc' ? 'desc' : 'asc';
+      const sortedData = _.orderBy(state.data, [action.column], [direction]);
       return {
+        ...state,
         column: action.column,
-        data: _.sortBy(state.data, [action.column]).reverse(), // make it descending by reverse()
-        direction: 'desc',
+        data: sortedData,
+        direction,
       };
     case 'CHANGE_DATA':
       return {
