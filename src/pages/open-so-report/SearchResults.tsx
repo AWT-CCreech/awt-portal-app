@@ -3,6 +3,7 @@ import { TableCell, Link } from '@mui/material';
 import OpenSalesOrder from '../../models/OpenSalesOrder';
 import WarningIcon from '@mui/icons-material/Warning';
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
+import { formatAmount } from '../../utils/dataManipulation';
 
 interface SearchResultsProps {
   results: OpenSalesOrder[];
@@ -62,7 +63,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => 
 
   const isDefaultDate = (date: Date | null) => date?.toLocaleDateString() === '1/1/1900' || date?.toLocaleDateString() === '1/1/1990';
 
-  const renderRow = (order: OpenSalesOrder): JSX.Element[] => {
+  const renderRow = (order: OpenSalesOrder): React.JSX.Element[] => {
     const orderDate = order.orderDate ? new Date(order.orderDate) : null;
     const requiredDate = order.requiredDate ? new Date(order.requiredDate) : null;
     const poIssueDate = order.poissueDate ? new Date(order.poissueDate) : null;
@@ -80,7 +81,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => 
       <TableCell key="eventId" align="left" style={{ cursor: order.eventId ? 'pointer' : 'default', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }} onClick={order.eventId ? openEvent : undefined}>
         {order.eventId ? (
           <Link
-            href={`http://10.0.0.8:81/inet/Sales/EditRequestDetail_V2.asp?eventid=${order.eventId}`}
             underline="hover"
             target="_blank"
             rel="noopener noreferrer"
@@ -102,7 +102,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => 
           {deliveryAlert && <WarningIcon color="error" fontSize="small" style={{ marginLeft: 4 }} />}
         </div>
       </TableCell>,
-      <TableCell key="amountLeft" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>${order.amountLeft?.toFixed(2)}</TableCell>,
+      <TableCell key="amountLeft" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{formatAmount(order.amountLeft ?? 0)}</TableCell>,
       <TableCell key="ponum" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.ponum}</TableCell>,
       <TableCell key="poissueDate" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{poIssueDate && !isDefaultDate(poIssueDate) ? poIssueDate.toLocaleDateString() : ''}</TableCell>,
       <TableCell key="expectedDelivery" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{expectedDelivery && !isDefaultDate(expectedDelivery) ? expectedDelivery.toLocaleDateString() : ''}</TableCell>,
