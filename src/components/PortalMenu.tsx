@@ -31,11 +31,13 @@ import { handleLogOut } from '../utils/authentication';
 import UserInfoContext from '../stores/userInfo';
 import logo from '../assets/images/fullLogo.png';
 
+// Set drawer width
 const drawerWidth = 300;
 
+// Custom styled components
 const DrawerPaper = {
   width: drawerWidth,
-  backgroundColor: '#ffffff', // Light background color
+  backgroundColor: '#ffffff',
   color: grey[900],
   overflowX: 'hidden',
 };
@@ -59,7 +61,7 @@ const MenuHeader = styled('div')({
   justifyContent: 'space-between', 
   backgroundColor: grey[200],
   position: 'sticky',
-  top: '60px', // Adjust the top value to be below the TitleRow
+  top: '60px',
   zIndex: 1000,
 });
 
@@ -357,25 +359,24 @@ const PortalMenu: React.FC = () => {
                     </ListItemCustom>
                     <Collapse in={openFolders[folder]} timeout="auto" unmountOnExit>
                       <List component="div" disablePadding>
-                        {folder === 'purchasing' && (
-                          <>
-                            <NestedListItem
-                              onClick={() => handleNavigation('/dropship')}
+                        {folder === 'sales' && (
+                          <NestedListItem
+                            onClick={() => handleNavigation('/opensalesorderreport')}
+                          >
+                            <ListItemTextCustom primary="Open SO Report" />
+                            <ListItemIconCustom
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleFavoriteToggle('Open Sales Order Report');
+                              }}
                             >
-                              <ListItemTextCustom primary="Drop Ship" />
-                              <ListItemIconCustom onClick={(e) => { e.stopPropagation(); handleFavoriteToggle('Drop Ship'); }}>
-                                {isFavorite('Drop Ship') ? <Star sx={{ color: blue[700] }} /> : <StarBorder sx={{ color: blue[700] }} />}
-                              </ListItemIconCustom>
-                            </NestedListItem>
-                            <NestedListItem
-                              onClick={() => handleNavigation('/massmailer')}
-                            >
-                              <ListItemTextCustom primary="Mass Mailer" />
-                              <ListItemIconCustom onClick={(e) => { e.stopPropagation(); handleFavoriteToggle('Mass Mailer'); }}>
-                                {isFavorite('Mass Mailer') ? <Star sx={{ color: blue[700] }} /> : <StarBorder sx={{ color: blue[700] }} />}
-                              </ListItemIconCustom>
-                            </NestedListItem>
-                          </>
+                              {isFavorite('Open Sales Order Report') ? (
+                                <Star sx={{ color: blue[700] }} />
+                              ) : (
+                                <StarBorder sx={{ color: blue[700] }} />
+                              )}
+                            </ListItemIconCustom>
+                          </NestedListItem>
                         )}
                         <NestedListItem
                           onClick={() => handleNavigation(`/${formatPath(folder + ' item1')}`)}
