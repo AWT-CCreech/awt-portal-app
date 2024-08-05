@@ -14,8 +14,10 @@ import SellOppEvent from '../../models/MasterSearch/SellOppEvent';
 import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import { User } from '../../models/User';
+import { AccountNumbers } from '../../models/OpenSOReport/AccountNumbers';
 import { ActiveSalesReps } from '../../models/OpenSOReport/ActiveSalesReps';
 import { ActiveSalesTeams } from '../../models/OpenSOReport/ActiveSalesTeams';
+import { ItemCategories } from '../../models/OpenSOReport/ItemCategories';
 
 const devURL = "http://localhost:5001/api"; //http://10.0.0.27/api
 const prodURL = "http://10.0.0.8:82/api"; //http://10.0.0.8/api
@@ -164,7 +166,27 @@ const OpenSalesOrderReport = {
             throw error;
         }
     },
+
+    fetchItemCategories: async (): Promise<ItemCategories[]> => {
+        try {
+            const response = await requests.get('/Sales/GetCategories');
+            return response as ItemCategories[];
+        } catch (error) {
+            console.error('Error fetching sales teams', error);
+            throw error;
+        }
+    },
     
+    fetchAccountNumbers: async (): Promise<AccountNumbers[]> => {
+        try {
+            const response = await requests.get('/Sales/GetAccountNumbers');
+            return response as AccountNumbers[];
+        } catch (error) {
+            console.error('Error fetching sales teams', error);
+            throw error;
+        }
+    },
+
     // Function to fetch open sales orders
     fetchOpenSalesOrders: async (params: OpenSalesOrderSearchInput): Promise<OpenSalesOrder[]> => {
         try {
