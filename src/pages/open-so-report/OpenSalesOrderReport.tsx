@@ -4,16 +4,11 @@ import SearchBox from './SearchBox';
 import agent from '../../app/api/agent';
 import { formatAmount } from '../../utils/dataManipulation';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
-import {
-  Box,
-  Container,
-  CircularProgress,
-  Grid,
-  Typography,
-} from '@mui/material';
+import { Box, Container, CircularProgress, Grid, Typography } from '@mui/material';
 import SearchResults from './SearchResults';
 import OpenSalesOrder from '../../models/OpenSalesOrder';
 import { grey } from '@mui/material/colors';
+import * as XLSX from 'xlsx';
 
 const OpenSalesOrderReport: React.FC = () => {
   const [searchParams, setSearchParams] = useState<OpenSalesOrderSearchInput>({});
@@ -42,6 +37,13 @@ const OpenSalesOrderReport: React.FC = () => {
     }
   };
 
+  const handleExport = () => {
+    const ws = XLSX.utils.json_to_sheet(searchResult);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'OpenSalesOrders');
+    XLSX.writeFile(wb, 'OpenSalesOrders.xlsx');
+  };
+
   return (
     <div>
       <PageHeader pageName="Open Sales Order Report" pageHref="/opensalesorderreport" />
@@ -52,6 +54,8 @@ const OpenSalesOrderReport: React.FC = () => {
               searchParams={searchParams}
               setSearchParams={setSearchParams}
               getResultSets={getResultSets}
+              handleExport={handleExport}
+              searchResultLength={searchResult.length} // Pass the length of searchResult
             />
           </Grid>
           <Grid item xs={12} sx={{ paddingTop: { xs: '15px' } }}>
