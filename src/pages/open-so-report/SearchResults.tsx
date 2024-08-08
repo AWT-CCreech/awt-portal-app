@@ -1,17 +1,26 @@
-import React from 'react';
-import { TableCell, Link } from '@mui/material';
-import OpenSalesOrder from '../../models/OpenSalesOrder';
+// pages/open-so-report/SearchResults.tsx
+import React, { useState } from 'react';
+import { TableCell, Link, IconButton, Modal, Box } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
+import AddIcon from '@mui/icons-material/Add';
+import NoteIcon from '@mui/icons-material/Note';
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
+import NoteModal from './NoteModal';
 import { formatAmount } from '../../utils/dataManipulation';
+import OpenSalesOrder from '../../models/OpenSalesOrder';
+import { TrkSoNote } from '../../models/TrkSoNote';
 
 interface SearchResultsProps {
-  results: OpenSalesOrder[];
-  groupBySo: boolean; 
+  results: (OpenSalesOrder & { notes: TrkSoNote[] })[];
+  groupBySo: boolean;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => {
-  // Define all columns and column names
+  const [showNoteModal, setShowNoteModal] = useState<boolean>(false);
+  const [selectedSONum, setSelectedSONum] = useState<string>('');
+  const [selectedPartNum, setSelectedPartNum] = useState<string>('');
+  const [selectedNotes, setSelectedNotes] = useState<TrkSoNote[]>([]);
+
   const allColumns = [
     'eventId',
     'sonum',
@@ -52,7 +61,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => 
     'Notes',
   ];
 
-  // Conditionally filter out columns if grouping is enabled
   const columns = groupBySo
     ? allColumns.filter(column => column !== 'itemNum' && column !== 'mfgNum')
     : allColumns;
@@ -63,7 +71,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => 
 
   const isDefaultDate = (date: Date | null) => date?.toLocaleDateString() === '1/1/1900' || date?.toLocaleDateString() === '1/1/1990';
 
-  const renderRow = (order: OpenSalesOrder): React.JSX.Element[] => {
+  const renderRow = (order: OpenSalesOrder & { notes: TrkSoNote[] }): React.JSX.Element[] => {
     const orderDate = order.orderDate ? new Date(order.orderDate) : null;
     const requiredDate = order.requiredDate ? new Date(order.requiredDate) : null;
     const poIssueDate = order.poissueDate ? new Date(order.poissueDate) : null;
@@ -72,19 +80,15 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => 
     const deliveryAlert = expectedDelivery && requiredDate && expectedDelivery > requiredDate && (order.leftToShip ?? 0) > 0;
 
     const openEvent = () => {
-      window.open(
-        `http://10.0.0.8:81/inet/Sales/EditRequest.asp?EventID=${order.eventId}`
-      );
+      window.open(`http://10.0.0.8:81/inet/Sales/EditRequest.asp?EventID=${order.eventId}`);
     };
+
+    const hasNotes = order.notes && order.notes.length > 0;
 
     const rowCells = [
       <TableCell key="eventId" align="left" style={{ cursor: order.eventId ? 'pointer' : 'default', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }} onClick={order.eventId ? openEvent : undefined}>
         {order.eventId ? (
-          <Link
-            underline="hover"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link underline="hover" target="_blank" rel="noopener noreferrer">
             {order.eventId}
           </Link>
         ) : (
@@ -108,8 +112,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => 
       <TableCell key="expectedDelivery" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{expectedDelivery && !isDefaultDate(expectedDelivery) ? expectedDelivery.toLocaleDateString() : ''}</TableCell>,
       <TableCell key="qtyOrdered" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.qtyOrdered}</TableCell>,
       <TableCell key="qtyReceived" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.qtyReceived}</TableCell>,
-      <TableCell key="poLog" align="left" style={{ cursor: 'pointer', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }} onClick={() => EditPOInfo(order.id)}>{/* PO Log content here */}</TableCell>,
-      <TableCell key="notes" align="left" style={{ cursor: 'pointer', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }} onClick={() => EditNote(order.sonum || '', order.itemNum || '')}>{/* Notes content here */}</TableCell>,
+      <TableCell key="poLog" align="left" style={{ cursor: 'pointer', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }} >{/* PO Log content here */}</TableCell>,
+      <TableCell key="notes" align="left" style={{ cursor: 'pointer', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+        <IconButton onClick={() => handleOpenNoteModal(order.sonum || '', order.itemNum || '', order.notes || [])}>
+          {hasNotes ? <NoteIcon color="primary" /> : <AddIcon />}
+        </IconButton>
+      </TableCell>,
     ];
 
     if (!groupBySo) {
@@ -120,23 +128,67 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => 
     return rowCells;
   };
 
-  const EditNote = (soNum: string, partNum: string) => {
-    window.open(`EditOpenSONote.asp?SONum=${soNum}&PartNo=${partNum}`, "", "width=600,height=400");
+  const handleOpenNoteModal = (soNum: string, partNum: string, notes: TrkSoNote[]) => {
+    setSelectedSONum(soNum);
+    setSelectedPartNum(partNum);
+    setSelectedNotes(notes);
+    setShowNoteModal(true);
   };
 
-  const EditPOInfo = (id: number) => {
-    window.open(`PODetail.asp?id=${id}`, "", "width=800,height=650");
+  const handleCloseNoteModal = () => {
+    setShowNoteModal(false);
   };
 
   return (
-    <PaginatedSortableTable
-      tableData={results}
-      columns={columns}
-      columnNames={columnNames}
-      func={renderRow}
-      headerBackgroundColor="#384959"
-      hoverColor="#f5f5f5"
-    />
+    <>
+      <PaginatedSortableTable
+        tableData={results}
+        columns={columns}
+        columnNames={columnNames}
+        func={renderRow}
+        headerBackgroundColor="#384959"
+        hoverColor="#f5f5f5"
+      />
+      <Modal
+        open={showNoteModal}
+        onClose={handleCloseNoteModal}
+        aria-labelledby="note-modal-title"
+        aria-describedby="note-modal-description"
+        closeAfterTransition
+        slotProps={{
+          backdrop: {
+            style: {
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(3px)',
+            }
+          }
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            width: '90%',
+            maxWidth: '600px',
+            borderRadius: 1,
+            overflow: 'auto',
+            maxHeight: '90vh'
+          }}
+        >
+          <NoteModal
+            soNum={selectedSONum}
+            partNum={selectedPartNum}
+            notes={selectedNotes}
+            onClose={handleCloseNoteModal}
+          />
+        </Box>
+      </Modal>
+    </>
   );
 };
 
