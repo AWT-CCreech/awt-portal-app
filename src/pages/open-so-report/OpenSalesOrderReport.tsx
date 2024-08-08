@@ -9,10 +9,11 @@ import SearchResults from './SearchResults';
 import OpenSalesOrder from '../../models/OpenSalesOrder';
 import { grey } from '@mui/material/colors';
 import * as XLSX from 'xlsx';
+import { TrkSoNote } from '../../models/TrkSoNote';
 
 const OpenSalesOrderReport: React.FC = () => {
   const [searchParams, setSearchParams] = useState<OpenSalesOrderSearchInput>({});
-  const [searchResult, setSearchResult] = useState<OpenSalesOrder[]>([]);
+  const [searchResult, setSearchResult] = useState<(OpenSalesOrder & { Notes: TrkSoNote[] })[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [uniqueSalesOrders, setUniqueSalesOrders] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -55,7 +56,7 @@ const OpenSalesOrderReport: React.FC = () => {
               setSearchParams={setSearchParams}
               getResultSets={getResultSets}
               handleExport={handleExport}
-              searchResultLength={searchResult.length} // Pass the length of searchResult
+              searchResultLength={searchResult.length} 
             />
           </Grid>
           <Grid item xs={12} sx={{ paddingTop: { xs: '15px' } }}>
@@ -86,6 +87,7 @@ const OpenSalesOrderReport: React.FC = () => {
             top: '50%',
             transform: 'translateY(-50%)',
             backgroundColor: grey[100],
+            opacity: '75%',
             padding: '10px',
             boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
             borderRadius: '5px',
