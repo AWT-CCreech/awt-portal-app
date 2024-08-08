@@ -18,6 +18,7 @@ import { AccountNumbers } from '../../models/OpenSOReport/AccountNumbers';
 import { ActiveSalesReps } from '../../models/OpenSOReport/ActiveSalesReps';
 import { ActiveSalesTeams } from '../../models/OpenSOReport/ActiveSalesTeams';
 import { ItemCategories } from '../../models/OpenSOReport/ItemCategories';
+import { TrkSoNote } from '../../models/TrkSoNote';
 
 const devURL = "http://localhost:5001/api"; //http://10.0.0.27/api
 const prodURL = "http://10.0.0.8:82/api"; //http://10.0.0.8/api
@@ -188,16 +189,57 @@ const OpenSalesOrderReport = {
     },
 
     // Function to fetch open sales orders
-    fetchOpenSalesOrders: async (params: OpenSalesOrderSearchInput): Promise<OpenSalesOrder[]> => {
+    fetchOpenSalesOrders: async (params: OpenSalesOrderSearchInput): Promise<(OpenSalesOrder & { Notes: TrkSoNote[] })[]> => {
         try {
-            const response = await requests.getWithParams('/OpenSalesOrder/GetOpenSalesOrders', params);
-            return response as OpenSalesOrder[];
+          const response = await requests.getWithParams('/OpenSalesOrder/GetOpenSalesOrders', params);
+          return response as (OpenSalesOrder & { Notes: TrkSoNote[] })[];
         } catch (error) {
-            console.error('Error fetching open sales orders', error);
+          console.error('Error fetching open sales orders', error);
+          throw error;
+        }
+      }
+};
+
+const OpenSalesOrderNotes = {
+    getNotes: async (soNum: string, partNum: string): Promise<TrkSoNote[]> => {
+        try {
+            const response = await requests.get(`/OpenSalesOrderNotes/GetNotes/${soNum}/${partNum}`);
+            return response as TrkSoNote[];
+        } catch (error) {
+            console.error('Error fetching notes', error);
+            throw error;
+        }
+    },
+
+    addNote: async (note: TrkSoNote): Promise<TrkSoNote> => {
+        try {
+            const response = await requests.post('/OpenSalesOrderNotes/AddNote', note);
+            return response as TrkSoNote;
+        } catch (error) {
+            console.error('Error adding note', error);
+            throw error;
+        }
+    },
+
+    updateNote: async (id: number, note: TrkSoNote): Promise<void> => {
+        try {
+            await requests.put(`/OpenSalesOrderNotes/UpdateNote/${id}`, note);
+        } catch (error) {
+            console.error('Error updating note', error);
+            throw error;
+        }
+    },
+
+    deleteNote: async (id: number): Promise<void> => {
+        try {
+            await requests.delete(`/OpenSalesOrderNotes/DeleteNote/${id}`);
+        } catch (error) {
+            console.error('Error deleting note', error);
             throw error;
         }
     }
 };
+
 
 const Modules = {
     MassMailerEmailTemplates,
@@ -213,7 +255,8 @@ const Modules = {
     MasterSearches,
     DropShip,
     UserList,
-    OpenSalesOrderReport
+    OpenSalesOrderReport,
+    OpenSalesOrderNotes // Include the new module here
 };
 
 export default Modules;
