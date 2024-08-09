@@ -6,14 +6,14 @@ import { formatAmount } from '../../utils/dataManipulation';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
 import { Box, Container, CircularProgress, Grid, Typography } from '@mui/material';
 import SearchResults from './SearchResults';
-import OpenSalesOrder from '../../models/OpenSalesOrder';
+import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { grey } from '@mui/material/colors';
 import * as XLSX from 'xlsx';
 import { TrkSoNote } from '../../models/TrkSoNote';
 
 const OpenSalesOrderReport: React.FC = () => {
   const [searchParams, setSearchParams] = useState<OpenSalesOrderSearchInput>({});
-  const [searchResult, setSearchResult] = useState<(OpenSalesOrder & { Notes: TrkSoNote[] })[]>([]);
+  const [searchResult, setSearchResult] = useState<(OpenSOReport & { Notes: TrkSoNote[] })[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [uniqueSalesOrders, setUniqueSalesOrders] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -68,8 +68,19 @@ const OpenSalesOrderReport: React.FC = () => {
                 </Typography>
               </Box>
             ) : searchResult.length > 0 ? (
-              <Box sx={{ maxHeight: '40vh', overflowY: 'auto', boxShadow: 3 }}>
-                <SearchResults results={searchResult} groupBySo={searchParams.chkGroupBySo || false} />
+              <Box
+                sx={{
+                  height: '60vh', // Set the height for the table container
+                  display: 'flex',
+                  flexDirection: 'column',
+                  boxShadow: 3,
+                }}
+              >
+                <SearchResults
+                  results={searchResult}
+                  groupBySo={searchParams.chkGroupBySo || false}
+                  containerHeight="100%" // Pass the container height as a prop
+                />
               </Box>
             ) : (
               <Typography variant="h6" align="center" mt={2}>
