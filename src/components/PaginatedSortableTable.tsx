@@ -49,12 +49,16 @@ interface IProps {
 const RoundedPaper = styled(Paper)`
   border-radius: 8px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `;
 
 const StyledTable = styled(Table)`
   border-collapse: separate;
   overflow: hidden;
   border-radius: 8px;
+  min-height: 100px;
 `;
 
 const StyledTableRow = styled(TableRow)<{ hovercolor?: string }>`
@@ -86,10 +90,9 @@ const HeaderTableCell = styled(StyledTableCell)`
   }
 `;
 
-const ScrollableContainer = styled(Box)`
-  max-height: 33vh;
+const ScrollableTableBody = styled(TableBody)`
+  max-height: 100vh;
   overflow-y: auto;
-  position: relative;
 `;
 
 const PaginatedSortableTable: React.FC<IProps> = ({ columns, columnNames, tableData, func, headerBackgroundColor, hoverColor }) => {
@@ -130,53 +133,53 @@ const PaginatedSortableTable: React.FC<IProps> = ({ columns, columnNames, tableD
 
   return (
     <RoundedPaper>
-      <ScrollableContainer>
-        <TableContainer>
-          <StyledTable>
-            <TableHead>
-              <TableRow>
-                {columnNamesInCamelCase.map((col, index) => (
-                  <HeaderTableCell
-                    key={col}
-                    style={{ backgroundColor: headerBackgroundColor ?? 'none' }}
-                    sortDirection={column === col ? direction : false}
+      <TableContainer sx={{ flex: '1 1 auto', overflowY: 'auto' }}>
+        <StyledTable stickyHeader>
+          <TableHead>
+            <TableRow>
+              {columnNamesInCamelCase.map((col, index) => (
+                <HeaderTableCell
+                  key={col}
+                  style={{ backgroundColor: headerBackgroundColor ?? 'none' }}
+                  sortDirection={column === col ? direction : false}
+                >
+                  <TableSortLabel
+                    active={column === col}
+                    direction={column === col ? direction : 'asc'}
+                    onClick={() => {
+                      dispatchState({ type: 'CHANGE_SORT', column: col });
+                    }}
                   >
-                    <TableSortLabel
-                      active={column === col}
-                      direction={column === col ? direction : 'asc'}
-                      onClick={() => {
-                        dispatchState({ type: 'CHANGE_SORT', column: col });
-                      }}
-                    >
-                      {columnNames && columnNames.length === columns?.length ? columnNames[index] : toPascalCase(col)}
-                    </TableSortLabel>
-                  </HeaderTableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {paginatedData.map((row: any, id: number) => (
-                <StyledTableRow key={id} hovercolor={hoverColor}>
-                  {func
-                    ? func(row)
-                    : columnNamesInCamelCase.map(col => (
-                        <StyledTableCell key={col}>{row[toLowerFirstLetter(col)]}</StyledTableCell>
-                      ))}
-                </StyledTableRow>
+                    {columnNames && columnNames.length === columns?.length ? columnNames[index] : toPascalCase(col)}
+                  </TableSortLabel>
+                </HeaderTableCell>
               ))}
-            </TableBody>
-          </StyledTable>
-        </TableContainer>
-      </ScrollableContainer>
-      <TablePagination
-        component="div"
-        count={data.length}
-        page={page}
-        onPageChange={handleChangePage}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        rowsPerPageOptions={[5, 10, 25, 50, { label: 'All', value: data.length }]}
-      />
+            </TableRow>
+          </TableHead>
+          <ScrollableTableBody>
+            {paginatedData.map((row: any, id: number) => (
+              <StyledTableRow key={id} hovercolor={hoverColor}>
+                {func
+                  ? func(row)
+                  : columnNamesInCamelCase.map(col => (
+                      <StyledTableCell key={col}>{row[toLowerFirstLetter(col)]}</StyledTableCell>
+                    ))}
+              </StyledTableRow>
+            ))}
+          </ScrollableTableBody>
+        </StyledTable>
+      </TableContainer>
+      <Box sx={{ flexShrink: 0 }}>
+        <TablePagination
+          component="div"
+          count={data.length}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10, 25, 50, { label: 'All', value: data.length }]}
+        />
+      </Box>
     </RoundedPaper>
   );
 };
