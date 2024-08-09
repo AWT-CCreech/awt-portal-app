@@ -1,4 +1,3 @@
-// pages/open-so-report/SearchResults.tsx
 import React, { useState } from 'react';
 import { TableCell, Link, IconButton, Modal, Box } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -7,15 +6,17 @@ import NoteIcon from '@mui/icons-material/Note';
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
 import NoteModal from './NoteModal';
 import { formatAmount } from '../../utils/dataManipulation';
-import OpenSalesOrder from '../../models/OpenSalesOrder';
+import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { TrkSoNote } from '../../models/TrkSoNote';
+import { TrkPoLog } from '../../models/TrkPoLog';
 
 interface SearchResultsProps {
-  results: (OpenSalesOrder & { notes: TrkSoNote[] })[];
+  results: (OpenSOReport & { notes: TrkSoNote[], poLog?: TrkPoLog })[];
   groupBySo: boolean;
+  containerHeight?: string;
 }
 
-const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => {
+const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo, containerHeight = '100%' }) => {
   const [showNoteModal, setShowNoteModal] = useState<boolean>(false);
   const [selectedSONum, setSelectedSONum] = useState<string>('');
   const [selectedPartNum, setSelectedPartNum] = useState<string>('');
@@ -71,7 +72,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => 
 
   const isDefaultDate = (date: Date | null) => date?.toLocaleDateString() === '1/1/1900' || date?.toLocaleDateString() === '1/1/1990';
 
-  const renderRow = (order: OpenSalesOrder & { notes: TrkSoNote[] }): React.JSX.Element[] => {
+  const renderRow = (order: OpenSOReport & { notes: TrkSoNote[], poLog?: { Id: number, EnteredBy: string, EntryDate: Date } }): React.JSX.Element[] => {
     const orderDate = order.orderDate ? new Date(order.orderDate) : null;
     const requiredDate = order.requiredDate ? new Date(order.requiredDate) : null;
     const poIssueDate = order.poissueDate ? new Date(order.poissueDate) : null;
@@ -84,49 +85,75 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => 
     };
 
     const hasNotes = order.notes && order.notes.length > 0;
+    const hasPoLog = order.poLog !== undefined && order.poLog !== null;
+
+    // Find the most recent note date
+    const mostRecentNoteDate = hasNotes
+    ? new Date(Math.max(...order.notes.map(note => new Date(note.entryDate!).getTime())))
+    : null;
 
     const rowCells = [
-      <TableCell key="eventId" align="left" style={{ cursor: order.eventId ? 'pointer' : 'default', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }} onClick={order.eventId ? openEvent : undefined}>
-        {order.eventId ? (
-          <Link underline="hover" target="_blank" rel="noopener noreferrer">
-            {order.eventId}
-          </Link>
-        ) : (
-          ''
-        )}
-      </TableCell>,
-      <TableCell key="sonum" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.sonum}</TableCell>,
-      <TableCell key="team" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.accountTeam || order.salesRep}</TableCell>,
-      <TableCell key="customerName" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.customerName}</TableCell>,
-      <TableCell key="custPo" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.custPo}</TableCell>,
-      <TableCell key="orderDate" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{orderDate && !isDefaultDate(orderDate) ? orderDate.toLocaleDateString() : ''}</TableCell>,
-      <TableCell key="requiredDate" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {requiredDate && !isDefaultDate(requiredDate) ? requiredDate.toLocaleDateString() : ''}
-          {deliveryAlert && <WarningIcon color="error" fontSize="small" style={{ marginLeft: 4 }} />}
-        </div>
-      </TableCell>,
-      <TableCell key="amountLeft" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{formatAmount(order.amountLeft ?? 0)}</TableCell>,
-      <TableCell key="ponum" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.ponum}</TableCell>,
-      <TableCell key="poissueDate" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{poIssueDate && !isDefaultDate(poIssueDate) ? poIssueDate.toLocaleDateString() : ''}</TableCell>,
-      <TableCell key="expectedDelivery" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{expectedDelivery && !isDefaultDate(expectedDelivery) ? expectedDelivery.toLocaleDateString() : ''}</TableCell>,
-      <TableCell key="qtyOrdered" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.qtyOrdered}</TableCell>,
-      <TableCell key="qtyReceived" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.qtyReceived}</TableCell>,
-      <TableCell key="poLog" align="left" style={{ cursor: 'pointer', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }} >{/* PO Log content here */}</TableCell>,
-      <TableCell key="notes" align="left" style={{ cursor: 'pointer', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-        <IconButton onClick={() => handleOpenNoteModal(order.sonum || '', order.itemNum || '', order.notes || [])}>
-          {hasNotes ? <NoteIcon color="primary" /> : <AddIcon />}
-        </IconButton>
-      </TableCell>,
+        <TableCell key="eventId" align="left" style={{ cursor: order.eventId ? 'pointer' : 'default', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }} onClick={order.eventId ? openEvent : undefined}>
+            {order.eventId ? (
+              <Link underline="hover" target="_blank" rel="noopener noreferrer">
+                {order.eventId}
+              </Link>
+            ) : (
+                ''
+            )}
+        </TableCell>,
+        <TableCell key="sonum" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.sonum}</TableCell>,
+        <TableCell key="team" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.accountTeam || order.salesRep}</TableCell>,
+        <TableCell key="customerName" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.customerName}</TableCell>,
+        <TableCell key="custPo" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.custPo}</TableCell>,
+        <TableCell key="orderDate" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{orderDate && !isDefaultDate(orderDate) ? orderDate.toLocaleDateString() : ''}</TableCell>,
+        <TableCell key="requiredDate" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                {requiredDate && !isDefaultDate(requiredDate) ? requiredDate.toLocaleDateString() : ''}
+                {deliveryAlert && (
+                  <WarningIcon
+                      color="error"
+                      fontSize="small"
+                      style={{ marginLeft: 4, visibility: 'visible', display: 'inline-block' }}
+                  />
+                )}
+            </div>
+        </TableCell>,
+        <TableCell key="amountLeft" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{formatAmount(order.amountLeft ?? 0)}</TableCell>,
+        <TableCell key="ponum" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.ponum}</TableCell>,
+        <TableCell key="poissueDate" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{poIssueDate && !isDefaultDate(poIssueDate) ? poIssueDate.toLocaleDateString() : ''}</TableCell>,
+        <TableCell key="expectedDelivery" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{expectedDelivery && !isDefaultDate(expectedDelivery) ? expectedDelivery.toLocaleDateString() : ''}</TableCell>,
+        <TableCell key="qtyOrdered" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.qtyOrdered}</TableCell>,
+        <TableCell key="qtyReceived" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.qtyReceived}</TableCell>,
+        <TableCell 
+          key="poLog" 
+          align="left" 
+          onClick={hasPoLog ? () => openPoLog(order.poLog!.id) : undefined} 
+          style={{ cursor: hasPoLog ? 'pointer' : 'default', textOverflow: 'ellipsis', overflow: 'hidden' }}
+        >
+          {hasPoLog ? `${new Date(order.poLog!.entryDate).toLocaleDateString()} (${order.poLog!.enteredBy})` : ''}
+        </TableCell>,
+        <TableCell key="notes" align="left" style={{ cursor: 'pointer', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+          <IconButton onClick={() => handleOpenNoteModal(order.sonum || '', order.itemNum || '', order.notes || [])}>
+            {hasNotes ? <NoteIcon color="primary" /> : <AddIcon />}
+          </IconButton>
+          {hasNotes && mostRecentNoteDate && (
+              <div style={{ fontSize: '0.8em', color: '#888' }}>
+                  {mostRecentNoteDate.toLocaleDateString()}
+              </div>
+          )}
+        </TableCell>,
     ];
 
     if (!groupBySo) {
-      rowCells.splice(7, 0, <TableCell key="itemNum" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.itemNum} ({order.leftToShip})</TableCell>);
-      rowCells.splice(8, 0, <TableCell key="mfgNum" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.mfgNum}</TableCell>);
+        rowCells.splice(7, 0, <TableCell key="itemNum" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.itemNum} ({order.leftToShip ?? 0})</TableCell>);
+        rowCells.splice(8, 0, <TableCell key="mfgNum" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.mfgNum}</TableCell>);
     }
 
     return rowCells;
-  };
+};
+
+
 
   const handleOpenNoteModal = (soNum: string, partNum: string, notes: TrkSoNote[]) => {
     setSelectedSONum(soNum);
@@ -139,16 +166,22 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo }) => 
     setShowNoteModal(false);
   };
 
+  const openPoLog = (id: number) => {
+    window.open(`/PODetail?id=${id}`, '_blank');
+  };
+
   return (
     <>
-      <PaginatedSortableTable
-        tableData={results}
-        columns={columns}
-        columnNames={columnNames}
-        func={renderRow}
-        headerBackgroundColor="#384959"
-        hoverColor="#f5f5f5"
-      />
+      <Box sx={{ height: containerHeight, display: 'flex', flexDirection: 'column' }}>
+        <PaginatedSortableTable
+          tableData={results}
+          columns={columns}
+          columnNames={columnNames}
+          func={renderRow}
+          headerBackgroundColor="#384959"
+          hoverColor="#f5f5f5"
+        />
+      </Box>
       <Modal
         open={showNoteModal}
         onClose={handleCloseNoteModal}
