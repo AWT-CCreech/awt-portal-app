@@ -1,4 +1,3 @@
-import { TrkSoNote } from './TrkSoNote';
 interface OpenSalesOrder {
     id: number;
     sonum?: string;
@@ -27,7 +26,6 @@ interface OpenSalesOrder {
     allHere?: boolean;
     receivedOnPothatDay?: boolean;
     entryDate?: Date;
-    notes: TrkSoNote[]; // Include Notes property
 }
 
 export default OpenSalesOrder;
