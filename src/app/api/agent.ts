@@ -8,7 +8,7 @@ import BuyOppDetail from '../../models/MasterSearch/BuyOppDetail';
 import LoginInfo from '../../models/Login/LoginInfo';
 import MasterSearchContact from '../../models/MasterSearch/MasterSearchContact';
 import MasterSearchInput from '../../models/MasterSearch/SearchInput';
-import OpenSalesOrder from '../../models/OpenSalesOrder';
+import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
 import SellOppEvent from '../../models/MasterSearch/SellOppEvent';
 import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
@@ -189,10 +189,10 @@ const OpenSalesOrderReport = {
     },
 
     // Function to fetch open sales orders
-    fetchOpenSalesOrders: async (params: OpenSalesOrderSearchInput): Promise<(OpenSalesOrder & { Notes: TrkSoNote[] })[]> => {
+    fetchOpenSalesOrders: async (params: OpenSalesOrderSearchInput): Promise<(OpenSOReport & { Notes: TrkSoNote[] })[]> => {
         try {
           const response = await requests.getWithParams('/OpenSalesOrder/GetOpenSalesOrders', params);
-          return response as (OpenSalesOrder & { Notes: TrkSoNote[] })[];
+          return response as (OpenSOReport & { Notes: TrkSoNote[] })[];
         } catch (error) {
           console.error('Error fetching open sales orders', error);
           throw error;
