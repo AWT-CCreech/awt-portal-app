@@ -28,7 +28,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
     const fetchSalesReps = async () => {
       try {
         const reps = await Modules.OpenSalesOrderReport.fetchActiveSalesReps();
-        console.log('Fetched sales reps:', reps); // Log the fetched data
         if (Array.isArray(reps)) {
           setSalesReps(reps);
         } else {
@@ -42,7 +41,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
     const fetchSalesTeams = async () => {
       try {
         const teams = await Modules.OpenSalesOrderReport.fetchActiveSalesTeams();
-        console.log('Fetched sales teams:', teams);
         if (Array.isArray(teams)) {
           setSalesTeams(teams);
         } else {
@@ -56,7 +54,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
     const fetchAccounts = async () => {
       try {
         const accountNumbers = await Modules.OpenSalesOrderReport.fetchAccountNumbers();
-        console.log('Fetched accountNumbers:', accountNumbers);
         if (Array.isArray(accountNumbers)) {
           setAccountNumbers(accountNumbers);
         } else {
@@ -70,7 +67,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
     const fetchCategories = async () => {
       try {
         const categories = await Modules.OpenSalesOrderReport.fetchItemCategories();
-        console.log('Fetched categories:', categories);
         if (Array.isArray(categories)) {
           setItemCategories(categories);
         } else {
