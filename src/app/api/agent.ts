@@ -19,6 +19,7 @@ import { ActiveSalesReps } from '../../models/OpenSOReport/ActiveSalesReps';
 import { ActiveSalesTeams } from '../../models/OpenSOReport/ActiveSalesTeams';
 import { ItemCategories } from '../../models/OpenSOReport/ItemCategories';
 import { TrkSoNote } from '../../models/TrkSoNote';
+import { CamContact } from '../../models/CamContact';
 
 const devURL = "http://localhost:5001/api"; //http://10.0.0.27/api
 const prodURL = "http://10.0.0.8:82/api"; //http://10.0.0.8/api
@@ -94,6 +95,21 @@ const MasterSearches = {
     getBuyOppEvents: (input: MasterSearchInput): Promise<BuyOppEvent[]> => requests.getWithParams('/BuyOppEvents', input),
     getBuyOppDetails: (input: MasterSearchInput): Promise<BuyOppDetail[]> => requests.getWithParams('/BuyOppDetails', input),
     getContacts: (searchValue: string, active: boolean): Promise<MasterSearchContact[]> => requests.getWithParams('/MasterSearchContacts', { searchValue, active })
+};
+
+const CamSearch = {
+    searchContacts: (params: { searchText: string, username: string, searchBy: string, activeOnly?: boolean, orderBy?: string, companyId?: string }): Promise<CamContact[]> => {
+        return requests.getWithParams('/Cam/ContactSearch', params);
+    },
+    getSearchFields: (): Promise<string[]> => {
+        return requests.get('/Cam/SearchFields');
+    },
+    getAdvancedSearchFields: (): Promise<{ FieldValue: string, FieldValue2: string, FieldValue4: string }[]> => {
+        return requests.get('/Cam/AdvancedSearchFields');
+    },
+    getContactTypes: (): Promise<string[]> => {
+        return requests.get('/Cam/ContactTypes');
+    }
 };
 
 const DropShip = {
@@ -256,7 +272,8 @@ const Modules = {
     DropShip,
     UserList,
     OpenSalesOrderReport,
-    OpenSalesOrderNotes // Include the new module here
+    OpenSalesOrderNotes,
+    CamSearch
 };
 
 export default Modules;
