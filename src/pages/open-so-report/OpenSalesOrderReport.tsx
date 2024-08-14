@@ -41,8 +41,8 @@ const OpenSalesOrderReport: React.FC = () => {
   const handleExport = () => {
     const ws = XLSX.utils.json_to_sheet(searchResult);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'OpenSalesOrders');
-    XLSX.writeFile(wb, 'OpenSalesOrders.xlsx');
+    XLSX.utils.book_append_sheet(wb, ws, 'OpenSOReport');
+    XLSX.writeFile(wb, 'OpenSOReport.xlsx');
   };
 
   return (
