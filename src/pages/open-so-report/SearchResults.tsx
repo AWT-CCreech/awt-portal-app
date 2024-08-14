@@ -207,7 +207,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo, conta
             boxShadow: 24,
             p: 4,
             width: '90%',
-            maxWidth: '600px',
+            maxWidth: '800px',
             borderRadius: 1,
             overflow: 'auto',
             maxHeight: '90vh'
