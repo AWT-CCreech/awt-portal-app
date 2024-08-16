@@ -359,6 +359,26 @@ const PortalMenu: React.FC = () => {
                     </ListItemCustom>
                     <Collapse in={openFolders[folder]} timeout="auto" unmountOnExit>
                       <List component="div" disablePadding>
+                        {folder === 'purchasing' && (
+                          <>
+                            <NestedListItem
+                              onClick={() => handleNavigation('/dropship')}
+                            >
+                              <ListItemTextCustom primary="Drop Ship" />
+                              <ListItemIconCustom onClick={(e) => { e.stopPropagation(); handleFavoriteToggle('Drop Ship'); }}>
+                                {isFavorite('Drop Ship') ? <Star sx={{ color: blue[700] }} /> : <StarBorder sx={{ color: blue[700] }} />}
+                              </ListItemIconCustom>
+                            </NestedListItem>
+                            <NestedListItem
+                              onClick={() => handleNavigation('/massmailer')}
+                            >
+                              <ListItemTextCustom primary="Mass Mailer" />
+                              <ListItemIconCustom onClick={(e) => { e.stopPropagation(); handleFavoriteToggle('Mass Mailer'); }}>
+                                {isFavorite('Mass Mailer') ? <Star sx={{ color: blue[700] }} /> : <StarBorder sx={{ color: blue[700] }} />}
+                              </ListItemIconCustom>
+                            </NestedListItem>
+                          </>
+                        )}
                         {folder === 'sales' && (
                           <NestedListItem
                             onClick={() => handleNavigation('/opensalesorderreport')}
