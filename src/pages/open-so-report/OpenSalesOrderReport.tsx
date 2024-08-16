@@ -48,7 +48,7 @@ const OpenSalesOrderReport: React.FC = () => {
   return (
     <div>
       <PageHeader pageName="Open Sales Order Report" pageHref="/opensalesorderreport" />
-      <Container sx={{ padding: { xs: '20px', md: '20px 20px 20px 20px' }, maxWidth: '100%' }}>
+      <Container sx={{ padding: { xs: '20px', md: '20px' }, maxWidth: '100%' }}>
         <Grid container justifyContent="center">
           <Grid item xs={12}>
             <SearchBox
@@ -101,7 +101,7 @@ const OpenSalesOrderReport: React.FC = () => {
             opacity: '75%',
             padding: '10px',
             boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-            borderRadius: '5px',
+            borderRadius: 5,
             zIndex: 1000,
           }}
         >
