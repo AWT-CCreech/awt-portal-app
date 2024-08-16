@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Grid, TableCell, Typography, TextField, Button, ButtonGroup, Autocomplete, Checkbox } from '@mui/material';
-import {Close, Save} from '@mui/icons-material';
+import { Close, Save } from '@mui/icons-material';
 import Modules from '../../app/api/agent';
 import { CamContact } from '../../models/CamContact';
 import { NoteList } from '../../models/OpenSOReport/NoteList';
@@ -12,9 +12,10 @@ interface NoteModalProps {
   partNum: string;
   notes: NoteList[];
   onClose: () => void;
+  onNoteAdded: () => void; // New prop for handling note addition
 }
 
-const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose }) => {
+const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, onNoteAdded }) => {
   const [noteText, setNoteText] = useState<string>('');
   const [camContact, setCamContact] = useState<CamContact | null>(null);
   const [noteList, setNoteList] = useState<NoteList[]>(notes);
@@ -38,22 +39,25 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose })
     fetchUsername();
   }, []);
 
-  const fetchSuggestions = useCallback(async (query: string) => {
-    if (!query || query.length <= 2) return; // Prevent fetching if the input is empty or too short
-    try {
-      const response = await Modules.CamSearch.searchContacts({
-        searchText: query,
-        username: username,
-        searchBy: searchBy,
-        activeOnly: activeOnly,
-        orderBy: searchBy,
-        companyId: 'AIR'
-      });
-      setSuggestions(response);
-    } catch (error) {
-      console.error('Error fetching suggestions:', error);
-    }
-  }, [username, activeOnly, searchBy]);
+  const fetchSuggestions = useCallback(
+    async (query: string) => {
+      if (!query || query.length <= 2) return; // Prevent fetching if the input is empty or too short
+      try {
+        const response = await Modules.CamSearch.searchContacts({
+          searchText: query,
+          username: username,
+          searchBy: searchBy,
+          activeOnly: activeOnly,
+          orderBy: searchBy,
+          companyId: 'AIR',
+        });
+        setSuggestions(response);
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+      }
+    },
+    [username, activeOnly, searchBy]
+  );
 
   useEffect(() => {
     if (contactQuery.length > 2 || companyQuery.length > 2) {
@@ -85,10 +89,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose })
     }
   };
 
-  const handleSelection = (
-    event: React.SyntheticEvent,
-    value: CamContact | string | null
-  ) => {
+  const handleSelection = (event: React.SyntheticEvent, value: CamContact | string | null) => {
     if (typeof value === 'object' && value !== null) {
       setCamContact(value);
       setContactQuery(value.contact || ''); // Update the contact field
@@ -117,12 +118,19 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose })
         };
 
         const savedNote = await Modules.OpenSalesOrderNotes.addNote(newNote);
+
+        // Update the note list with the newly saved note
+        setNoteList([...noteList, { ...savedNote, contactName: camContact?.contact || 'N/A' }]);
+
+        // Trigger the onNoteAdded callback to refetch notes in the parent component
+        onNoteAdded();
+
+        // Clear inputs but keep modal open
         setNoteText('');
         setCamContact(null);
-        setContactQuery(''); // Clear the contact field after saving
-        setCompanyQuery(''); // Clear the company field after saving
-
-        setNoteList([...noteList, { ...savedNote, contactName: camContact?.contact || 'N/A' }]);
+        setContactQuery('');
+        setCompanyQuery('');
+        setSuggestions([]);
       } catch (error) {
         console.error('Error saving note:', error);
       }
@@ -155,14 +163,20 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose })
       </Typography>
 
       <Box sx={{ width: '100%' }}> {/* Ensure consistent width */}
-        <SortableTable
-          tableData={noteList}
-          columns={['notes', 'contactName', 'entryDate', 'enteredBy']}
-          columnNames={['Note', 'Contact', 'Date', 'By']}
-          func={renderRow}
-          headerBackgroundColor="#384959" // Customize as needed
-          hoverColor="#f5f5f5" // Customize as needed
-        />
+        {noteList.length > 0 ? (
+          <SortableTable
+            tableData={noteList}
+            columns={['notes', 'contactName', 'entryDate', 'enteredBy']}
+            columnNames={['Note', 'Contact', 'Date', 'By']}
+            func={renderRow}
+            headerBackgroundColor="#384959" // Customize as needed
+            hoverColor="#f5f5f5" // Customize as needed
+          />
+        ) : (
+          <Typography variant="body1" sx={{ textAlign: 'center', padding: 2, color: 'gray' }}>
+            No notes have been added.
+          </Typography>
+        )}
       </Box>
 
       <Box sx={{ mt: 2, width: '100%' }}>
@@ -178,8 +192,9 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose })
                 getOptionLabel={(option) =>
                   typeof option === 'string' ? option : `${option.contact || ''} (${option.company || ''})`
                 }
+                inputValue={contactQuery}
                 onInputChange={handleContactInputChange}
-                onChange={(event, value) => handleSelection(event, value)}
+                onChange={handleSelection}
                 value={camContact}  // Bind the selected value to the input field
                 renderOption={(props, option) => (
                   <li {...props} key={typeof option === 'string' ? option : option.id}>
@@ -192,7 +207,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose })
                   <TextField
                     {...params}
                     label="Search Contact"
-                    value={contactQuery}  // Manually setting the value here
                     placeholder="Enter contact name"
                     fullWidth
                   />
@@ -218,8 +232,9 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose })
             getOptionLabel={(option) =>
               typeof option === 'string' ? option : `${option.company || ''} (${option.contact || ''})`
             }
+            inputValue={companyQuery}
             onInputChange={handleCompanyInputChange}
-            onChange={(event, value) => handleSelection(event, value)}
+            onChange={handleSelection}
             value={camContact}  // Bind the selected value to the input field
             renderOption={(props, option) => (
               <li {...props} key={typeof option === 'string' ? option : option.id}>
@@ -232,7 +247,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose })
               <TextField
                 {...params}
                 label="Search Company"
-                value={companyQuery}  // Manually setting the value here
                 placeholder="Enter company name"
                 fullWidth
               />
