@@ -21,16 +21,19 @@ import { ItemCategories } from '../../models/OpenSOReport/ItemCategories';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { CamContact } from '../../models/CamContact';
 
-const devURL = "http://localhost:5001/api"; //http://10.0.0.27/api
-const prodURL = "http://10.0.0.8:82/api"; //http://10.0.0.8/api
+const devURL = "http://localhost:5001/api"; // Use for development environment
+const prodURL = "http://10.0.0.8:82/api";   // Use for production environment
 
+// Set the base URL based on the environment
 if (process.env.NODE_ENV === "development")
     axios.defaults.baseURL = devURL;
 else
     axios.defaults.baseURL = prodURL;
 
+// Helper function to extract the data from Axios responses
 const responseBody = (response: AxiosResponse) => response.data;
 
+// Axios request methods wrapped for easier use
 const requests = {
     get: (url: string) => axios.get(url).then(responseBody),
     getWithParams: (url: string, body: Object) => axios.get(url, { params: body }).then(responseBody),
@@ -40,8 +43,18 @@ const requests = {
     delete: (url: string) => axios.delete(url).then(responseBody)
 };
 
+// Automatically attach the JWT token to every request if it exists in localStorage
+axios.interceptors.request.use(config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
+// API endpoints grouped by functionality
 const UserLogins = {
-    authenticate: (loginInfo: Object): Promise<LoginInfo> => requests.post('/UserLogins', loginInfo)
+    authenticate: (loginInfo: LoginInfo): Promise<LoginInfo> => requests.post('/UserLogins', loginInfo)
 };
 
 const MassMailerEmailTemplates = {
@@ -119,7 +132,6 @@ const DropShip = {
 };
 
 const UserList = {
-    // Function to fetch users
     fetchUserList: async (): Promise<User[]> => {
         try {
             const response = await requests.get('/UserList/GetUserList');
@@ -129,8 +141,6 @@ const UserList = {
             throw error;
         }
     },
-
-    // Function to add a new user
     addUser: async (newUser: User): Promise<User> => {
         try {
             const response = await requests.post('/UserList/AddUser', newUser);
@@ -140,8 +150,6 @@ const UserList = {
             throw error;
         }
     },
-
-    // Function to update a user
     updateUser: async (uid: number, updatedUser: User): Promise<User> => {
         try {
             const response = await requests.put(`/UserList/UpdateUser/${uid}`, updatedUser);
@@ -151,8 +159,6 @@ const UserList = {
             throw error;
         }
     },
-
-    // Function to delete a user
     deleteUser: async (uid: number): Promise<void> => {
         try {
             await requests.delete(`/UserList/DeleteUser/${uid}`);
@@ -204,7 +210,6 @@ const OpenSalesOrderReport = {
         }
     },
 
-    // Function to fetch open sales orders
     fetchOpenSalesOrders: async (params: OpenSalesOrderSearchInput): Promise<(OpenSOReport & { Notes: TrkSoNote[] })[]> => {
         try {
           const response = await requests.getWithParams('/OpenSalesOrder/GetOpenSalesOrders', params);
@@ -255,7 +260,6 @@ const OpenSalesOrderNotes = {
         }
     }
 };
-
 
 const Modules = {
     MassMailerEmailTemplates,
