@@ -6,6 +6,7 @@ import UserInfo from '../../stores/userInfo';
 import agent from '../../app/api/agent';
 import AppState from '../../stores/app';
 import { styled } from '@mui/system';
+import LoginInfo from '../../models/Login/LoginInfo'
 
 const LogoContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -57,31 +58,44 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     console.log('Submitting form...');
     setPageLoading(true);
-    console.log('Loading state set to true');
     setHiddenLoginError(true);
-    try {
-      const response = await agent.UserLogins.authenticate({
+
+    // Prepare the payload with userId
+    const loginPayload: LoginInfo = {
+        userid: "",
         username,
         password,
         isPasswordEncrypted: false,
-        userid: "", // Ensure this field is included if required
-      });
-      console.log('Authentication successful:', response);
-      // Save to LocalStorage only after successful login
-      localStorage.setItem('username', response.username);
-      localStorage.setItem('password', response.password);
-      localStorage.setItem('userid', response.userid);
-      setPageLoading(false);
-      console.log('Loading state set to false');
-      if (response.username === '' && response.password === '') {
-        setHiddenLoginError(false);
-      } else {
-        navigate('/');
-      }
+        token: ""
+    };
+
+    console.log('Request payload:', loginPayload);
+
+    try {
+        const response = await agent.UserLogins.authenticate(loginPayload);
+        console.log('Authentication successful:', response);
+
+        // Save necessary data to local storage
+        localStorage.setItem('username', response.username);
+        localStorage.setItem('password', response.password);
+        localStorage.setItem('userid', response.userid);
+
+        if (response.token) {
+            localStorage.setItem('token', response.token);
+        }
+
+        setPageLoading(false);
+        console.log('Loading state set to false');
+
+        if (response.username === '' && response.password === '') {
+            setHiddenLoginError(false);
+        } else {
+            navigate('/');
+        }
     } catch (error) {
-      console.error('Error during authentication:', error);
-      setPageLoading(false);
-      setHiddenLoginError(false);
+        console.error('Error during authentication:', error);
+        setPageLoading(false);
+        setHiddenLoginError(false);
     }
   };
 
