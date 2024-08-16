@@ -2,7 +2,8 @@ interface LoginInfo {
     userid: string,
     username: string,
     password: string,
-    isPasswordEncrypted: boolean
+    isPasswordEncrypted: boolean,
+    token?: string
 }
 
 export default LoginInfo;
