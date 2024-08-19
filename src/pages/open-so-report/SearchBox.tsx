@@ -1,6 +1,6 @@
 import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react';
 import {
-  Box, Button, TextField, Grid, Checkbox, FormControlLabel, Select, MenuItem, InputLabel, FormControl, SelectChangeEvent, IconButton, Tooltip
+  Box, Button, TextField, Grid, Checkbox, FormControlLabel, Select, SelectChangeEvent, MenuItem, InputLabel, FormControl, IconButton, Tooltip
 } from '@mui/material';
 import { GetApp, Search } from '@mui/icons-material';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
@@ -28,11 +28,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
     const fetchSalesReps = async () => {
       try {
         const reps = await Modules.OpenSalesOrderReport.fetchActiveSalesReps();
-        if (Array.isArray(reps)) {
-          setSalesReps(reps);
-        } else {
-          console.error('Unexpected data format:', reps);
-        }
+        setSalesReps(reps);
       } catch (error) {
         console.error('Error fetching sales reps', error);
       }
@@ -41,11 +37,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
     const fetchSalesTeams = async () => {
       try {
         const teams = await Modules.OpenSalesOrderReport.fetchActiveSalesTeams();
-        if (Array.isArray(teams)) {
-          setSalesTeams(teams);
-        } else {
-          console.error('Unexpected data format:', teams);
-        }
+        setSalesTeams(teams);
       } catch (error) {
         console.error('Error fetching sales teams', error);
       }
@@ -54,11 +46,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
     const fetchAccounts = async () => {
       try {
         const accountNumbers = await Modules.OpenSalesOrderReport.fetchAccountNumbers();
-        if (Array.isArray(accountNumbers)) {
-          setAccountNumbers(accountNumbers);
-        } else {
-          console.error('Unexpected data format:', accountNumbers);
-        }
+        setAccountNumbers(accountNumbers);
       } catch (error) {
         console.error('Error fetching account numbers', error);
       }
@@ -67,11 +55,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
     const fetchCategories = async () => {
       try {
         const categories = await Modules.OpenSalesOrderReport.fetchItemCategories();
-        if (Array.isArray(categories)) {
-          setItemCategories(categories);
-        } else {
-          console.error('Unexpected data format:', categories);
-        }
+        setItemCategories(categories);
       } catch (error) {
         console.error('Error fetching item categories', error);
       }
@@ -105,10 +89,10 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
     const { name, value } = event.target;
     setSearchParams(prevParams => ({
       ...prevParams,
-      [name!]: value,
+      [name!]: value as string, // Type assertion if necessary
     }));
   };
-
+  
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
     setSearchParams(prevParams => ({
@@ -126,7 +110,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
   return (
     <Box sx={{ width: '100%', p: { xs: 1, md: 2 }, boxShadow: 3, bgcolor: 'background.paper', boxSizing: 'border-box' }}>
       <Grid container spacing={2} onKeyDown={handleKeyDown}>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
             <InputLabel id="dateFilterType-label">Date Filter Type</InputLabel>
             <Select
@@ -140,7 +124,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <TextField
             fullWidth
             type="date"
@@ -151,7 +135,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <TextField
             fullWidth
             type="date"
@@ -162,8 +146,22 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
+        <Grid item xs={12} sm={3}>
+          <FormControl fullWidth>
+            <InputLabel id="reqDateStatus-label">Req Date Status</InputLabel>
+            <Select
+              labelId="reqDateStatus-label"
+              name="reqDateStatus"
+              value={searchParams.reqDateStatus || 'All'}
+              onChange={handleSelectChange}
+            >
+              <MenuItem key="All" value="All">All</MenuItem>
+              <MenuItem key="Late" value="Late">Late</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
 
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
             <InputLabel id="salesTeam-label">Sales Team</InputLabel>
             <Select
@@ -181,26 +179,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <TextField
-            fullWidth
-            label="SO Number"
-            name="soNum"
-            value={searchParams.soNum || ''}
-            onChange={handleInputChange}
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <TextField
-            fullWidth
-            label="Part Number"
-            name="partNum"
-            value={searchParams.partNum || ''}
-            onChange={handleInputChange}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
             <InputLabel id="salesRep-label">Sales Rep</InputLabel>
             <Select
@@ -218,60 +197,26 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <TextField
             fullWidth
-            label="Customer PO"
-            name="custPO"
-            value={searchParams.custPO || ''}
+            label="AirWay SO"
+            name="soNum"
+            value={searchParams.soNum || ''}
             onChange={handleInputChange}
           />
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <TextField
             fullWidth
-            label="Airway PO"
-            name="poNum"
-            value={searchParams.poNum || ''}
+            label="Part Number"
+            name="partNum"
+            value={searchParams.partNum || ''}
             onChange={handleInputChange}
           />
         </Grid>
-
-        <Grid item xs={12} sm={4}>
-          <FormControl fullWidth>
-            <InputLabel id="reqDateStatus-label">Req Date Status</InputLabel>
-            <Select
-              labelId="reqDateStatus-label"
-              name="reqDateStatus"
-              value={searchParams.reqDateStatus || 'All'}
-              onChange={handleSelectChange}
-            >
-              <MenuItem key="All" value="All">All</MenuItem>
-              <MenuItem key="Late" value="Late">Late</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
         
-        <Grid item xs={12} sm={4}>
-          <FormControl fullWidth>
-            <InputLabel id="category-label">Category</InputLabel>
-            <Select
-              labelId="category-label"
-              name="category"
-              value={searchParams.category || 'All'}
-              onChange={handleSelectChange}
-            >
-              <MenuItem key="All" value="All">All</MenuItem>
-              {itemCategories.map((category) => (
-                <MenuItem key={category.id} value={category.litem}>
-                  {category.litem}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
             <InputLabel id="accountNumber-label">Account Number</InputLabel>
             <Select
@@ -289,8 +234,44 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             </Select>
           </FormControl>
         </Grid>
+        <Grid item xs={12} sm={3}>
+          <FormControl fullWidth>
+            <InputLabel id="category-label">Category</InputLabel>
+            <Select
+              labelId="category-label"
+              name="category"
+              value={searchParams.category || 'All'}
+              onChange={handleSelectChange}
+            >
+              <MenuItem key="All" value="All">All</MenuItem>
+              {itemCategories.map((category) => (
+                <MenuItem key={category.id} value={category.litem}>
+                  {category.litem}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          <TextField
+            fullWidth
+            label="AirWay PO"
+            name="poNum"
+            value={searchParams.poNum || ''}
+            onChange={handleInputChange}
+          />
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          <TextField
+            fullWidth
+            label="Customer PO"
+            name="custPO"
+            value={searchParams.custPO || ''}
+            onChange={handleInputChange}
+          />
+        </Grid>
 
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={9}>
           <TextField
             fullWidth
             label="Customer"
@@ -299,7 +280,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             onChange={handleInputChange}
           />
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={3}>
           <FormControlLabel
             control={
               <Checkbox
