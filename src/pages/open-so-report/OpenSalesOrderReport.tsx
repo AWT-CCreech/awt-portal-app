@@ -48,7 +48,7 @@ const OpenSalesOrderReport: React.FC = () => {
   return (
     <div>
       <PageHeader pageName="Open Sales Order Report" pageHref="/opensalesorderreport" />
-      <Container sx={{ padding: { xs: '20px', md: '20px' }, maxWidth: '100%' }}>
+      <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' }}}>
         <Grid container justifyContent="center">
           <Grid item xs={12}>
             <SearchBox
@@ -70,7 +70,7 @@ const OpenSalesOrderReport: React.FC = () => {
             ) : searchResult.length > 0 ? (
               <Box
                 sx={{
-                  height: '60vh', // Set the height for the table container
+                  height: '80vh', // Set the height for the table container
                   display: 'flex',
                   flexDirection: 'column',
                   boxShadow: 3,
