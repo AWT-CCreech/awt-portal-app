@@ -6,7 +6,6 @@ import {
   Button,
   Checkbox,
   Container,
-  Grid,
   Input,
   Table,
   TableBody,
@@ -27,7 +26,7 @@ const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }
   useEffect(() => {
     const userid = localStorage.getItem('userid');
     if (userid !== null)
-      agent.MassMailerPartItems.partItemsForUser(userid).then(response => {
+      agent.MassMailer.PartItems.partItemsForUser(userid).then(response => {
         setPartItems(response);
         setSelectedPartItems(response);
       });
@@ -144,7 +143,7 @@ const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }
           variant="contained"
           color="error"
           onClick={() =>
-            agent.MassMailerClearPartItems.clear(localStorage.getItem('userid') ?? '').then(() => window.location.reload())
+            agent.MassMailer.ClearPartItems.clear(localStorage.getItem('userid') ?? '').then(() => window.location.reload())
           }
         >
           Unmark Mailers
