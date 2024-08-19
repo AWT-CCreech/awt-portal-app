@@ -84,7 +84,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo, conta
     'Amount',
     'PO #',
     'PO Issue Date',
-    'Expected Delivery',
+    'Exp. Delivery',
     'Qty Ordered',
     'Qty Received',
     'PO Log',
@@ -130,12 +130,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo, conta
           ''
         )}
       </TableCell>,
-      <TableCell key="sonum" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.sonum}</TableCell>,
-      <TableCell key="team" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.accountTeam || order.salesRep}</TableCell>,
-      <TableCell key="customerName" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.customerName}</TableCell>,
-      <TableCell key="custPo" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.custPo}</TableCell>,
-      <TableCell key="orderDate" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{orderDate && !isDefaultDate(orderDate) ? orderDate.toLocaleDateString() : ''}</TableCell>,
-      <TableCell key="requiredDate" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+      <TableCell key="sonum" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.sonum}</TableCell>,
+      <TableCell key="team" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.accountTeam || order.salesRep}</TableCell>,
+      <TableCell key="customerName" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.customerName}</TableCell>,
+      <TableCell key="custPo" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.custPo}</TableCell>,
+      <TableCell key="orderDate" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{orderDate && !isDefaultDate(orderDate) ? orderDate.toLocaleDateString() : ''}</TableCell>,
+      <TableCell key="requiredDate" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {requiredDate && !isDefaultDate(requiredDate) ? requiredDate.toLocaleDateString() : ''}
           {deliveryAlert && (
@@ -147,12 +147,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo, conta
           )}
         </div>
       </TableCell>,
-      <TableCell key="amountLeft" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{formatAmount(order.amountLeft ?? 0)}</TableCell>,
-      <TableCell key="ponum" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.ponum}</TableCell>,
-      <TableCell key="poissueDate" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{poIssueDate && !isDefaultDate(poIssueDate) ? poIssueDate.toLocaleDateString() : ''}</TableCell>,
-      <TableCell key="expectedDelivery" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{expectedDelivery && !isDefaultDate(expectedDelivery) ? expectedDelivery.toLocaleDateString() : ''}</TableCell>,
-      <TableCell key="qtyOrdered" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.qtyOrdered}</TableCell>,
-      <TableCell key="qtyReceived" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.qtyReceived}</TableCell>,
+      <TableCell key="amountLeft" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{formatAmount(order.amountLeft ?? 0)}</TableCell>,
+      <TableCell key="ponum" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.ponum}</TableCell>,
+      <TableCell key="poissueDate" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{poIssueDate && !isDefaultDate(poIssueDate) ? poIssueDate.toLocaleDateString() : ''}</TableCell>,
+      <TableCell key="expectedDelivery" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{expectedDelivery && !isDefaultDate(expectedDelivery) ? expectedDelivery.toLocaleDateString() : ''}</TableCell>,
+      <TableCell key="qtyOrdered" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.qtyOrdered}</TableCell>,
+      <TableCell key="qtyReceived" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.qtyReceived}</TableCell>,
       <TableCell 
         key="poLog" 
         align="left" 
@@ -174,8 +174,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo, conta
     ];
 
     if (!groupBySo) {
-      rowCells.splice(7, 0, <TableCell key="itemNum" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.itemNum} ({order.leftToShip ?? 0})</TableCell>);
-      rowCells.splice(8, 0, <TableCell key="mfgNum" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.mfgNum}</TableCell>);
+      rowCells.splice(7, 0, <TableCell key="itemNum" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.itemNum} ({order.leftToShip ?? 0})</TableCell>);
+      rowCells.splice(8, 0, <TableCell key="mfgNum" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.mfgNum}</TableCell>);
     }
 
     return rowCells;
