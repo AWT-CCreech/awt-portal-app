@@ -47,11 +47,11 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
 
   useEffect(() => {
     // Fetch initial vendors and manufacturer options
-    agent.MassMailerVendors.vendorList('All', false, false).then((response) => {
+    agent.MassMailer.Vendors.vendorList('All', false, false).then((response) => {
       setVendorsToSelect(response);
     });
 
-    agent.MassMailerManufacturers.manufacturerList().then((response) => {
+    agent.MassMailer.Manufacturers.manufacturerList().then((response) => {
       const options = response.map((mfg: string) => ({
         key: mfg,
         value: mfg,
@@ -66,21 +66,21 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
     const value = event.target.value;
     setCurrentPage(1);
     setMfg(value);
-    agent.MassMailerVendors.vendorList(value, anc, fne).then((response) => {
+    agent.MassMailer.Vendors.vendorList(value, anc, fne).then((response) => {
       setVendorsToSelect(response);
     });
   };
 
   const handleAncChange = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
     setAnc(checked);
-    agent.MassMailerVendors.vendorList(mfg, checked, fne).then((response) => {
+    agent.MassMailer.Vendors.vendorList(mfg, checked, fne).then((response) => {
       setVendorsToSelect(response);
     });
   };
 
   const handleFneChange = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
     setFne(checked);
-    agent.MassMailerVendors.vendorList(mfg, anc, checked).then((response) => {
+    agent.MassMailer.Vendors.vendorList(mfg, anc, checked).then((response) => {
       setVendorsToSelect(response);
     });
   };
