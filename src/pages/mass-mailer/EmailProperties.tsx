@@ -85,7 +85,7 @@ const EmailProperties: React.FC<IProps> = ({
   useEffect(() => {
     const user = localStorage.getItem('username');
     if (user) {
-      agent.MassMailerEmailTemplates.templatesForUser(user).then((response) => {
+      agent.MassMailer.EmailTemplates.templatesForUser(user).then((response) => {
         const options = response.map((template: IMassMailerEmailTemplate) => ({
           key: template.id,
           value: template.emailDesc,
@@ -124,7 +124,7 @@ const EmailProperties: React.FC<IProps> = ({
       });
       formData.set('username', localStorage.getItem('username') ?? '');
 
-      agent.MassMailerFileUpload.upload(formData).then((attachments) => {
+      agent.MassMailer.FileUpload.upload(formData).then((attachments) => {
         const temp = [...attachFiles];
         attachments.forEach((attachment) => {
           if (!attachFiles.includes(attachment)) temp.push(attachment);
