@@ -104,7 +104,7 @@ const PaginatedSortableTable: React.FC<IProps> = ({ columns, columnNames, tableD
   const { column, data, direction } = state;
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [paginatedData, setPaginatedData] = useState<object[]>([]);
 
   useEffect(() => {
