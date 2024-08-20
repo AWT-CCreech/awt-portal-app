@@ -38,9 +38,9 @@ const MassMailer: React.FC = () => {
   const { pageLoading, setPageLoading } = useContext(AppState);
 
   useEffect(() => {
-    agent.MassMailerUsers.getAll().then(setAllUsers);
+    agent.MassMailer.Users.getAll().then(setAllUsers);
     const username = localStorage.getItem('username') ?? '';
-    agent.MassMailerFileUpload.clear(username);
+    agent.MassMailer.FileUpload.clear(username);
   }, []);
 
   useEffect(() => {
@@ -114,7 +114,7 @@ const MassMailer: React.FC = () => {
       items: selectedPartItems,
     };
 
-    agent.MassMailerEmailOuts.sendEmail(obj).then(() => {
+    agent.MassMailer.EmailOuts.sendEmail(obj).then(() => {
       window.location.reload();
     });
   };
