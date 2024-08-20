@@ -52,44 +52,39 @@ axios.interceptors.request.use(config => {
     return config;
 });
 
-// API endpoints grouped by functionality
-const UserLogins = {
-    authenticate: (loginInfo: LoginInfo): Promise<LoginInfo> => requests.post('/UserLogins', loginInfo)
-};
-
-const MassMailerEmailTemplates = {
-    templatesForUser: (user: string): Promise<IMassMailerEmailTemplate[]> => requests.get(`/MassMailerEmailTemplates/${user}`)
-};
-
-const MassMailerManufacturers = {
-    manufacturerList: (): Promise<string[]> => requests.get('/MassMailerManufacturers')
-};
-
-const MassMailerVendors = {
-    vendorList: (mfg: string, anc: boolean, fne: boolean): Promise<IMassMailerVendor[]> => {
-        return requests.get(`/MassMailerVendors/${mfg}/${anc}/${fne}`);
+// Group all MassMailer-related modules into one constant
+const MassMailer = {
+    EmailTemplates: {
+        templatesForUser: (user: string): Promise<IMassMailerEmailTemplate[]> => requests.get(`/MassMailerEmailTemplates/${user}`)
+    },
+    Manufacturers: {
+        manufacturerList: (): Promise<string[]> => requests.get('/MassMailerManufacturers')
+    },
+    Vendors: {
+        vendorList: (mfg: string, anc: boolean, fne: boolean): Promise<IMassMailerVendor[]> => {
+            return requests.get(`/MassMailerVendors/${mfg}/${anc}/${fne}`);
+        }
+    },
+    PartItems: {
+        partItemsForUser: (user: string): Promise<IMassMailerPartItem[]> => requests.get(`/MassMailerPartItems/${user}`)
+    },
+    EmailOuts: {
+        sendEmail: (body: Object) => requests.post('/MassMailerEmailOuts', body)
+    },
+    Users: {
+        getAll: (): Promise<IMassMailerUser[]> => requests.get('/MassMailerUsers')
+    },
+    FileUpload: {
+        upload: (body: FormData): Promise<string[]> => requests.post('/MassMailerFileUpload', body),
+        clear: (username: string): Promise<any> => requests.get(`/MassMailerFileUpload/${username}`)
+    },
+    ClearPartItems: {
+        clear: (userid: string): Promise<any> => requests.get(`/MassMailerClearPartItems/${userid}`)
     }
 };
 
-const MassMailerPartItems = {
-    partItemsForUser: (user: string): Promise<IMassMailerPartItem[]> => requests.get(`/MassMailerPartItems/${user}`)
-};
-
-const MassMailerEmailOuts = {
-    sendEmail: (body: Object) => requests.post('/MassMailerEmailOuts', body)
-};
-
-const MassMailerUsers = {
-    getAll: (): Promise<IMassMailerUser[]> => requests.get('/MassMailerUsers')
-};
-
-const MassMailerFileUpload = {
-    upload: (body: FormData): Promise<string[]> => requests.post('/MassMailerFileUpload', body),
-    clear: (username: string): Promise<any> => requests.get(`/MassMailerFileUpload/${username}`)
-};
-
-const MassMailerClearPartItems = {
-    clear: (userid: string): Promise<any> => requests.get(`/MassMailerClearPartItems/${userid}`)
+const UserLogins = {
+    authenticate: (loginInfo: LoginInfo): Promise<LoginInfo> => requests.post('/UserLogins', loginInfo)
 };
 
 const TimeTrackers = {
@@ -102,12 +97,13 @@ const TimeTrackers = {
     approve: (approvals: object) => requests.post('/TimeTrackerApprovals', approvals)
 };
 
+// Update the MasterSearches module to use the new centralized MasterSearchController
 const MasterSearches = {
-    getSellOppEvents: (input: MasterSearchInput): Promise<SellOppEvent[]> => requests.getWithParams('/SellOppEvents', input),
-    getSellOppDetails: (input: MasterSearchInput): Promise<SellOppDetail[]> => requests.getWithParams('/SellOppDetails', input),
-    getBuyOppEvents: (input: MasterSearchInput): Promise<BuyOppEvent[]> => requests.getWithParams('/BuyOppEvents', input),
-    getBuyOppDetails: (input: MasterSearchInput): Promise<BuyOppDetail[]> => requests.getWithParams('/BuyOppDetails', input),
-    getContacts: (searchValue: string, active: boolean): Promise<MasterSearchContact[]> => requests.getWithParams('/MasterSearchContacts', { searchValue, active })
+    getSellOppEvents: (input: MasterSearchInput): Promise<SellOppEvent[]> => requests.getWithParams('/MasterSearch/SellOppEvents', input),
+    getSellOppDetails: (input: MasterSearchInput): Promise<SellOppDetail[]> => requests.getWithParams('/MasterSearch/SellOppDetails', input),
+    getBuyOppEvents: (input: MasterSearchInput): Promise<BuyOppEvent[]> => requests.getWithParams('/MasterSearch/BuyOppEvents', input),
+    getBuyOppDetails: (input: MasterSearchInput): Promise<BuyOppDetail[]> => requests.getWithParams('/MasterSearch/BuyOppDetails', input),
+    getContacts: (searchValue: string, active: boolean): Promise<MasterSearchContact[]> => requests.getWithParams('/MasterSearch/Contacts', { searchValue, active })
 };
 
 const CamSearch = {
@@ -261,23 +257,17 @@ const OpenSalesOrderNotes = {
     }
 };
 
+// Export grouped modules
 const Modules = {
-    MassMailerEmailTemplates,
-    MassMailerManufacturers,
-    MassMailerVendors,
-    MassMailerPartItems,
-    MassMailerEmailOuts,
-    UserLogins,
-    MassMailerUsers,
-    MassMailerFileUpload,
-    MassMailerClearPartItems,
+    MassMailer,
     TimeTrackers,
     MasterSearches,
+    CamSearch,
     DropShip,
     UserList,
     OpenSalesOrderReport,
     OpenSalesOrderNotes,
-    CamSearch
+    UserLogins
 };
 
 export default Modules;
