@@ -1,12 +1,13 @@
 import React, { useContext, FormEvent, useState, useEffect } from 'react';
-import { Container, Box, TextField, Button, Typography, Alert, Divider, CircularProgress } from '@mui/material';
+import { Container, Box, TextField, Button, Typography, Alert, Divider, CircularProgress, IconButton, InputAdornment } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import UserInfo from '../../stores/userInfo';
 import agent from '../../app/api/agent';
 import AppState from '../../stores/app';
 import { styled } from '@mui/system';
-import LoginInfo from '../../models/Login/LoginInfo'
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import LoginInfo from '../../models/Login/LoginInfo';
 
 const LogoContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -49,10 +50,13 @@ const LoginPage: React.FC = () => {
   const { pageLoading, setPageLoading } = appState;
   const [hiddenLoginError, setHiddenLoginError] = useState(true);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
   useEffect(() => {
     console.log('Loading state changed:', pageLoading);
   }, [pageLoading]);
+
+  const handleClickShowPassword = () => setShowPassword((prev) => !prev);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,7 +64,6 @@ const LoginPage: React.FC = () => {
     setPageLoading(true);
     setHiddenLoginError(true);
 
-    // Prepare the payload with userId
     const loginPayload: LoginInfo = {
         userid: "",
         username,
@@ -75,7 +78,6 @@ const LoginPage: React.FC = () => {
         const response = await agent.UserLogins.authenticate(loginPayload);
         console.log('Authentication successful:', response);
 
-        // Save necessary data to local storage
         localStorage.setItem('username', response.username);
         localStorage.setItem('password', response.password);
         localStorage.setItem('userid', response.userid);
@@ -129,11 +131,24 @@ const LoginPage: React.FC = () => {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'} // Toggle between text and password
               id="password"
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassWord(e.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             {!hiddenLoginError && (
               <Alert severity="error">Username or Password is not correct</Alert>
@@ -145,7 +160,7 @@ const LoginPage: React.FC = () => {
                 variant="contained"
                 color="primary"
                 sx={{ mt: 3, mb: 2 }}
-                disabled={pageLoading} // Disable button while loading
+                disabled={pageLoading}
               >
                 {pageLoading ? <CircularProgress size={24} /> : 'Login'}
               </Button>
