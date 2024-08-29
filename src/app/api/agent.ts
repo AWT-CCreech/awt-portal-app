@@ -123,7 +123,7 @@ const CamSearch = {
 
 const DropShip = {
     getDropShipInfo: (poNum: string): Promise<any> => requests.get(`/DropShipInfo/${poNum}`),
-    sendDropShipEmail: (emailInput: object) => requests.post('/SendDropShipEmail', emailInput),
+    DropShipSendEmail: (emailInput: object) => requests.post('/DropShipSendEmail', emailInput),
     getAllDropShipSalesReps: () => requests.get(`/DropShipSalesReps`)
 };
 
