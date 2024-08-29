@@ -69,7 +69,7 @@ const DropShip = () => {
     const recipientEmails = [autoFillRep?.email, ...addedSalesReps.map(sr => sr.email)].filter(Boolean) as string[];
     const recipientNames = [autoFillRep?.fullName, ...addedSalesReps.map(sr => sr.fullName)].filter(Boolean) as string[];
 
-    agent.DropShip.sendDropShipEmail({
+    agent.DropShip.DropShipSendEmail({
       subject: `Drop Ship Complete: SO#${SONum}`,
       senderUserName: localStorage.getItem("username"),
       password: localStorage.getItem("password"),
