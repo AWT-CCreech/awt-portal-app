@@ -3,12 +3,15 @@ import { NavigateFunction } from 'react-router-dom';
 export const isAuthenticated = () => {
   const storageUser = localStorage.getItem('username');
   const storagePass = localStorage.getItem('password');
+  const token = localStorage.getItem('token');
 
   return (
     storageUser !== '' &&
     storagePass !== '' &&
     storagePass !== null &&
-    storageUser !== null
+    storageUser !== null &&
+    token !== null &&
+    token !== ''
   );
 };
 
@@ -17,9 +20,12 @@ export const handleLogOut = (
   setUserName: (u: string) => void,
   setPassWord: (p: string) => void
 ) => {
-  localStorage.setItem('username', '');
-  localStorage.setItem('password', '');
-  localStorage.setItem('userid', '');
+  localStorage.removeItem('token');
+  localStorage.removeItem('expiresAt');
+  localStorage.removeItem('username');
+  localStorage.removeItem('password');
+  localStorage.removeItem('userid');
+
   setUserName('');
   setPassWord('');
   navigate('/login');
