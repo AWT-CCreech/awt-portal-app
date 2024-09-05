@@ -78,20 +78,16 @@ const SearchBox: React.FC<IProps> = ({
   const searchInput2Ref = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    // Ensure the correct input is always focused
     const searchInput = searchFor === 4 ? searchInput2Ref.current : searchInput1Ref.current;
-    searchInput?.focus();
 
-    const handleEnterPress = (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        getResultSets();
-      }
-    };
-
-    window.addEventListener('keydown', handleEnterPress);
-    return () => {
-      window.removeEventListener('keydown', handleEnterPress);
-    };
-  }, [searchFor, viewBy, chkID, chkSONo, chkPartNo, chkPartDesc, chkPONo, chkMfg, chkCompany, chkInvNo, chkActive, getResultSets]);
+    // Using setTimeout to make sure focus is applied after render
+    if (searchInput) {
+      setTimeout(() => {
+        searchInput.focus();
+      }, 0);
+    }
+  }, [searchFor, searchValue, viewBy, chkID, chkSONo, chkPartNo, chkPartDesc, chkPONo, chkMfg, chkCompany, chkInvNo, chkActive]);
 
   useEffect(() => {
     if (searchFor === 2) {
@@ -140,6 +136,11 @@ const SearchBox: React.FC<IProps> = ({
                       autoComplete="off"
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          getResultSets();
+                        }
+                      }}
                     />
                   </FormControl>
                 </Grid>
@@ -271,6 +272,11 @@ const SearchBox: React.FC<IProps> = ({
                       autoComplete="off"
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          getResultSets();
+                        }
+                      }}
                     />
                   </FormControl>
                 </Grid>
