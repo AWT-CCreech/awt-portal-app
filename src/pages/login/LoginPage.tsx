@@ -1,4 +1,4 @@
-import React, { useContext, FormEvent, useState, useEffect } from 'react';
+import React, { useContext, FormEvent, useState, useEffect, useCallback } from 'react';
 import { Container, Box, TextField, Button, Typography, Alert, Divider, CircularProgress, IconButton, InputAdornment } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
@@ -43,61 +43,92 @@ const AppLogo = () => (
   <img src="logo.png" alt="Company Logo" style={{ width: '150px', height: 'auto' }} />
 );
 
-const LoginPage: React.FC = () => {
+const LoginPage: React.FC = observer(() => {
   const userInfo = useContext(UserInfo);
-  const { username, password, setUserName, setPassWord } = userInfo;
+  const { setUserName, setPassWord } = userInfo;
   const appState = useContext(AppState);
-  const { pageLoading, setPageLoading } = appState;
+  const { pageLoading, setPageLoading } = appState; 
+
   const [hiddenLoginError, setHiddenLoginError] = useState(true);
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Local state for inputs
+  const [localUsername, setLocalUsername] = useState('');
+  const [localPassword, setLocalPassword] = useState('');
+
+  const handleAutoLogout = useCallback(() => {
+    console.log('Auto logout triggered');
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
+    localStorage.removeItem('userid');
+    localStorage.removeItem('expiresAt');
+    setUserName('');
+    setPassWord('');
+    navigate('/login');
+  }, [setUserName, setPassWord, navigate]);
 
   useEffect(() => {
     console.log('Loading state changed:', pageLoading);
-  }, [pageLoading]);
+
+    const tokenExpiry = localStorage.getItem('expiresAt');
+    if (tokenExpiry) {
+      const expiryTime = parseInt(tokenExpiry, 10);
+      const currentTime = Date.now();
+
+      if (expiryTime > currentTime) {
+        const timeout = setTimeout(() => handleAutoLogout(), expiryTime - currentTime);
+        return () => clearTimeout(timeout);
+      } else {
+        handleAutoLogout();
+      }
+    }
+  }, [pageLoading, handleAutoLogout]);
 
   const handleClickShowPassword = () => setShowPassword((prev) => !prev);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Submitting form...');
     setPageLoading(true);
     setHiddenLoginError(true);
 
     const loginPayload: LoginInfo = {
-        userid: "",
-        username,
-        password,
-        isPasswordEncrypted: false,
-        token: ""
+      userid: "",
+      username: localUsername,
+      password: localPassword,
+      isPasswordEncrypted: false,
+      token: ""
     };
 
-    console.log('Request payload:', loginPayload);
-
     try {
-        const response = await agent.UserLogins.authenticate(loginPayload);
-        console.log('Authentication successful:', response);
+      const response = await agent.UserLogins.authenticate(loginPayload);
+      console.log('Backend response:', response);
 
+      if (response && response.token) {
+        const token = response.token;
+        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+        const expiresAt = tokenPayload.exp * 1000; 
+
+        localStorage.setItem('token', token);
         localStorage.setItem('username', response.username);
-        localStorage.setItem('password', response.password);
         localStorage.setItem('userid', response.userid);
+        localStorage.setItem('expiresAt', expiresAt.toString());
 
-        if (response.token) {
-            localStorage.setItem('token', response.token);
-        }
+        setUserName(response.username); // Set username in the context
+        setPassWord(localPassword); // Set password in the context
 
+        setPageLoading(false); 
+        navigate('/'); // Redirect to home page after successful login
+      } else {
+        console.error('Invalid response:', response);
         setPageLoading(false);
-        console.log('Loading state set to false');
-
-        if (response.username === '' && response.password === '') {
-            setHiddenLoginError(false);
-        } else {
-            navigate('/');
-        }
+        setHiddenLoginError(false); // Show error message
+      }
     } catch (error) {
-        console.error('Error during authentication:', error);
-        setPageLoading(false);
-        setHiddenLoginError(false);
+      console.error('Error during authentication:', error);
+      setPageLoading(false);
+      setHiddenLoginError(false); // Show error message
     }
   };
 
@@ -122,8 +153,8 @@ const LoginPage: React.FC = () => {
               name="username"
               autoComplete="username"
               autoFocus
-              value={username}
-              onChange={(e) => setUserName(e.target.value)}
+              value={localUsername}
+              onChange={(e) => setLocalUsername(e.target.value)}
             />
             <TextField
               margin="normal"
@@ -131,11 +162,11 @@ const LoginPage: React.FC = () => {
               fullWidth
               name="password"
               label="Password"
-              type={showPassword ? 'text' : 'password'} // Toggle between text and password
+              type={showPassword ? 'text' : 'password'}
               id="password"
               autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassWord(e.target.value)}
+              value={localPassword}
+              onChange={(e) => setLocalPassword(e.target.value)}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -170,6 +201,6 @@ const LoginPage: React.FC = () => {
       </FlexContainer>
     </MainContainer>
   );
-};
+});
 
-export default observer(LoginPage);
+export default LoginPage;
