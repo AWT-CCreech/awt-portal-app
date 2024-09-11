@@ -18,6 +18,9 @@ const setDocumentTitle = (path: string): void => {
       case '/opensalesorderreport':
           document.title = 'AWT Portal | Open SO Report';
           break;
+      case '/podeliverylog':
+          document.title = 'AWT Portal | PO Delivery Log';
+          break;
       case '/dropship':
         document.title = 'AWT Portal | Drop Ship';
         break;
