@@ -53,6 +53,15 @@ const Home: React.FC = () => {
           <Button
             variant="contained"
             sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
+            onClick={() => navigate('/podeliverylog')}
+          >
+            PO Delivery Log
+          </Button>
+        </Grid>
+        <Grid item xs={3} textAlign="center">
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
             onClick={() => navigate('/opensalesorderreport')}
           >
             Open SO Report
