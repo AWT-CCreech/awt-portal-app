@@ -171,13 +171,15 @@ const PaginatedSortableTable: React.FC<IProps> = ({ columns, columnNames, tableD
       </TableContainer>
       <Box sx={{ flexShrink: 0 }}>
         <TablePagination
+          showFirstButton={true}
+          showLastButton={true}
           component="div"
           count={data.length}
           page={page}
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25, 50, { label: 'All', value: data.length }]}
+          rowsPerPageOptions={[5, 10, 25, 50, 100, { label: 'All', value: data.length }]}
         />
       </Box>
     </RoundedPaper>
