@@ -215,6 +215,24 @@ const UserList = {
   },
 };
 
+const PODeliveryLog = {
+  getPODeliveryLogs: (params: {
+    PONum?: string;
+    Vendor?: string;
+    PartNum?: string;
+    IssuedBy?: string;
+    SONum?: string;
+    xSalesRep?: string;
+    HasNotes?: string;
+    POStatus?: string;
+    EquipType?: string;
+    CompanyID?: string;
+    lstYear?: number;
+  }): Promise<any[]> => {
+    return requests.getWithParams('/PODeliveryLog', params);
+  },
+};
+
 const OpenSalesOrderReport = {
   fetchActiveSalesReps: async (): Promise<ActiveSalesReps[]> => {
     try {
@@ -317,6 +335,7 @@ const Modules = {
   CamSearch,
   DropShip,
   UserList,
+  PODeliveryLog,
   OpenSalesOrderReport,
   OpenSalesOrderNotes,
   UserLogins,
