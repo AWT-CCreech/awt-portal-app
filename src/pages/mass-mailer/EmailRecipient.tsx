@@ -21,7 +21,7 @@ import agent from '../../app/api/agent';
 import { IMassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
 import VendorListItem from './components/VendorListItem';
 import SelectedVendor from './components/SelectedVendor';
-import '../styles/mass-mailer/EmailRecipient.css';
+import '../../styles/mass-mailer/EmailRecipient.css';
 
 interface IProps {
   selectedVendors: IMassMailerVendor[];
@@ -223,6 +223,8 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
             </List>
             <Box sx={{ display: 'flex', justifyContent: 'center', paddingTop: 2 }}>
               <Pagination
+                showFirstButton={true}
+                showLastButton={true}
                 count={Math.ceil(vendorsToSelect.length / 100)}
                 page={currentPage}
                 onChange={handleSelectPage}
