@@ -112,11 +112,12 @@ const LoginPage: React.FC = observer(() => {
 
         localStorage.setItem('token', token);
         localStorage.setItem('username', response.username);
+        localStorage.setItem('password', response.password);
         localStorage.setItem('userid', response.userid);
         localStorage.setItem('expiresAt', expiresAt.toString());
 
         setUserName(response.username); // Set username in the context
-        setPassWord(localPassword); // Set password in the context
+        setPassWord(response.password); // Set password in the context
 
         setPageLoading(false); 
         navigate('/'); // Redirect to home page after successful login
