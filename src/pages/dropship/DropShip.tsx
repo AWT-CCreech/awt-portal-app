@@ -102,7 +102,6 @@ const DropShip = () => {
         <Box my={4}>
           <Grid container spacing={3} justifyContent="center">
             <Grid item xs={12} md={8}>
-              <Typography variant="h6">Drop Ship Form</Typography>
               {alertMessage && (
                 <Alert severity="error" onClose={() => setAlertMessage(null)}>{alertMessage}</Alert>
               )}
