@@ -1,6 +1,6 @@
-import React, { useEffect, useContext, useState, useCallback } from 'react';
+import React, { useEffect, useContext, useState, useCallback, useRef } from 'react';
 import './App.css';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import LoginPage from '../../pages/login/LoginPage';
 import Home from '../../pages/home/Home';
 import NotFound from '../../pages/exception-pages/NotFound';
@@ -14,31 +14,21 @@ import UserListPage from '../../pages/user-list/UserListPage';
 import setDocumentTitle from '../../utils/setDocumentTitle';
 import InactivityModal from '../../components/InactivityModal';
 import agent from '../../app/api/agent';
-import { isAuthenticated } from '../../utils/authentication';
+import { isAuthenticated, handleAutoLogout } from '../../utils/authentication';
+import PODeliveryLog from '../../pages/po-delivery-log/PODeliveryLog';
 
 const App: React.FC = () => {
   const userInfo = useContext(UserInfoContext);
   const location = useLocation();
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [countdown, setCountdown] = useState(30);
-  const [inactivityTimeout, setInactivityTimeout] = useState<NodeJS.Timeout | null>(null);
+  const inactivityTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Function for logging out
-  const handleAutoLogout = useCallback((): void => {
-    console.log('Auto logout triggered due to inactivity');
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    localStorage.removeItem('password');
-    localStorage.removeItem('userid');
-    localStorage.removeItem('expiresAt');
-    userInfo.setUserName('');
-    userInfo.setPassWord('');
-    setIsModalOpen(false);
-    setCountdown(30);
-    window.location.href = '/login';
-  }, [userInfo]);
+  const handleLogout = useCallback((): void => {
+    handleAutoLogout(navigate, userInfo.setUserName, userInfo.setPassWord);
+  }, [navigate, userInfo.setUserName, userInfo.setPassWord]);
 
-  // Function to refresh the token
   const refreshToken = useCallback(async (): Promise<void> => {
     try {
       const currentToken = localStorage.getItem('token');
@@ -51,20 +41,22 @@ const App: React.FC = () => {
         const expiresAt = tokenPayload.exp * 1000;
         localStorage.setItem('expiresAt', expiresAt.toString());
 
+        const lastRefresh = Date.now();
+        localStorage.setItem('lastRefresh', lastRefresh.toString());
+
         console.log('Token refreshed automatically');
       }
     } catch (error) {
       console.error('Failed to refresh token:', error);
-      handleAutoLogout();
+      handleLogout();
     }
-  }, [handleAutoLogout]);
+  }, [handleLogout]);
 
-  // Function to reset inactivity timeout
   const resetInactivityTimeout = useCallback((): void => {
-    if (!isAuthenticated()) return; // Skip inactivity timeout if user is not authenticated
+    if (!isAuthenticated()) return;
 
-    if (inactivityTimeout) {
-      clearTimeout(inactivityTimeout);
+    if (inactivityTimeoutRef.current) {
+      clearTimeout(inactivityTimeoutRef.current);
     }
 
     const expiresAt = localStorage.getItem('expiresAt');
@@ -73,47 +65,54 @@ const App: React.FC = () => {
       const currentTime = Date.now();
 
       const timeLeftUntilExpiration = expiryTime - currentTime;
-      const timeToAutoRefresh = 5 * 60 * 1000; // 5 minutes before expiration in milliseconds
+      const timeToShowModal = 1 * 60 * 1000; // Show modal with 1 minute left
 
-      if (timeLeftUntilExpiration > timeToAutoRefresh) {
-        // Set timeout to auto-refresh token 5 minutes before expiration
-        const timeoutId = setTimeout(() => {
-          refreshToken();
-        }, timeLeftUntilExpiration - timeToAutoRefresh);
-
-        setInactivityTimeout(timeoutId);
+      if (timeLeftUntilExpiration > timeToShowModal) {
+        // Automatically refresh the token without showing the modal
+        inactivityTimeoutRef.current = setTimeout(() => {
+          resetInactivityTimeout(); // Recheck after this interval
+        }, timeLeftUntilExpiration - timeToShowModal);
+        setIsModalOpen(false); // Ensure modal is closed
       } else if (timeLeftUntilExpiration > 0) {
-        // If token is within 5 minutes of expiration, refresh immediately
-        refreshToken();
+        // Less than 1 minute left, show the modal
+        setIsModalOpen(true);
+        setCountdown(Math.floor(timeLeftUntilExpiration / 1000));
       } else {
-        handleAutoLogout();
+        // Token has expired, log out the user
+        handleLogout();
       }
     }
-  }, [refreshToken, handleAutoLogout]); 
+  }, [handleLogout]);
 
-  // Effect to manage inactivity timeout based on user activity
+
+  // Effect to manage inactivity timeout
   useEffect(() => {
     if (!isAuthenticated()) return;
 
     setDocumentTitle(location.pathname);
 
-    const events = ['mousemove', 'keydown', 'scroll', 'click'];
     const resetHandler = () => {
-      resetInactivityTimeout();
+      if (!isModalOpen) {
+        resetInactivityTimeout();
+      }
     };
 
+    const events = ['mousemove', 'keydown', 'scroll', 'click'];
     events.forEach((event) => window.addEventListener(event, resetHandler));
 
-    // Cleanup event listeners on component unmount
     return () => {
       events.forEach((event) => window.removeEventListener(event, resetHandler));
     };
-  }, [location.pathname, resetInactivityTimeout]); // Correct dependencies to avoid re-renders
+  }, [location.pathname, resetInactivityTimeout, isModalOpen]);
 
-  // Effect to reset inactivity timeout on initial mount and when dependencies change
+  // Effect to reset inactivity timeout on mount
   useEffect(() => {
     resetInactivityTimeout();
-  }, [resetInactivityTimeout]); // Ensure it runs once and when dependencies change
+
+    return () => {
+      if (inactivityTimeoutRef.current) clearTimeout(inactivityTimeoutRef.current);
+    };
+  }, [resetInactivityTimeout]);
 
   return (
     <>
@@ -121,8 +120,12 @@ const App: React.FC = () => {
         <InactivityModal
           open={isModalOpen}
           countdown={countdown}
-          onStayLoggedIn={refreshToken}
-          onLogout={handleAutoLogout}
+          onStayLoggedIn={async () => {
+            setIsModalOpen(false);
+            await refreshToken();  // Refresh the token when the user stays logged in
+            resetInactivityTimeout();
+          }}
+          onLogout={handleLogout}
         />
       )}
       <Routes>
@@ -133,6 +136,7 @@ const App: React.FC = () => {
           <Route path="/massmailer" element={<MassMailer />} />
           <Route path="/mastersearch" element={<MasterSearch />} />
           <Route path="/opensalesorderreport" element={<OpenSalesOrderReport />} />
+          <Route path="/podeliverylog" element={<PODeliveryLog />} />
           <Route path="/userlist" element={<UserListPage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
