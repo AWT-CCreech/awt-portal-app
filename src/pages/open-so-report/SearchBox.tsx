@@ -4,10 +4,10 @@ import {
 } from '@mui/material';
 import { GetApp, Search } from '@mui/icons-material';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
-import { AccountNumbers } from '../../models/OpenSOReport/AccountNumbers';
-import { ActiveSalesReps } from '../../models/OpenSOReport/ActiveSalesReps';
-import { ActiveSalesTeams } from '../../models/OpenSOReport/ActiveSalesTeams';
-import { ItemCategories } from '../../models/OpenSOReport/ItemCategories';
+import { AccountNumbers } from '../../models/Data/AccountNumbers';
+import { ActiveSalesReps } from '../../models/Data/ActiveSalesReps';
+import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
+import { ItemCategories } from '../../models/Data/ItemCategories';
 import Modules from '../../app/api/agent';
 
 interface SearchBoxProps {
