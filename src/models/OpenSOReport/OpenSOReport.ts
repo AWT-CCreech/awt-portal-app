@@ -1,4 +1,4 @@
-import { PoLogEntry } from './PoLogEntry';
+import { PoLogEntry } from '../Data/PoLogEntry';
 import { TrkSoNote } from '../TrkSoNote';
 
 interface OpenSOReport {
