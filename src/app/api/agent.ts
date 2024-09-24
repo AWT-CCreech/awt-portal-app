@@ -14,10 +14,10 @@ import SellOppEvent from '../../models/MasterSearch/SellOppEvent';
 import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import { User } from '../../models/User';
-import { AccountNumbers } from '../../models/OpenSOReport/AccountNumbers';
-import { ActiveSalesReps } from '../../models/OpenSOReport/ActiveSalesReps';
-import { ActiveSalesTeams } from '../../models/OpenSOReport/ActiveSalesTeams';
-import { ItemCategories } from '../../models/OpenSOReport/ItemCategories';
+import { AccountNumbers } from '../../models/Data/AccountNumbers';
+import { ActiveSalesReps } from '../../models/Data/ActiveSalesReps';
+import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
+import { ItemCategories } from '../../models/Data/ItemCategories';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { CamContact } from '../../models/CamContact';
 
