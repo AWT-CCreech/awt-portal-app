@@ -9,5 +9,5 @@ export interface SearchInput {
   POStatus: string;
   EquipType: string;
   CompanyID: string;
-  lstYear: number;
+  YearRange: number;
 }
