@@ -5,8 +5,6 @@ import EmailRecipient from './EmailRecipient';
 import { IMassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
 import { IMassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
 import agent from '../../app/api/agent';
-import { useNavigate } from 'react-router-dom';
-import UserInfo from '../../stores/userInfo';
 import { observer } from 'mobx-react-lite';
 import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
 import AppState from '../../stores/app';
@@ -25,8 +23,6 @@ import {
 } from '@mui/material';
 
 const MassMailer: React.FC = () => {
-  const navigate = useNavigate();
-  const { setUserName, setPassWord } = useContext(UserInfo);
   const [emailBody, setEmailBody] = useState<string>('');
   const [emailSubject, setEmailSubject] = useState<string>('');
   const [selectedPartItems, setSelectedPartItems] = useState<IMassMailerPartItem[]>([]);
@@ -42,37 +38,6 @@ const MassMailer: React.FC = () => {
     const username = localStorage.getItem('username') ?? '';
     agent.MassMailer.FileUpload.clear(username);
   }, []);
-
-  useEffect(() => {
-    const username = localStorage.getItem('username') ?? '';
-    const password = localStorage.getItem('password') ?? '';
-    const userid = localStorage.getItem('userid') ?? '';
-  
-    agent.UserLogins.authenticate({
-      userid,
-      username,
-      password,
-      isPasswordEncrypted: true,
-    })
-    .then(response => {
-      if (response.username === '') {
-        localStorage.setItem('username', '');
-        localStorage.setItem('userid', '');
-        localStorage.setItem('password', '');
-        setUserName('');
-        setPassWord('');
-        navigate('/Login');
-      }
-    })
-    .catch(error => {
-      console.error('Error authenticating user: ' + username, error);
-      if (error.response) {
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
-        console.error('Response headers:', error.response.headers);
-      }
-    });
-  }, [navigate, setUserName, setPassWord]);
 
   const handleSendEmailClicked = () => {
     if (!trim(emailBody)) {
