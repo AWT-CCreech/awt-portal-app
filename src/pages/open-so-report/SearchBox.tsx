@@ -27,7 +27,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
   useEffect(() => {
     const fetchSalesReps = async () => {
       try {
-        const reps = await Modules.OpenSalesOrderReport.fetchActiveSalesReps();
+        const reps = await Modules.DataFetch.fetchActiveSalesReps();
         setSalesReps(reps);
       } catch (error) {
         console.error('Error fetching sales reps', error);
@@ -36,7 +36,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
 
     const fetchSalesTeams = async () => {
       try {
-        const teams = await Modules.OpenSalesOrderReport.fetchActiveSalesTeams();
+        const teams = await Modules.DataFetch.fetchActiveSalesTeams();
         setSalesTeams(teams);
       } catch (error) {
         console.error('Error fetching sales teams', error);
@@ -45,7 +45,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
 
     const fetchAccounts = async () => {
       try {
-        const accountNumbers = await Modules.OpenSalesOrderReport.fetchAccountNumbers();
+        const accountNumbers = await Modules.DataFetch.fetchAccountNumbers();
         setAccountNumbers(accountNumbers);
       } catch (error) {
         console.error('Error fetching account numbers', error);
@@ -54,7 +54,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
 
     const fetchCategories = async () => {
       try {
-        const categories = await Modules.OpenSalesOrderReport.fetchItemCategories();
+        const categories = await Modules.DataFetch.fetchItemCategories();
         setItemCategories(categories);
       } catch (error) {
         console.error('Error fetching item categories', error);
