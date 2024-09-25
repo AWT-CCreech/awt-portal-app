@@ -108,6 +108,55 @@ const CamSearch = {
   },
 };
 
+const DataFetch = {
+  fetchAccountNumbers: async (): Promise<AccountNumbers[]> => {
+    try {
+      const response = await requests.get('/Sales/GetAccountNumbers');
+      return response as AccountNumbers[];
+    } catch (error) {
+      console.error('Error fetching account numbers', error);
+      throw error;
+    }
+  },
+  fetchActiveSalesReps: async (): Promise<ActiveSalesReps[]> => {
+    try {
+      const response = await requests.get('/Sales/GetSalesReps');
+      return response as ActiveSalesReps[];
+    } catch (error) {
+      console.error('Error fetching sales reps', error);
+      throw error;
+    }
+  },
+  fetchActiveSalesTeams: async (): Promise<ActiveSalesTeams[]> => {
+    try {
+      const response = await requests.get('/Sales/GetSalesTeams');
+      return response as ActiveSalesTeams[];
+    } catch (error) {
+      console.error('Error fetching sales teams', error);
+      throw error;
+    }
+  },
+  fetchItemCategories: async (): Promise<ItemCategories[]> => {
+    try {
+      const response = await requests.get('/Sales/GetCategories');
+      return response as ItemCategories[];
+    } catch (error) {
+      console.error('Error fetching item categories', error);
+      throw error;
+    }
+  },
+  fetchPurchasingReps: async (): Promise<any[]> => {  // Adding new method to fetch purchasing reps
+    try {
+      const response = await requests.get('/Purchasing/GetPurchasingReps');
+      return response;
+    } catch (error) {
+      console.error('Error fetching purchasing reps', error);
+      throw error;
+    }
+  },
+};
+
+
 const DropShip = {
   dropShipSendEmail: (emailInput: object) => requests.post('/DropShipSendEmail', emailInput),
   getAllDropShipSalesReps: () => requests.get(`/DropShipSalesReps`),
@@ -197,42 +246,6 @@ const OpenSalesOrderNotes = {
 };
 
 const OpenSalesOrderReport = {
-  fetchAccountNumbers: async (): Promise<AccountNumbers[]> => {
-    try {
-      const response = await requests.get('/Sales/GetAccountNumbers');
-      return response as AccountNumbers[];
-    } catch (error) {
-      console.error('Error fetching sales teams', error);
-      throw error;
-    }
-  },
-  fetchActiveSalesReps: async (): Promise<ActiveSalesReps[]> => {
-    try {
-      const response = await requests.get('/Sales/GetSalesReps');
-      return response as ActiveSalesReps[];
-    } catch (error) {
-      console.error('Error fetching sales reps', error);
-      throw error;
-    }
-  },
-  fetchActiveSalesTeams: async (): Promise<ActiveSalesTeams[]> => {
-    try {
-      const response = await requests.get('/Sales/GetSalesTeams');
-      return response as ActiveSalesTeams[];
-    } catch (error) {
-      console.error('Error fetching sales teams', error);
-      throw error;
-    }
-  },
-  fetchItemCategories: async (): Promise<ItemCategories[]> => {
-    try {
-      const response = await requests.get('/Sales/GetCategories');
-      return response as ItemCategories[];
-    } catch (error) {
-      console.error('Error fetching sales teams', error);
-      throw error;
-    }
-  },
   fetchOpenSalesOrders: async (
     params: OpenSalesOrderSearchInput
   ): Promise<(OpenSOReport & { Notes: TrkSoNote[] })[]> => {
@@ -320,15 +333,16 @@ const UserLogins = {
 
 // Export grouped modules
 const Modules = {
-  MassMailer,
-  TimeTrackers,
-  MasterSearches,
   CamSearch,
+  DataFetch,
   DropShip,
-  UserList,
-  PODeliveryLog,
-  OpenSalesOrderReport,
+  MassMailer,
+  MasterSearches,
   OpenSalesOrderNotes,
+  OpenSalesOrderReport,
+  PODeliveryLog,
+  TimeTrackers,
+  UserList,
   UserLogins,
 };
 
