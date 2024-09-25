@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { TableCell, Link, IconButton, Modal, Box } from '@mui/material';
-import {Warning, Add, Note} from '@mui/icons-material';
+import { Warning, Add, Note } from '@mui/icons-material';
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
 import NoteModal from './NoteModal';
 import { formatAmount } from '../../utils/dataManipulation';
@@ -15,14 +15,14 @@ interface SearchResultsProps {
   containerHeight?: string;
 }
 
-const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo, containerHeight = '100%' }) => {
+const SearchResults: React.FC<SearchResultsProps> = React.memo(({ results, groupBySo, containerHeight = '100%' }) => {
   const [searchResult, setSearchResult] = useState<(OpenSOReport & { notes: TrkSoNote[], poLog?: TrkPoLog })[]>(results);
   const [showNoteModal, setShowNoteModal] = useState<boolean>(false);
   const [selectedSONum, setSelectedSONum] = useState<string>('');
   const [selectedPartNum, setSelectedPartNum] = useState<string>('');
   const [selectedNotes, setSelectedNotes] = useState<TrkSoNote[]>([]);
 
-  const fetchNotesForLineItem = async (soNum: string, partNum: string) => {
+  const fetchNotesForLineItem = useCallback(async (soNum: string, partNum: string) => {
     try {
       const response = await Modules.OpenSalesOrderNotes.getNotes(soNum, partNum);
       setSearchResult((prevResults) =>
@@ -36,21 +36,24 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo, conta
     } catch (error) {
       console.error('Error fetching notes', error);
     }
-  };
+  }, []);
 
-  const handleOpenNoteModal = (soNum: string, partNum: string, notes: TrkSoNote[]) => {
+  const handleOpenNoteModal = useCallback((soNum: string, partNum: string, notes: TrkSoNote[]) => {
     setSelectedSONum(soNum);
     setSelectedPartNum(partNum);
     setSelectedNotes(notes);
     setShowNoteModal(true);
-  };
+  }, []);
 
-  const handleCloseNoteModal = () => {
+  const handleCloseNoteModal = useCallback(() => {
     setShowNoteModal(false);
     fetchNotesForLineItem(selectedSONum, selectedPartNum); // Refetch notes when closing the modal
-  };
+  }, [selectedSONum, selectedPartNum, fetchNotesForLineItem]);
 
-  // Define columns and column names before they are used
+  const openPoLog = useCallback((id: number) => {
+    window.open(`/PODetail?id=${id}`, '_blank');
+  }, []);
+
   const allColumns = [
     'eventId',
     'sonum',
@@ -99,9 +102,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo, conta
     ? allColumnNames.filter(columnName => columnName !== 'Missing P/N' && columnName !== 'Vendor P/N')
     : allColumnNames;
 
-  const isDefaultDate = (date: Date | null) => date?.toLocaleDateString() === '1/1/1900' || date?.toLocaleDateString() === '1/1/1990';
+  const isDefaultDate = (date: Date | null) =>
+    date?.toLocaleDateString() === '1/1/1900' || date?.toLocaleDateString() === '1/1/1990';
 
-  const renderRow = (order: OpenSOReport & { notes: TrkSoNote[], poLog?: { Id: number, EnteredBy: string, EntryDate: Date } }): React.JSX.Element[] => {
+  const renderRow = useCallback((order: OpenSOReport & { notes: TrkSoNote[], poLog?: TrkPoLog }): React.JSX.Element[] => {
     const orderDate = order.orderDate ? new Date(order.orderDate) : null;
     const requiredDate = order.requiredDate ? new Date(order.requiredDate) : null;
     const poIssueDate = order.poissueDate ? new Date(order.poissueDate) : null;
@@ -179,15 +183,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo, conta
     }
 
     return rowCells;
-  };
-
-  const openPoLog = (id: number) => {
-    window.open(`/PODetail?id=${id}`, '_blank');
-  };
+  }, [handleOpenNoteModal, groupBySo, openPoLog]);
 
   return (
     <>
-      <Box sx={{ height: containerHeight, display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ height: containerHeight, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
         <PaginatedSortableTable
           tableData={searchResult}
           columns={columns}
@@ -239,6 +239,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, groupBySo, conta
       </Modal>
     </>
   );
-};
+});
 
 export default SearchResults;

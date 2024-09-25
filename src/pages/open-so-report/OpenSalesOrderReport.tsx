@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import PageHeader from '../../components/PageHeader';
 import SearchBox from './SearchBox';
 import agent from '../../app/api/agent';
 import { formatAmount } from '../../utils/dataManipulation';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
-import { Box, Container, CircularProgress, Grid, Typography } from '@mui/material';
+import { Box, Container, CircularProgress, Grid, Typography, Snackbar } from '@mui/material';
 import SearchResults from './SearchResults';
 import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { grey } from '@mui/material/colors';
@@ -12,15 +12,17 @@ import * as XLSX from 'xlsx';
 import { TrkSoNote } from '../../models/TrkSoNote';
 
 const OpenSalesOrderReport: React.FC = () => {
-  const [searchParams, setSearchParams] = useState<OpenSalesOrderSearchInput>({});
+  const [searchParams, setSearchParams] = useState<OpenSalesOrderSearchInput>({} as OpenSalesOrderSearchInput);
   const [searchResult, setSearchResult] = useState<(OpenSOReport & { Notes: TrkSoNote[] })[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [uniqueSalesOrders, setUniqueSalesOrders] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [error, setError] = useState<string | null>(null);
 
-  const getResultSets = async () => {
+  const getResultSets = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const response = await agent.OpenSalesOrderReport.fetchOpenSalesOrders(searchParams);
       setSearchResult(response);
@@ -29,6 +31,7 @@ const OpenSalesOrderReport: React.FC = () => {
       setTotalAmount(response.reduce((acc, order) => acc + (order.amountLeft || 0), 0));
     } catch (error) {
       console.error('Error fetching open sales orders', error);
+      setError('Failed to fetch sales orders. Please try again.');
       setSearchResult([]);
       setUniqueSalesOrders(0);
       setTotalItems(0);
@@ -36,19 +39,23 @@ const OpenSalesOrderReport: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchParams]);
 
-  const handleExport = () => {
+  const handleExport = useCallback(() => {
     const ws = XLSX.utils.json_to_sheet(searchResult);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'OpenSOReport');
     XLSX.writeFile(wb, 'OpenSOReport.xlsx');
-  };
+  }, [searchResult]);
+
+  const handleCloseSnackbar = useCallback(() => {
+    setError(null);
+  }, []);
 
   return (
     <div>
       <PageHeader pageName="Open Sales Order Report" pageHref="/opensalesorderreport" />
-      <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' }}}>
+      <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
         <Grid container justifyContent="center">
           <Grid item xs={12}>
             <SearchBox
@@ -56,7 +63,7 @@ const OpenSalesOrderReport: React.FC = () => {
               setSearchParams={setSearchParams}
               getResultSets={getResultSets}
               handleExport={handleExport}
-              searchResultLength={searchResult.length} 
+              searchResultLength={searchResult.length}
             />
           </Grid>
           <Grid item xs={12} sx={{ paddingTop: { xs: '15px' } }}>
@@ -74,6 +81,7 @@ const OpenSalesOrderReport: React.FC = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   boxShadow: 3,
+                  overflow: 'auto', // Added overflow for small screens
                 }}
               >
                 <SearchResults
@@ -109,6 +117,14 @@ const OpenSalesOrderReport: React.FC = () => {
           <Typography variant="body1"><strong>Sales Orders:</strong> {uniqueSalesOrders}</Typography>
           <Typography variant="body1"><strong>Total Items:</strong> {totalItems}</Typography>
         </Box>
+      )}
+      {error && (
+        <Snackbar
+          open={true}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+          message={error}
+        />
       )}
     </div>
   );

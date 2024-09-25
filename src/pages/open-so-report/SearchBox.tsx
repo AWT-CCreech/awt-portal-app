@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, KeyboardEvent, useEffect, useCallback, useState } from 'react';
 import {
   Box, Button, TextField, Grid, Checkbox, FormControlLabel, Select, SelectChangeEvent, MenuItem, InputLabel, FormControl, IconButton, Tooltip
 } from '@mui/material';
@@ -77,35 +77,35 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
     }));
   }, [setSearchParams]);
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setSearchParams(prevParams => ({
       ...prevParams,
       [name]: name === 'date1' || name === 'date2' ? (value ? new Date(value) : null) : value,
     }));
-  };
+  }, [setSearchParams]);
 
-  const handleSelectChange = (event: SelectChangeEvent<string>) => {
+  const handleSelectChange = useCallback((event: SelectChangeEvent<string>) => {
     const { name, value } = event.target;
     setSearchParams(prevParams => ({
       ...prevParams,
       [name!]: value as string, // Type assertion if necessary
     }));
-  };
-  
-  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+  }, [setSearchParams]);
+
+  const handleCheckboxChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
     setSearchParams(prevParams => ({
       ...prevParams,
       [name]: checked,
     }));
-  };
+  }, [setSearchParams]);
 
-  const handleKeyDown = (event: KeyboardEvent) => {
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (event.key === 'Enter') {
       getResultSets();
     }
-  };
+  }, [getResultSets]);
 
   return (
     <Box sx={{ width: '100%', p: { xs: 1, md: 2 }, boxShadow: 3, bgcolor: 'background.paper', boxSizing: 'border-box' }}>
