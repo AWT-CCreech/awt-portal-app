@@ -4,7 +4,7 @@ import SearchBox from './SearchBox';
 import agent from '../../app/api/agent';
 import { formatAmount } from '../../utils/dataManipulation';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
-import { Box, Container, CircularProgress, Grid, Typography, Snackbar } from '@mui/material';
+import { Box, Container, Grid, Typography, Snackbar } from '@mui/material';
 import SearchResults from './SearchResults';
 import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { grey } from '@mui/material/colors';
@@ -64,30 +64,30 @@ const OpenSalesOrderReport: React.FC = () => {
               getResultSets={getResultSets}
               handleExport={handleExport}
               searchResultLength={searchResult.length}
+              loading={loading}
             />
           </Grid>
           <Grid item xs={12} sx={{ paddingTop: { xs: '15px' } }}>
             {loading ? (
               <Box display="flex" justifyContent="center" alignItems="center" mt={10}>
-                <CircularProgress size={80} />
                 <Typography variant="h6" component="div" sx={{ ml: 2 }}>
-                  Loading
+                  Loading...
                 </Typography>
               </Box>
             ) : searchResult.length > 0 ? (
               <Box
                 sx={{
-                  height: '80vh', // Set the height for the table container
+                  height: '80vh', 
                   display: 'flex',
                   flexDirection: 'column',
                   boxShadow: 3,
-                  overflow: 'auto', // Added overflow for small screens
+                  overflow: 'auto',
                 }}
               >
                 <SearchResults
                   results={searchResult}
                   groupBySo={searchParams.chkGroupBySo || false}
-                  containerHeight="100%" // Pass the container height as a prop
+                  containerHeight="100%"
                 />
               </Box>
             ) : (

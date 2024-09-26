@@ -1,6 +1,6 @@
 import React, { ChangeEvent, KeyboardEvent, useEffect, useCallback, useState } from 'react';
 import {
-  Box, Button, TextField, Grid, Checkbox, FormControlLabel, Select, SelectChangeEvent, MenuItem, InputLabel, FormControl, IconButton, Tooltip
+  Box, Button, TextField, Grid, Checkbox, FormControlLabel, Select, SelectChangeEvent, MenuItem, InputLabel, FormControl, IconButton, Tooltip, CircularProgress
 } from '@mui/material';
 import { GetApp, Search } from '@mui/icons-material';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
@@ -14,11 +14,12 @@ interface SearchBoxProps {
   searchParams: OpenSalesOrderSearchInput;
   setSearchParams: React.Dispatch<React.SetStateAction<OpenSalesOrderSearchInput>>;
   getResultSets: () => void;
-  handleExport: () => void; 
+  handleExport: () => void;
   searchResultLength: number;
+  loading: boolean;  // Add the loading prop to control the state of the button
 }
 
-const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, getResultSets, handleExport, searchResultLength }) => {
+const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, getResultSets, handleExport, searchResultLength, loading }) => {
   const [salesReps, setSalesReps] = useState<ActiveSalesReps[]>([]);
   const [salesTeams, setSalesTeams] = useState<ActiveSalesTeams[]>([]);
   const [itemCategories, setItemCategories] = useState<ItemCategories[]>([]);
@@ -89,7 +90,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
     const { name, value } = event.target;
     setSearchParams(prevParams => ({
       ...prevParams,
-      [name!]: value as string, // Type assertion if necessary
+      [name!]: value as string,
     }));
   }, [setSearchParams]);
 
@@ -215,7 +216,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             onChange={handleInputChange}
           />
         </Grid>
-        
+
         <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
             <InputLabel id="accountNumber-label">Account Number</InputLabel>
@@ -300,7 +301,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
               />
             }
             label="All Here"
-          />          
+          />
           <FormControlLabel
             control={
               <Checkbox
@@ -318,10 +319,11 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             variant="contained"
             color="primary"
             onClick={getResultSets}
-            startIcon={<Search />}
-            sx={{ flexGrow: 1 }}
+            fullWidth
+            disabled={loading}  // Disable the button when loading
+            startIcon={!loading && <Search />}  // Add the magnifying glass icon only when not loading
           >
-            Search
+            {loading ? <CircularProgress size={24} /> : 'Search'}  {/* Show CircularProgress when loading */}
           </Button>
           <Tooltip title="Export to Excel">
             <span>
