@@ -1,53 +1,68 @@
 import React, { useContext, FormEvent, useState, useEffect, useCallback } from 'react';
-import { Container, Box, TextField, Button, Typography, Alert, Divider, CircularProgress, IconButton, InputAdornment } from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  CssBaseline,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Alert,
+  TextField,
+  Typography,
+  CircularProgress,
+  IconButton,
+  InputAdornment,
+  Card as MuiCard,
+  Stack,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import UserInfo from '../../stores/userInfo';
 import agent from '../../app/api/agent';
 import AppState from '../../stores/app';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LoginInfo from '../../models/Login/LoginInfo';
 
-const LogoContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: theme.spacing(2),
-}));
-
-const LoginContainer = styled(Box)(({ theme }) => ({
+const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'flex-start',
-  justifyContent: 'center',
-  padding: theme.spacing(2),
+  alignSelf: 'center',
   width: '100%',
-  maxWidth: 400,
+  padding: theme.spacing(4),
+  gap: theme.spacing(2),
+  margin: 'auto',
+  [theme.breakpoints.up('sm')]: {
+    maxWidth: '450px',
+  },
+  boxShadow:
+    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
 }));
 
-const MainContainer = styled(Container)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  minHeight: '100vh',
-  height: '100vh',
+const LoginContainer = styled(Stack)(({ theme }) => ({
+  minHeight: '100vh', // Full viewport height
+  padding: 20,
+  position: 'relative',
+  justifyContent: 'center', // Center vertically
+  alignItems: 'center', // Center horizontally
+  '&::before': {
+    content: '""',
+    display: 'block',
+    position: 'absolute',
+    zIndex: -1,
+    inset: 0,
+    backgroundImage:
+      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
+    backgroundRepeat: 'no-repeat',
+  },
 }));
-
-const FlexContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-}));
-
-const AppLogo = () => (
-  <img src="logo.png" alt="Company Logo" style={{ width: '150px', height: 'auto' }} />
-);
 
 const LoginPage: React.FC = observer(() => {
   const userInfo = useContext(UserInfo);
   const { setUserName, setPassWord } = userInfo;
   const appState = useContext(AppState);
-  const { pageLoading, setPageLoading } = appState; 
+  const { pageLoading, setPageLoading } = appState;
 
   const [hiddenLoginError, setHiddenLoginError] = useState(true);
   const navigate = useNavigate();
@@ -94,11 +109,11 @@ const LoginPage: React.FC = observer(() => {
     setHiddenLoginError(true);
 
     const loginPayload: LoginInfo = {
-      userid: "",
+      userid: '',
       username: localUsername,
       password: localPassword,
       isPasswordEncrypted: false,
-      token: ""
+      token: '',
     };
 
     try {
@@ -108,7 +123,7 @@ const LoginPage: React.FC = observer(() => {
       if (response && response.token) {
         const token = response.token;
         const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-        const expiresAt = tokenPayload.exp * 1000; 
+        const expiresAt = tokenPayload.exp * 1000;
 
         localStorage.setItem('token', token);
         localStorage.setItem('username', response.username);
@@ -116,91 +131,107 @@ const LoginPage: React.FC = observer(() => {
         localStorage.setItem('userid', response.userid);
         localStorage.setItem('expiresAt', expiresAt.toString());
 
-        setUserName(response.username); // Set username in the context
-        setPassWord(response.password); // Set password in the context
+        setUserName(response.username);
+        setPassWord(response.password);
 
-        setPageLoading(false); 
-        navigate('/'); // Redirect to home page after successful login
+        setPageLoading(false);
+        navigate('/');
       } else {
         console.error('Invalid response:', response);
         setPageLoading(false);
-        setHiddenLoginError(false); // Show error message
+        setHiddenLoginError(false);
       }
     } catch (error) {
       console.error('Error during authentication:', error);
       setPageLoading(false);
-      setHiddenLoginError(false); // Show error message
+      setHiddenLoginError(false);
     }
   };
 
   return (
-    <MainContainer>
-      <FlexContainer>
-        <LogoContainer>
-          <AppLogo />
-        </LogoContainer>
-        <Divider orientation="vertical" flexItem sx={{ height: 'auto' }} />
-        <LoginContainer>
-          <Typography component="h1" variant="h5">
+    <>
+      <CssBaseline />
+      <LoginContainer>
+        <Card variant="outlined">
+          {/* Replace with your logo */}
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <img src="logo.png" alt="Company Logo" style={{ width: '150px', height: 'auto' }} />
+          </Box>
+          <Typography
+            component="h1"
+            variant="h4"
+            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', textAlign: 'center' }}
+          >
             AWT Portal
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoComplete="username"
-              autoFocus
-              value={localUsername}
-              onChange={(e) => setLocalUsername(e.target.value)}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-              id="password"
-              autoComplete="current-password"
-              value={localPassword}
-              onChange={(e) => setLocalPassword(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            {!hiddenLoginError && (
-              <Alert severity="error">Username or Password is not correct</Alert>
-            )}
-            <Box sx={{ position: 'relative', width: '100%' }}>
-              <Button
-                type="submit"
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              gap: 2,
+            }}
+          >
+            <FormControl>
+              <TextField
+                margin="normal"
+                required
                 fullWidth
-                variant="contained"
-                color="primary"
-                sx={{ mt: 3, mb: 2 }}
-                disabled={pageLoading}
-              >
-                {pageLoading ? <CircularProgress size={24} /> : 'Login'}
-              </Button>
-            </Box>
+                id="username"
+                label="Username"
+                name="username"
+                autoComplete="username"
+                autoFocus
+                value={localUsername}
+                onChange={(e) => setLocalUsername(e.target.value)}
+              />
+            </FormControl>
+            <FormControl>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                autoComplete="current-password"
+                value={localPassword}
+                onChange={(e) => setLocalPassword(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </FormControl>
+            {!hiddenLoginError && (
+              <Alert severity="error">Incorrect username or password</Alert>
+            )}
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={pageLoading}
+              sx={{ mt: 2 }}
+            >
+              {pageLoading ? <CircularProgress size={24} /> : 'Sign in'}
+            </Button>
           </Box>
-        </LoginContainer>
-      </FlexContainer>
-    </MainContainer>
+        </Card>
+      </LoginContainer>
+    </>
   );
 });
 
