@@ -2,11 +2,8 @@ import React, { useContext, FormEvent, useState, useEffect, useCallback } from '
 import {
   Box,
   Button,
-  Checkbox,
   CssBaseline,
   FormControl,
-  FormControlLabel,
-  FormLabel,
   Alert,
   TextField,
   Typography,
