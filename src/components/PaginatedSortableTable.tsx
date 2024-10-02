@@ -3,7 +3,7 @@ import {
   Table,
   TableHead,
   TableBody,
-  TableRow,
+  TableRow,        // Ensure TableRow is imported
   TableCell,
   TableSortLabel,
   Paper,
@@ -41,7 +41,7 @@ interface IProps {
   tableData: object[];
   columns?: string[];
   columnNames?: string[];
-  func?: (row: any) => React.JSX.Element[];
+  func?: (row: any) => React.JSX.Element | React.JSX.Element[]; // Updated type here
   headerBackgroundColor?: string;
   hoverColor?: string;
 }
@@ -95,7 +95,14 @@ const ScrollableTableBody = styled(TableBody)`
   overflow-y: auto;
 `;
 
-const PaginatedSortableTable: React.FC<IProps> = ({ columns, columnNames, tableData, func, headerBackgroundColor, hoverColor }) => {
+const PaginatedSortableTable: React.FC<IProps> = ({
+  columns,
+  columnNames,
+  tableData,
+  func,
+  headerBackgroundColor,
+  hoverColor
+}) => {
   const [state, dispatchState] = useReducer(reducer, {
     column: null,
     data: tableData,
@@ -157,15 +164,32 @@ const PaginatedSortableTable: React.FC<IProps> = ({ columns, columnNames, tableD
             </TableRow>
           </TableHead>
           <ScrollableTableBody>
-            {paginatedData.map((row: any, id: number) => (
-              <StyledTableRow key={id} hovercolor={hoverColor}>
-                {func
-                  ? func(row)
-                  : columnNamesInCamelCase.map(col => (
-                      <StyledTableCell key={col}>{row[toLowerFirstLetter(col)]}</StyledTableCell>
+            {paginatedData.map((row: any, id: number) => {
+              const renderedRow = func ? func(row) : null;
+
+              if (React.isValidElement(renderedRow) && renderedRow.type === TableRow) {
+                // If func returns a TableRow, render it directly
+                return React.cloneElement(renderedRow, { key: id });
+              } else if (Array.isArray(renderedRow)) {
+                // If func returns an array of TableCell elements
+                return (
+                  <StyledTableRow key={id} hovercolor={hoverColor}>
+                    {renderedRow}
+                  </StyledTableRow>
+                );
+              } else {
+                // Default rendering
+                return (
+                  <StyledTableRow key={id} hovercolor={hoverColor}>
+                    {columnNamesInCamelCase.map(col => (
+                      <StyledTableCell key={col}>
+                        {row[toLowerFirstLetter(col)]}
+                      </StyledTableCell>
                     ))}
-              </StyledTableRow>
-            ))}
+                  </StyledTableRow>
+                );
+              }
+            })}
           </ScrollableTableBody>
         </StyledTable>
       </TableContainer>
