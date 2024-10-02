@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import {
   TextField,
   FormControl,
@@ -9,16 +9,41 @@ import {
   Button,
   Grid,
   SelectChangeEvent,
+  CircularProgress,
 } from '@mui/material';
+import { Search } from '@mui/icons-material';
+import Modules from '../../app/api/agent';
+import { ActiveSalesReps } from '../../models/Data/ActiveSalesReps';
 import { SearchInput } from '../../models/PODeliveryLog/SearchInput';
 
 interface SearchBoxProps {
   searchParams: SearchInput;
   setSearchParams: React.Dispatch<React.SetStateAction<SearchInput>>;
   onSearch: () => void;
+  loading: boolean;
 }
 
-const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, onSearch }) => {
+const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, onSearch, loading }) => {
+  const [salesReps, setSalesReps] = useState<ActiveSalesReps[]>([]);
+  const [purchasingReps, setPurchasingReps] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchReps = async () => {
+      try {
+        const [salesRepsData, purchasingRepsData] = await Promise.all([
+          Modules.DataFetch.fetchActiveSalesReps(),
+          Modules.DataFetch.fetchPurchasingReps(),
+        ]);
+        setSalesReps(salesRepsData);
+        setPurchasingReps(purchasingRepsData);
+      } catch (error) {
+        console.error('Error fetching reps', error);
+      }
+    };
+
+    fetchReps();
+  }, []);
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSearchParams((prevParams: SearchInput) => ({
@@ -69,14 +94,22 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, on
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            fullWidth
-            label="Issued By"
-            name="IssuedBy"
-            value={searchParams.IssuedBy}
-            onChange={handleInputChange}
-            variant="outlined"
-          />
+          <FormControl fullWidth>
+            <InputLabel id="issuedBy-label">Issued By</InputLabel>
+            <Select
+              labelId="issuedBy-label"
+              name="IssuedBy"
+              value={searchParams.IssuedBy || 'All'}
+              onChange={handleSelectChange}
+            >
+              <MenuItem key="All" value="All">All</MenuItem>
+              {purchasingReps.map((rep) => (
+                <MenuItem key={rep.id} value={rep.uname}>
+                  {rep.uname}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <TextField
@@ -89,14 +122,22 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, on
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            fullWidth
-            label="Sales Representative"
-            name="xSalesRep"
-            value={searchParams.xSalesRep}
-            onChange={handleInputChange}
-            variant="outlined"
-          />
+          <FormControl fullWidth>
+            <InputLabel id="salesRep-label">Sales Rep</InputLabel>
+            <Select
+              labelId="salesRep-label"
+              name="xSalesRep"
+              value={searchParams.xSalesRep || 'All'}
+              onChange={handleSelectChange}
+            >
+              <MenuItem key="All" value="All">All</MenuItem>
+              {salesReps.map((rep) => (
+                <MenuItem key={rep.id} value={rep.uname}>
+                  {rep.uname}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <FormControl fullWidth>
@@ -128,22 +169,26 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, on
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            fullWidth
-            label="Company ID"
-            name="CompanyID"
-            value={searchParams.CompanyID}
-            onChange={handleInputChange}
-            variant="outlined"
-          />
+          <FormControl fullWidth>
+            <InputLabel>Company</InputLabel>
+            <Select
+              name="CompanyID"
+              value={searchParams.CompanyID}
+              onChange={handleSelectChange}
+            >
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="AIR">AIR</MenuItem>
+              <MenuItem value="SOL">SOL</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <TextField
             fullWidth
-            label="Last Year"
-            name="lstYear"
+            label="Year"
+            name="YearRange"
             type="number"
-            value={searchParams.lstYear}
+            value={searchParams.YearRange}
             onChange={handleInputChange}
             variant="outlined"
           />
@@ -154,8 +199,10 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, on
             color="primary"
             onClick={onSearch}
             fullWidth
+            disabled={loading} // Disable button when loading
+            startIcon={!loading && <Search />} // Magnifying glass icon
           >
-            Search
+            {loading ? <CircularProgress size={24} /> : 'Search'}
           </Button>
         </Grid>
       </Grid>
