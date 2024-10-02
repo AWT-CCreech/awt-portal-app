@@ -1,109 +1,141 @@
-import React, { useState } from 'react';
-import { TableCell, IconButton, Box } from '@mui/material';
-import { Note, Add } from '@mui/icons-material';
+import React from 'react';
+import { TableCell, TableRow, Box } from '@mui/material'; // Added TableRow import
+import { Note } from '@mui/icons-material';
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
-import { formatAmount } from '../../utils/dataManipulation';
-import { TrkPoLog } from '../../models/TrkPoLog';
-import Modules from '../../app/api/agent';
+import { PODeliveryLog } from '../../models/PODeliveryLog/PODeliveryLog';
 
 interface SearchResultsProps {
-  results: any[]; // Use your correct typing for the PO data
+  results: PODeliveryLog[];
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
-  const [searchResult, setSearchResult] = useState<any[]>(results);
-
   const openPoDetail = (id: number) => {
     window.open(`/PODetail?id=${id}`, '_blank');
   };
 
-  // Define columns and column names before they are used
   const columns = [
     'ponum',
     'vendorName',
-    'issueDate',
     'itemNum',
+    'altPartNum',      // Mfg Part #
+    'issueDate',
+    'issuedBy',
+    'expectedDelivery', // Revised Del Date
+    'poRequiredDate',   // PO Req Date
     'qtyOrdered',
     'qtyReceived',
     'receiverNum',
-    'requiredDate',
-    'dateDelivered',
-    'editDate',
-    'expectedDelivery',
-    'salesOrderNum',
+    'dateDelivered',    // Date Recvd
+    'salesOrderNum',    // SO #
+    'customerName',
+    'soRequiredDate',   // SO Req Date
     'salesRep',
-    'issuedBy',
-    'itemClassId',
-    'altPartNum',
-    'postatus',
     'notes'
   ];
 
   const columnNames = [
-    'PO #',
+    'PO#',
     'Vendor',
+    'AWT P/N',
+    'MFG P/N',
     'Issue Date',
-    'Part Number',
-    'Quantity Ordered',
-    'Quantity Received',
-    'Receiver Number',
-    'Required Date',
-    'Date Delivered',
-    'Edit Date',
-    'Expected Delivery',
-    'Sales Order Number',
-    'Sales Representative',
     'Issued By',
-    'Item Class ID',
-    'Alternate Part Number',
-    'PO Status',
+    'Revised Delivery Date',
+    'PO Required Date',
+    'Ordered',
+    'Received',
+    'Recvr No.',
+    'Date Recvd',
+    'SO#',
+    'Customer',
+    'SO Req Date',
+    'Sales Rep',
     'Notes'
   ];
 
-  const isDefaultDate = (date: Date | null) => 
+  const isDefaultDate = (date: Date | null) =>
     date?.toLocaleDateString() === '1/1/1900' || date?.toLocaleDateString() === '1/1/1990';
 
-  const renderRow = (po: any): React.JSX.Element[] => {
+  const renderRow = (po: PODeliveryLog): React.JSX.Element => {
     const issueDate = po.issueDate ? new Date(po.issueDate) : null;
-    const requiredDate = po.requiredDate ? new Date(po.requiredDate) : null;
+    const requiredDate = po.poRequiredDate ? new Date(po.poRequiredDate) : null;
+    const revisedDeliveryDate = po.expectedDelivery ? new Date(po.expectedDelivery) : null;
     const dateDelivered = po.dateDelivered ? new Date(po.dateDelivered) : null;
-    const editDate = po.editDate ? new Date(po.editDate) : null;
-    const expectedDelivery = po.expectedDelivery ? new Date(po.expectedDelivery) : null;
+    const soRequiredDate = po.soRequiredDate ? new Date(po.soRequiredDate) : null;
+    const noteEditDate = po.noteEditDate ? new Date(po.noteEditDate) : null;
 
-    const hasNotes = po.notes && po.notes.length > 0;
+    const hasNotes = po.notes && po.notes.toLowerCase() === 'yes';
+
+    const highlightStyle = {
+      backgroundColor: '#ed8794',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+    };
 
     const rowCells = [
       <TableCell key="ponum" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.ponum}</TableCell>,
       <TableCell key="vendorName" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.vendorName}</TableCell>,
-      <TableCell key="issueDate" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{issueDate && !isDefaultDate(issueDate) ? issueDate.toLocaleDateString() : ''}</TableCell>,
       <TableCell key="itemNum" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.itemNum}</TableCell>,
+      <TableCell key="altPartNum" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.altPartNum}</TableCell>,
+      <TableCell key="issueDate" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{issueDate && !isDefaultDate(issueDate) ? issueDate.toLocaleDateString() : ''}</TableCell>,
+      <TableCell key="issuedBy" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.issuedBy}</TableCell>,
+      <TableCell key="expectedDelivery" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{revisedDeliveryDate && !isDefaultDate(revisedDeliveryDate) ? revisedDeliveryDate.toLocaleDateString() : ''}</TableCell>,
+      <TableCell key="poRequiredDate" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{requiredDate && !isDefaultDate(requiredDate) ? requiredDate.toLocaleDateString() : ''}</TableCell>,
       <TableCell key="qtyOrdered" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.qtyOrdered}</TableCell>,
       <TableCell key="qtyReceived" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.qtyReceived}</TableCell>,
       <TableCell key="receiverNum" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.receiverNum}</TableCell>,
-      <TableCell key="requiredDate" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{requiredDate && !isDefaultDate(requiredDate) ? requiredDate.toLocaleDateString() : ''}</TableCell>,
       <TableCell key="dateDelivered" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{dateDelivered && !isDefaultDate(dateDelivered) ? dateDelivered.toLocaleDateString() : ''}</TableCell>,
-      <TableCell key="editDate" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{editDate && !isDefaultDate(editDate) ? editDate.toLocaleDateString() : ''}</TableCell>,
-      <TableCell key="expectedDelivery" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{expectedDelivery && !isDefaultDate(expectedDelivery) ? expectedDelivery.toLocaleDateString() : ''}</TableCell>,
-      <TableCell key="salesOrderNum" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.salesOrderNum}</TableCell>,
-      <TableCell key="salesRep" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.salesRep || 'N/A'}</TableCell>,
-      <TableCell key="issuedBy" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.issuedBy}</TableCell>,
-      <TableCell key="itemClassId" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.itemClassId}</TableCell>,
-      <TableCell key="altPartNum" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.altPartNum}</TableCell>,
-      <TableCell key="postatus" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{po.postatus}</TableCell>,
-      <TableCell key="notes" align="left" style={{ cursor: 'pointer', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-        <IconButton onClick={() => openPoDetail(po.id)}>
-          {hasNotes ? <Note color="primary" /> : <Add />}
-        </IconButton>
+      // Column: SO#
+      <TableCell key="salesOrderNum" align="left" style={highlightStyle}>
+        {po.salesOrderNum}
+      </TableCell>,
+
+      // Column: Customer
+      <TableCell key="customerName" align="left" style={highlightStyle}>
+        {po.customerName}
+      </TableCell>,
+
+      // Column: SO Req Date
+      <TableCell key="soRequiredDate" align="left" style={highlightStyle}>
+        {soRequiredDate ? soRequiredDate.toLocaleDateString() : ''}
+      </TableCell>,
+
+      // Column: Sales Rep
+      <TableCell key="salesRep" align="left" style={highlightStyle}>
+        {po.salesRep}
+      </TableCell>,
+
+      // Column: Notes
+      <TableCell key="notes" align="left" style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+        {hasNotes ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Note color="primary" />
+            {noteEditDate && !isDefaultDate(noteEditDate) && (
+              <span style={{ fontSize: '0.8em', marginTop: '4px' }}>
+                {noteEditDate.toLocaleDateString()}
+              </span>
+            )}
+          </div>
+        ) : null}
       </TableCell>,
     ];
 
-    return rowCells;
+    return (
+      <TableRow
+        key={po.id}
+        hover
+        onClick={() => openPoDetail(po.id)}
+        style={{ cursor: 'pointer' }}
+      >
+        {rowCells}
+      </TableRow>
+    );
   };
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <PaginatedSortableTable
-        tableData={searchResult}
+        tableData={results}
         columns={columns}
         columnNames={columnNames}
         func={renderRow}
