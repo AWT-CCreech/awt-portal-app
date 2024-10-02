@@ -31,6 +31,8 @@ import {
   PeopleOutlined,
   PinDropOutlined,
   EmailOutlined,
+  ContactsOutlined,
+  SellOutlined
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
@@ -209,7 +211,7 @@ const PortalMenu: React.FC = () => {
       // Add more items as needed
     ],
     cam: [
-      { label: 'CAM Dashboard', path: '/cam/dashboard' },
+      { label: 'CAM Dashboard', path: '/cam/dashboard', icon: ContactsOutlined },
       // Add more items as needed
     ],
     commissions: [
@@ -256,7 +258,7 @@ const PortalMenu: React.FC = () => {
       // Add more items as needed
     ],
     sales: [
-      { label: 'Open SO Report', path: '/opensalesorderreport' },
+      { label: 'Open SO Report', path: '/opensalesorderreport', icon: SellOutlined},
       // Add more items as needed
     ],
     shipping: [
