@@ -1,10 +1,15 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import Modules from '../../app/api/agent';
+import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs'; 
 import { SearchInput } from '../../models/PODeliveryLog/SearchInput';
-import { Box, Container, Grid, Typography } from '@mui/material';
+import { Box, Container, Grid, Typography, Modal } from '@mui/material';
 import PageHeader from '../../components/PageHeader';
 import SearchBox from './SearchBox';
 import SearchResults from './SearchResults';
+import PODetail from './PODetail';
+import * as XLSX from 'xlsx';
+import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
+import UserInfoContext from '../../stores/userInfo';
 
 const PODeliveryLog: React.FC = () => {
   const [searchParams, setSearchParams] = useState<SearchInput>({
@@ -14,33 +19,74 @@ const PODeliveryLog: React.FC = () => {
     IssuedBy: '',
     SONum: '',
     xSalesRep: '',
-    HasNotes: '',
+    HasNotes: 'All',
     POStatus: 'Not Complete',
     EquipType: 'All',
     CompanyID: 'AIR',
     YearRange: new Date().getFullYear(),
   });
 
-  const [poData, setPoData] = useState<any[]>([]);
+  const [poData, setPoData] = useState<PODeliveryLogs[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectedPO, setSelectedPO] = useState<PODetailUpdateDto | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const userInfo = useContext(UserInfoContext);
 
   const fetchPOData = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await Modules.PODeliveryLog.getPODeliveryLogs(searchParams);
+      const data = await Modules.PODeliveryLogService.getPODeliveryLogs(searchParams);
       setPoData(data);
-      console.log(data);
     } catch (error) {
       console.error('Error fetching PO data:', error);
-      setPoData([]); // Reset the data on error
+      setPoData([]);
     } finally {
       setLoading(false);
     }
   }, [searchParams]);
 
   const handleSearch = () => {
-    fetchPOData(); // Explicitly trigger the fetch
+    fetchPOData();
   };
+
+  const handleRowClick = (poLog: PODeliveryLogs) => {
+    const poDetail: PODetailUpdateDto = {
+      id: poLog.id,
+      poNum: poLog.ponum,
+      soNum: poLog.salesOrderNum || '',
+      partNum: poLog.itemNum || '',
+      newNote: null, // Set default value if needed
+      expectedDelivery: poLog.expectedDelivery ? new Date(poLog.expectedDelivery) : null, // Convert to Date
+      userId: parseInt(userInfo.userid, 10), // Convert to number
+      userName: userInfo.username,
+      contactID: poLog.contactId || 0, // Use a default value if needed
+      updateAllDates: false, // Set a default value
+      urgentEmail: false, // Set a default value
+      notesList: [], // Provide an empty array or set notes if available
+      qtyOrdered: poLog.qtyOrdered || 0,
+      qtyReceived: poLog.qtyReceived || 0,
+      receiverNum: poLog.receiverNum ? parseInt(poLog.receiverNum, 10) : null, // Convert to number if not null
+    };
+  
+    setSelectedPO(poDetail);
+    setModalOpen(true);
+  };
+  
+  
+  
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedPO(null);
+  };
+
+  const handleExport = useCallback(() => {
+    const ws = XLSX.utils.json_to_sheet(poData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'PODeliveryLogs');
+    XLSX.writeFile(wb, 'PODeliveryLogs.xlsx');
+  }, [poData]);
 
   return (
     <div>
@@ -52,7 +98,9 @@ const PODeliveryLog: React.FC = () => {
               searchParams={searchParams}
               setSearchParams={setSearchParams}
               onSearch={handleSearch}
-              loading={loading} // Pass loading state to SearchBox
+              loading={loading}
+              handleExport={handleExport}
+              searchResultLength={poData.length}
             />
           </Grid>
           <Grid item xs={12}>
@@ -66,7 +114,7 @@ const PODeliveryLog: React.FC = () => {
                   overflow: 'auto',
                 }}
               >
-                <SearchResults results={poData} />
+                <SearchResults results={poData} onRowClick={handleRowClick} />
               </Box>
             ) : (
               <Typography variant="h6" align="center" mt={2}>
@@ -76,6 +124,22 @@ const PODeliveryLog: React.FC = () => {
           </Grid>
         </Grid>
       </Container>
+
+      <Modal open={modalOpen} onClose={handleCloseModal}>
+        <Box
+          sx={{
+            width: '80vw',
+            margin: '50px auto',
+            backgroundColor: '#fff',
+            padding: '20px',
+            borderRadius: '10px',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+          }}
+        >
+          {selectedPO && <PODetail poDetail={selectedPO} onClose={handleCloseModal} />}
+        </Box>
+      </Modal>
     </div>
   );
 };
