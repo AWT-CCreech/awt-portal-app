@@ -14,6 +14,8 @@ import MasterSearchContact from '../../models/MasterSearch/MasterSearchContact';
 import MasterSearchInput from '../../models/MasterSearch/SearchInput';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
 import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
+import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
+import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs';
 import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
 import SellOppEvent from '../../models/MasterSearch/SellOppEvent';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
@@ -259,7 +261,8 @@ const OpenSalesOrderReport = {
   },
 };
 
-const PODeliveryLog = {
+const PODeliveryLogService = {
+  // Fetch all delivery logs with the specified parameters
   getPODeliveryLogs: (params: {
     PONum?: string;
     Vendor?: string;
@@ -271,9 +274,24 @@ const PODeliveryLog = {
     POStatus?: string;
     EquipType?: string;
     CompanyID?: string;
-    lstYear?: number;
-  }): Promise<any[]> => {
+    YearRange?: number; 
+  }): Promise<PODeliveryLogs[]> => {
     return requests.getWithParams('/PODeliveryLog', params);
+  },
+
+  // Fetch PO detail by PO number
+  getPODetailByID: (id: number): Promise<PODetailUpdateDto> => {
+    return requests.get(`/PODetail/id/${id}`);
+  },
+
+  // Fetch PO detail by PO number
+  getPODetailByPONum: (ponum: string): Promise<PODetailUpdateDto> => {
+    return requests.get(`/PODetail/ponum/${ponum}`);
+  },
+
+  // Update PO detail based on the provided ID and data
+  updatePODetail: (id: number, body: PODetailUpdateDto): Promise<void> => {
+    return requests.put(`/PODetail/${id}`, body);
   },
 };
 
@@ -340,7 +358,7 @@ const Modules = {
   MasterSearches,
   OpenSalesOrderNotes,
   OpenSalesOrderReport,
-  PODeliveryLog,
+  PODeliveryLogService,
   TimeTrackers,
   UserList,
   UserLogins,
