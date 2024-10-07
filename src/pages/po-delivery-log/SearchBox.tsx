@@ -1,30 +1,24 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import {
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Box,
-  Button,
-  Grid,
-  SelectChangeEvent,
-  CircularProgress,
+  Box, Button, CircularProgress, TextField, Grid, FormControl, IconButton, InputLabel, Select, SelectChangeEvent, Tooltip, MenuItem,
 } from '@mui/material';
-import { Search } from '@mui/icons-material';
-import Modules from '../../app/api/agent';
-import { ActiveSalesReps } from '../../models/Data/ActiveSalesReps';
+import { GetApp, Search } from '@mui/icons-material';
 import { SearchInput } from '../../models/PODeliveryLog/SearchInput';
+import Modules from '../../app/api/agent';
 
 interface SearchBoxProps {
   searchParams: SearchInput;
   setSearchParams: React.Dispatch<React.SetStateAction<SearchInput>>;
   onSearch: () => void;
   loading: boolean;
+  handleExport: () => void;
+  searchResultLength: number;
 }
 
-const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, onSearch, loading }) => {
-  const [salesReps, setSalesReps] = useState<ActiveSalesReps[]>([]);
+const SearchBox: React.FC<SearchBoxProps> = ({
+  searchParams, setSearchParams, onSearch, loading, handleExport, searchResultLength,
+}) => {
+  const [salesReps, setSalesReps] = useState<any[]>([]);
   const [purchasingReps, setPurchasingReps] = useState<any[]>([]);
 
   useEffect(() => {
@@ -58,6 +52,10 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, on
       ...prevParams,
       [name as string]: value as string,
     }));
+  };
+
+  const handleNotesChange = (e: SelectChangeEvent<string>) => {
+    setSearchParams({ ...searchParams, HasNotes: e.target.value });
   };
 
   return (
@@ -147,10 +145,11 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, on
               value={searchParams.POStatus}
               onChange={handleSelectChange}
             >
-              <MenuItem value="Not Complete">Not Complete</MenuItem>
+              <MenuItem value="All">All</MenuItem>
               <MenuItem value="Complete">Complete</MenuItem>
+              <MenuItem value="Not Complete">Not Complete</MenuItem>
               <MenuItem value="Late">Late</MenuItem>
-              <MenuItem value="Due w/n 2 Days">Due within 2 Days</MenuItem>
+              <MenuItem value="Due w/n 2 Days">Due w/n 2 Days</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -163,7 +162,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, on
               onChange={handleSelectChange}
             >
               <MenuItem value="All">All</MenuItem>
-              <MenuItem value="Ancillary">Ancillary</MenuItem>
+              <MenuItem value="ANC">ANC</MenuItem>
               <MenuItem value="FNE">FNE</MenuItem>
             </Select>
           </FormControl>
@@ -176,9 +175,22 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, on
               value={searchParams.CompanyID}
               onChange={handleSelectChange}
             >
-              <MenuItem value="All">All</MenuItem>
               <MenuItem value="AIR">AIR</MenuItem>
               <MenuItem value="SOL">SOL</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <FormControl fullWidth>
+            <InputLabel>Notes</InputLabel>
+            <Select
+              name="Notes"
+              value={searchParams.HasNotes}
+              onChange={handleNotesChange}
+            >
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="Yes">Yes</MenuItem>
+              <MenuItem value="No">No</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -193,17 +205,29 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, on
             variant="outlined"
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} display="flex" justifyContent="flex-start" alignItems="center">
           <Button
             variant="contained"
             color="primary"
             onClick={onSearch}
             fullWidth
-            disabled={loading} // Disable button when loading
-            startIcon={!loading && <Search />} // Magnifying glass icon
+            disabled={loading}
+            startIcon={!loading && <Search />}
           >
             {loading ? <CircularProgress size={24} /> : 'Search'}
           </Button>
+          <Tooltip title="Export to Excel">
+            <span>
+              <IconButton 
+                color="success" 
+                onClick={handleExport} 
+                sx={{ ml: 2 }} 
+                disabled={loading || searchResultLength === 0} // Disable if loading or no results
+              >
+                <GetApp />
+              </IconButton>
+            </span>
+          </Tooltip>
         </Grid>
       </Grid>
     </Box>
