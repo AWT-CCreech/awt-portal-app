@@ -84,7 +84,6 @@ const App: React.FC = () => {
     }
   }, [handleLogout]);
 
-
   // Effect to manage inactivity timeout
   useEffect(() => {
     if (!isAuthenticated()) return;
@@ -122,7 +121,7 @@ const App: React.FC = () => {
           countdown={countdown}
           onStayLoggedIn={async () => {
             setIsModalOpen(false);
-            await refreshToken();  // Refresh the token when the user stays logged in
+            await refreshToken(); // Refresh the token when the user stays logged in
             resetInactivityTimeout();
           }}
           onLogout={handleLogout}
