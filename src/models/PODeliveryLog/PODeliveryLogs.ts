@@ -1,4 +1,4 @@
-export interface PODeliveryLog {
+export interface PODeliveryLogs {
     id: number;
     ponum: string;
     issueDate: string | null;
@@ -6,7 +6,7 @@ export interface PODeliveryLog {
     qtyOrdered: number;
     qtyReceived: number;
     receiverNum: string | null;
-    notes: string | null;
+    notesExist: boolean | null;
     noteEditDate: string | null;
     poRequiredDate: string | null;
     dateDelivered: string | null;
@@ -14,7 +14,7 @@ export interface PODeliveryLog {
     expectedDelivery: string | null;
     salesOrderNum: string | null;
     customerName: string | null;
-    soRequiredDate: string | null;
+    soRequiredDate: Date | null;
     salesRep: string | null;
     issuedBy: string;
     vendorName: string;
@@ -22,4 +22,5 @@ export interface PODeliveryLog {
     altPartNum: string;
     postatus: number;
     companyId: string;
+    contactId?: number;
 }
