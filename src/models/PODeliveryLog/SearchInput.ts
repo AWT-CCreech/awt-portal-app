@@ -5,9 +5,9 @@ export interface SearchInput {
   IssuedBy: string;
   SONum: string;
   xSalesRep: string;
-  HasNotes: string;
+  HasNotes: string; 
   POStatus: string;
   EquipType: string;
   CompanyID: string;
-  YearRange: number;
+  YearRange: number; 
 }
