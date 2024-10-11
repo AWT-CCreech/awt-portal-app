@@ -13,48 +13,14 @@ import {
   Card as MuiCard,
   Stack,
 } from '@mui/material';
-import { Login } from '@mui/icons-material';
+import { Login, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import UserInfo from '../../stores/userInfo';
+import LoginInfo from '../../models/Login/LoginInfo';
 import agent from '../../app/api/agent';
 import AppState from '../../stores/app';
-import { styled } from '@mui/material/styles';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import LoginInfo from '../../models/Login/LoginInfo';
-
-const Card = styled(MuiCard)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignSelf: 'center',
-  width: '100%',
-  padding: theme.spacing(4),
-  gap: theme.spacing(2),
-  margin: 'auto',
-  [theme.breakpoints.up('sm')]: {
-    maxWidth: '450px',
-  },
-  boxShadow:
-    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-}));
-
-const LoginContainer = styled(Stack)(({ theme }) => ({
-  minHeight: '100vh', // Full viewport height
-  padding: 20,
-  position: 'relative',
-  justifyContent: 'center', // Center vertically
-  alignItems: 'center', // Center horizontally
-  '&::before': {
-    content: '""',
-    display: 'block',
-    position: 'absolute',
-    zIndex: -1,
-    inset: 0,
-    backgroundImage:
-      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-    backgroundRepeat: 'no-repeat',
-  },
-}));
+import '../../styles/login/LoginPage.css';
 
 const LoginPage: React.FC = observer(() => {
   const userInfo = useContext(UserInfo);
@@ -71,7 +37,6 @@ const LoginPage: React.FC = observer(() => {
   const [localPassword, setLocalPassword] = useState('');
 
   const handleAutoLogout = useCallback(() => {
-    console.log('Auto logout triggered');
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('password');
@@ -83,8 +48,6 @@ const LoginPage: React.FC = observer(() => {
   }, [setUserName, setPassWord, navigate]);
 
   useEffect(() => {
-    console.log('Loading state changed:', pageLoading);
-
     const tokenExpiry = localStorage.getItem('expiresAt');
     if (tokenExpiry) {
       const expiryTime = parseInt(tokenExpiry, 10);
@@ -116,7 +79,6 @@ const LoginPage: React.FC = observer(() => {
 
     try {
       const response = await agent.UserLogins.authenticate(loginPayload);
-      console.log('Backend response:', response);
 
       if (response && response.token) {
         const token = response.token;
@@ -135,12 +97,10 @@ const LoginPage: React.FC = observer(() => {
         setPageLoading(false);
         navigate('/');
       } else {
-        console.error('Invalid response:', response);
         setPageLoading(false);
         setHiddenLoginError(false);
       }
     } catch (error) {
-      console.error('Error during authentication:', error);
       setPageLoading(false);
       setHiddenLoginError(false);
     }
@@ -149,30 +109,15 @@ const LoginPage: React.FC = observer(() => {
   return (
     <>
       <CssBaseline />
-      <LoginContainer>
-        <Card variant="outlined">
-          {/* Replace with your logo */}
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <img src="logo.png" alt="Company Logo" style={{ width: '150px', height: 'auto' }} />
+      <Stack className="login-container">
+        <MuiCard className="login-card" variant="outlined">
+          <Box className="logo-box">
+            <img src="logo.png" alt="Company Logo" />
           </Box>
-          <Typography
-            component="h1"
-            variant="h4"
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', textAlign: 'center' }}
-          >
+          <Typography component="h1" variant="h4" className="login-title">
             AWT Portal
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '100%',
-              gap: 2,
-            }}
-          >
+          <Box component="form" onSubmit={handleSubmit} noValidate className="login-form">
             <FormControl>
               <TextField
                 margin="normal"
@@ -215,7 +160,9 @@ const LoginPage: React.FC = observer(() => {
               />
             </FormControl>
             {!hiddenLoginError && (
-              <Alert severity="error">Incorrect username or password</Alert>
+              <Alert severity="error" className="login-error-alert">
+                Incorrect username or password
+              </Alert>
             )}
             <Button
               type="submit"
@@ -224,12 +171,13 @@ const LoginPage: React.FC = observer(() => {
               color="primary"
               disabled={pageLoading}
               endIcon={!pageLoading && <Login />}
+              className="submit-button"
             >
               {pageLoading ? <CircularProgress size={24} /> : 'Login'}
             </Button>
           </Box>
-        </Card>
-      </LoginContainer>
+        </MuiCard>
+      </Stack>
     </>
   );
 });
