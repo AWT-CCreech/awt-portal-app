@@ -15,4 +15,12 @@ export interface PODetailUpdateDto {
   qtyReceived?: number | null; 
   receiverNum?: number | null; 
   notesList: string[]; 
+  contactName: string;
+  company: string;
+  phone: string;
+  issuedBy: string;
+  editDate: string;
+  editedBy: string | null;
+  expDelEditDate: string;
+  dateDelivered: string;
 }
