@@ -8,6 +8,9 @@ import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { TrkPoLog } from '../../models/TrkPoLog';
 import Modules from '../../app/api/agent';
+import '../../styles/open-so-report/SearchResults.css';
+import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
+import PODetail from '../po-delivery-log/PODetail';
 
 interface SearchResultsProps {
   results: (OpenSOReport & { notes: TrkSoNote[], poLog?: TrkPoLog })[];
@@ -21,6 +24,11 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(({ results, group
   const [selectedSONum, setSelectedSONum] = useState<string>('');
   const [selectedPartNum, setSelectedPartNum] = useState<string>('');
   const [selectedNotes, setSelectedNotes] = useState<TrkSoNote[]>([]);
+
+  // State variables for PO Detail modal
+  const [selectedPO, setSelectedPO] = useState<PODetailUpdateDto | null>(null);
+  const [poDetailModalOpen, setPoDetailModalOpen] = useState(false);
+  const [poDetailLoading, setPoDetailLoading] = useState(false);
 
   const fetchNotesForLineItem = useCallback(async (soNum: string, partNum: string) => {
     try {
@@ -50,8 +58,25 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(({ results, group
     fetchNotesForLineItem(selectedSONum, selectedPartNum); // Refetch notes when closing the modal
   }, [selectedSONum, selectedPartNum, fetchNotesForLineItem]);
 
-  const openPoLog = useCallback((id: number) => {
-    window.open(`/PODetail?id=${id}`, '_blank');
+  const openPoLog = useCallback(async (id: number) => {
+    setPoDetailModalOpen(true);
+    setSelectedPO(null); // Reset selected PO
+    setPoDetailLoading(true); // Start loading
+
+    try {
+      const poDetail = await Modules.PODeliveryLogService.getPODetailByID(id);
+      if (poDetail) {
+        setSelectedPO(poDetail);
+      } else {
+        console.error('PO Detail not found');
+        setPoDetailModalOpen(false); // Close modal if no data
+      }
+    } catch (error) {
+      console.error('Error fetching PO detail:', error);
+      setPoDetailModalOpen(false); // Close modal if error occurs
+    } finally {
+      setPoDetailLoading(false); // Stop loading
+    }
   }, []);
 
   const allColumns = [
@@ -139,14 +164,14 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(({ results, group
       <TableCell key="customerName" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.customerName}</TableCell>,
       <TableCell key="custPo" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{order.custPo}</TableCell>,
       <TableCell key="orderDate" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{orderDate && !isDefaultDate(orderDate) ? orderDate.toLocaleDateString() : ''}</TableCell>,
-      <TableCell key="requiredDate" align="left" style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+      <TableCell key="requiredDate" align="left" className="text-overflow">
+        <div className="required-date">
           {requiredDate && !isDefaultDate(requiredDate) ? requiredDate.toLocaleDateString() : ''}
           {deliveryAlert && (
             <Warning
               color="error"
               fontSize="small"
-              style={{ marginLeft: 4, visibility: 'visible', display: 'inline-block' }}
+              className="alert-icon"
             />
           )}
         </div>
@@ -165,12 +190,12 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(({ results, group
       >
         {hasPoLog ? `${new Date(order.poLog!.entryDate).toLocaleDateString()} (${order.poLog!.enteredBy})` : ''}
       </TableCell>,
-      <TableCell key="notes" align="left" style={{ cursor: 'pointer', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+      <TableCell key="notes" align="left" className="pointer notes-container">
         <IconButton onClick={() => handleOpenNoteModal(order.sonum || '', order.itemNum || '', order.notes || [])}>
           {hasNotes ? <Note color="primary" /> : <Add />}
         </IconButton>
         {hasNotes && mostRecentNoteDate && (
-          <div style={{ fontSize: '0.8em', color: '#888' }}>
+          <div className="notes-edit-date">
             {mostRecentNoteDate.toLocaleDateString()}
           </div>
         )}
@@ -234,6 +259,40 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(({ results, group
             notes={selectedNotes}
             onClose={handleCloseNoteModal}
             onNoteAdded={() => fetchNotesForLineItem(selectedSONum, selectedPartNum)} // Refetch notes when a new note is added
+          />
+        </Box>
+      </Modal>
+      {/* New Modal for PO Details */}
+      <Modal
+        open={poDetailModalOpen}
+        onClose={() => setPoDetailModalOpen(false)}
+        aria-labelledby="po-detail-modal-title"
+        aria-describedby="po-detail-modal-description"
+        closeAfterTransition
+        slotProps={{
+          backdrop: {
+            style: {
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(3px)',
+            }
+          }
+        }}
+      >
+        <Box
+          sx={{
+            width: '80vw',
+            margin: '50px auto',
+            backgroundColor: '#fff',
+            padding: '20px',
+            borderRadius: '10px',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+          }}
+        >
+          <PODetail
+            poDetail={selectedPO}
+            onClose={() => setPoDetailModalOpen(false)}
+            loading={poDetailLoading}
           />
         </Box>
       </Modal>
