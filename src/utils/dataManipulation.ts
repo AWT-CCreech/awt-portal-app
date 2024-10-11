@@ -26,3 +26,25 @@ export function formatAmount(amount: number) {
       minimumFractionDigits: 2,
     }).format(amount);
 }
+
+// Formats a phone number string into a standard format
+export function formatPhoneNumber(phone: string): string {
+    // Remove all non-digit characters
+    const sPhone = phone.replace(/\D/g, '');
+
+    if (sPhone.length < 7) {
+        return sPhone;
+    } else if (sPhone.length === 7) {
+        return `${sPhone.slice(0, 3)}-${sPhone.slice(3)}`;
+    } else if (sPhone.length === 10) {
+        return `(${sPhone.slice(0, 3)}) ${sPhone.slice(3, 6)}-${sPhone.slice(6)}`;
+    } else if (sPhone.length > 10) {
+        const countryCode = sPhone.slice(0, sPhone.length - 10);
+        const areaCode = sPhone.slice(-10, -7);
+        const centralOfficeCode = sPhone.slice(-7, -4);
+        const lineNumber = sPhone.slice(-4);
+        return `+${countryCode} (${areaCode}) ${centralOfficeCode}-${lineNumber}`;
+    } else {
+        return sPhone;
+    }
+}
