@@ -1,7 +1,7 @@
-import React, { useState, useCallback, useContext } from 'react';
+import React, { useState, useCallback } from 'react';
 import Modules from '../../app/api/agent';
 import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs'; 
-import { SearchInput } from '../../models/PODeliveryLog/SearchInput';
+import SearchInput from '../../models/PODeliveryLog/SearchInput';
 import { Box, Container, Grid, Typography, Modal } from '@mui/material';
 import PageHeader from '../../components/PageHeader';
 import SearchBox from './SearchBox';
@@ -9,7 +9,6 @@ import SearchResults from './SearchResults';
 import PODetail from './PODetail';
 import * as XLSX from 'xlsx';
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
-import UserInfoContext from '../../stores/userInfo';
 
 const PODeliveryLog: React.FC = () => {
   const [searchParams, setSearchParams] = useState<SearchInput>({
@@ -27,11 +26,10 @@ const PODeliveryLog: React.FC = () => {
   });
 
   const [poData, setPoData] = useState<PODeliveryLogs[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [selectedPO, setSelectedPO] = useState<PODetailUpdateDto | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-
-  const userInfo = useContext(UserInfoContext);
+  const [loading, setLoading] = useState(false); // Loading state for fetching PO data
+  const [detailLoading, setDetailLoading] = useState(false); // Loading state for fetching PO detail
 
   const fetchPOData = useCallback(async () => {
     setLoading(true);
@@ -50,31 +48,21 @@ const PODeliveryLog: React.FC = () => {
     fetchPOData();
   };
 
-  const handleRowClick = (poLog: PODeliveryLogs) => {
-    const poDetail: PODetailUpdateDto = {
-      id: poLog.id,
-      poNum: poLog.ponum,
-      soNum: poLog.salesOrderNum || '',
-      partNum: poLog.itemNum || '',
-      newNote: null, // Set default value if needed
-      expectedDelivery: poLog.expectedDelivery ? new Date(poLog.expectedDelivery) : null, // Convert to Date
-      userId: parseInt(userInfo.userid, 10), // Convert to number
-      userName: userInfo.username,
-      contactID: poLog.contactId || 0, // Use a default value if needed
-      updateAllDates: false, // Set a default value
-      urgentEmail: false, // Set a default value
-      notesList: [], // Provide an empty array or set notes if available
-      qtyOrdered: poLog.qtyOrdered || 0,
-      qtyReceived: poLog.qtyReceived || 0,
-      receiverNum: poLog.receiverNum ? parseInt(poLog.receiverNum, 10) : null, // Convert to number if not null
-    };
-  
-    setSelectedPO(poDetail);
+  const handleRowClick = async (event: React.MouseEvent, poLog: PODeliveryLogs) => {
+    event.stopPropagation();
     setModalOpen(true);
+    setSelectedPO(null); // Reset selected PO
+
+    setDetailLoading(true); // Set loading to true for fetching PO detail
+    try {
+      const poDetail = await Modules.PODeliveryLogService.getPODetailByID(poLog.id);
+      setSelectedPO(poDetail);
+    } catch (error) {
+      console.error('Error fetching PO detail:', error);
+    } finally {
+      setDetailLoading(false); // Set loading to false after data is fetched
+    }
   };
-  
-  
-  
 
   const handleCloseModal = () => {
     setModalOpen(false);
@@ -98,13 +86,13 @@ const PODeliveryLog: React.FC = () => {
               searchParams={searchParams}
               setSearchParams={setSearchParams}
               onSearch={handleSearch}
-              loading={loading}
+              loading={loading} // Only for search loading
               handleExport={handleExport}
               searchResultLength={poData.length}
             />
           </Grid>
           <Grid item xs={12}>
-            {loading ? null : poData.length > 0 ? (
+            {poData.length > 0 ? (
               <Box
                 sx={{
                   height: '70vh',
@@ -137,7 +125,7 @@ const PODeliveryLog: React.FC = () => {
             overflowY: 'auto',
           }}
         >
-          {selectedPO && <PODetail poDetail={selectedPO} onClose={handleCloseModal} />}
+          <PODetail poDetail={selectedPO} onClose={handleCloseModal} loading={detailLoading} />
         </Box>
       </Modal>
     </div>
