@@ -3,6 +3,7 @@ import { TableCell, TableRow, Box } from '@mui/material';
 import { Note, LocalFireDepartment, LocalShipping } from '@mui/icons-material';
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
 import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs';
+import '../../styles/po-delivery-log/SearchResults.css';
 
 interface SearchResultsProps {
   results: PODeliveryLogs[];
@@ -89,18 +90,18 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, onRowClick }) =>
       </TableCell>,
       <TableCell key="issuedBy" align="left">{po.issuedBy}</TableCell>,
       <TableCell key="expectedDelivery" align="left">
-        <Box display="flex" alignItems="center">
+        <Box className="expected-delivery">
           <span>{po.expectedDelivery ? new Date(po.expectedDelivery).toLocaleDateString() : ''}</span>
           {ExpDeliveryAlert && (
-            <LocalFireDepartment color="error" style={{ marginLeft: 4 }} />
+            <LocalFireDepartment color="error" className="alert-icon" />
           )}
         </Box>
       </TableCell>,
       <TableCell key="poRequiredDate" align="left">
-        <Box display="flex" alignItems="center">
+        <Box className="po-required-date">
           <span>{po.poRequiredDate ? new Date(po.poRequiredDate).toLocaleDateString() : ''}</span>
           {DeliveryAlert && (
-            <LocalFireDepartment color="error" style={{ marginLeft: 4 }} />
+            <LocalFireDepartment color="error" className="alert-icon" />
           )}
         </Box>
       </TableCell>,
@@ -111,10 +112,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, onRowClick }) =>
         {po.dateDelivered ? new Date(po.dateDelivered).toLocaleDateString() : ''}
       </TableCell>,
       <TableCell key="sonum" align="left">
-        <Box display="flex" alignItems="center">
+        <Box className="po-sonum">
           <span>{po.sonum}</span>
           {po.isDropShipment && (
-            <LocalShipping color="secondary" style={{ marginLeft: 4 }} />
+            <LocalShipping color="secondary" className="alert-icon" />
           )}
         </Box>
       </TableCell>,
@@ -126,13 +127,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, onRowClick }) =>
       <TableCell
         key="notes"
         align="left"
-        sx={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}
+        className="note-edit-date"
       >
         {po.notesExist ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div className="notes-container">
             <Note color="primary" />
             {po.noteEditDate && (
-              <span style={{ fontSize: '0.8em', marginTop: '4px' }}>
+              <span className="note-edit-date">
                 {new Date(po.noteEditDate).toLocaleDateString()}
               </span>
             )}
