@@ -12,7 +12,7 @@ export interface PODeliveryLogs {
     dateDelivered: string | null;
     editDate: string | null;
     expectedDelivery: string | null;
-    salesOrderNum: string | null;
+    sonum: string | null;
     customerName: string | null;
     soRequiredDate: Date | null;
     salesRep: string | null;
@@ -23,4 +23,5 @@ export interface PODeliveryLogs {
     postatus: number;
     companyId: string;
     contactId?: number;
+    isDropShipment: boolean;
 }
