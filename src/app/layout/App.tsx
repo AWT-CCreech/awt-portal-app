@@ -1,6 +1,9 @@
 import React, { useEffect, useContext, useState, useCallback, useRef } from 'react';
-import './App.css';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import theme from '../../styles/themes/theme'; // adjust the path as necessary
+
 import LoginPage from '../../pages/login/LoginPage';
 import Home from '../../pages/home/Home';
 import NotFound from '../../pages/exception-pages/NotFound';
@@ -65,26 +68,24 @@ const App: React.FC = () => {
       const currentTime = Date.now();
 
       const timeLeftUntilExpiration = expiryTime - currentTime;
-      const timeToShowModal = 1 * 60 * 1000; // Show modal with 1 minute left
+      const timeToShowModal = 1 * 60 * 1000;
 
-      if (timeLeftUntilExpiration > timeToShowModal) {
-        // Automatically refresh the token without showing the modal
+      if (timeLeftUntilExpiration <= 0) {
+        handleLogout();
+      } else if (timeLeftUntilExpiration > timeToShowModal) {
         inactivityTimeoutRef.current = setTimeout(() => {
-          resetInactivityTimeout(); // Recheck after this interval
+          resetInactivityTimeout();
         }, timeLeftUntilExpiration - timeToShowModal);
-        setIsModalOpen(false); // Ensure modal is closed
-      } else if (timeLeftUntilExpiration > 0) {
-        // Less than 1 minute left, show the modal
+        setIsModalOpen(false);
+      } else {
         setIsModalOpen(true);
         setCountdown(Math.floor(timeLeftUntilExpiration / 1000));
-      } else {
-        // Token has expired, log out the user
-        handleLogout();
       }
+    } else {
+      handleLogout();
     }
   }, [handleLogout]);
 
-  // Effect to manage inactivity timeout
   useEffect(() => {
     if (!isAuthenticated()) return;
 
@@ -104,7 +105,6 @@ const App: React.FC = () => {
     };
   }, [location.pathname, resetInactivityTimeout, isModalOpen]);
 
-  // Effect to reset inactivity timeout on mount
   useEffect(() => {
     resetInactivityTimeout();
 
@@ -114,14 +114,15 @@ const App: React.FC = () => {
   }, [resetInactivityTimeout]);
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       {isAuthenticated() && isModalOpen && (
         <InactivityModal
           open={isModalOpen}
           countdown={countdown}
           onStayLoggedIn={async () => {
             setIsModalOpen(false);
-            await refreshToken(); // Refresh the token when the user stays logged in
+            await refreshToken();
             resetInactivityTimeout();
           }}
           onLogout={handleLogout}
@@ -140,7 +141,7 @@ const App: React.FC = () => {
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </>
+    </ThemeProvider>
   );
 };
 

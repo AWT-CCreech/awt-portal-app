@@ -16,6 +16,7 @@ import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
 import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
 import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs';
+import PODeliveryLogSearchInput from '../../models/PODeliveryLog/SearchInput';
 import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
 import SellOppEvent from '../../models/MasterSearch/SellOppEvent';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
@@ -262,10 +263,20 @@ const OpenSalesOrderReport = {
 };
 
 const PODeliveryLogService = {
-  // Fetch all delivery logs with the specified parameters
-  getPODeliveryLogs: (params: {
+  getPODeliveryLogs: async (
+    params: PODeliveryLogSearchInput
+  ): Promise<PODeliveryLogs[]> => {
+    try {
+      const response = await requests.getWithParams('/PODeliveryLog', params);
+      return response as (PODeliveryLogs)[];
+    } catch (error) {
+      console.error('Error fetching open sales orders', error);
+      throw error;
+    }
+  },
+  
+  getVendors: (params: {
     PONum?: string;
-    Vendor?: string;
     PartNum?: string;
     IssuedBy?: string;
     SONum?: string;
@@ -274,25 +285,19 @@ const PODeliveryLogService = {
     POStatus?: string;
     EquipType?: string;
     CompanyID?: string;
-    YearRange?: number; 
-  }): Promise<PODeliveryLogs[]> => {
-    return requests.getWithParams('/PODeliveryLog', params);
+    YearRange?: number;
+  }): Promise<string[]> => {
+    return requests.getWithParams('/PODeliveryLog/vendors', params);
   },
 
-  // Fetch PO detail by PO number
   getPODetailByID: (id: number): Promise<PODetailUpdateDto> => {
     return requests.get(`/PODetail/id/${id}`);
   },
 
-  // Fetch PO detail by PO number
-  getPODetailByPONum: (ponum: string): Promise<PODetailUpdateDto> => {
-    return requests.get(`/PODetail/ponum/${ponum}`);
-  },
-
-  // Update PO detail based on the provided ID and data
   updatePODetail: (id: number, body: PODetailUpdateDto): Promise<void> => {
     return requests.put(`/PODetail/${id}`, body);
   },
+
 };
 
 const TimeTrackers = {
