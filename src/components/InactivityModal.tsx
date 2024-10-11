@@ -8,7 +8,7 @@ import {
   Box,
   CircularProgress,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import { InactivityModalProps } from '../models/Security/InactivityModal';
 import { handleAutoLogout } from '../utils/authentication';
 
@@ -19,26 +19,32 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
   onLogout,
 }) => {
   const [secondsLeft, setSecondsLeft] = useState(countdown);
-  const hasLoggedOut = useRef(false); // Ref to track if logout has already been triggered
-  const navigate = useNavigate(); // Initialize navigate
+  const hasLoggedOut = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
+    const currentToken = localStorage.getItem('token');
 
-    if (open) {
-      // Reset countdown when the modal opens
+    if (open && currentToken) {
       setSecondsLeft(countdown);
-      hasLoggedOut.current = false; // Reset the logout flag
+      hasLoggedOut.current = false;
 
-      // Start countdown
+      const tokenPayload = JSON.parse(atob(currentToken.split('.')[1]));
+      const expiresAt = tokenPayload.exp * 1000;
+
+      if (Date.now() >= expiresAt) {
+        handleAutoLogout(navigate, onLogout, () => {});
+        return;
+      }
+
       timer = setInterval(() => {
         setSecondsLeft((prevSeconds) => {
           if (prevSeconds <= 1) {
             clearInterval(timer!);
 
-            // Ensure logout is only called once when countdown reaches zero
             if (!hasLoggedOut.current) {
-              handleAutoLogout(navigate, onLogout, () => {}); // Use navigate in handleAutoLogout
+              handleAutoLogout(navigate, onLogout, () => {});
               hasLoggedOut.current = true;
             }
 
@@ -49,7 +55,6 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
       }, 1000);
     }
 
-    // Cleanup timer when the modal is closed or component is unmounted
     return () => {
       if (timer) clearInterval(timer);
     };
@@ -65,7 +70,7 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
   return (
     <Dialog
       open={open}
-      onClose={() => {}} // Prevent closing on backdrop click or escape key
+      onClose={() => {}}
       disableEscapeKeyDown
       PaperProps={{
         sx: {
@@ -75,7 +80,7 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
         },
       }}
       slotProps={{
-        backdrop: { style: { pointerEvents: 'none' } }, // Prevent closing on backdrop click
+        backdrop: { style: { pointerEvents: 'none' } },
       }}
     >
       <DialogContent>
@@ -112,14 +117,14 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
       <DialogActions sx={{ justifyContent: 'center', gap: 2 }}>
         <Button
           onClick={handleStayLoggedIn}
-          color="success"
+          color="primary"
           variant="contained"
           sx={{ borderRadius: 2, paddingX: 3 }}
         >
           Keep Working
         </Button>
         <Button
-          onClick={() => handleAutoLogout(navigate, onLogout, () => {})} // Trigger logout manually
+          onClick={() => handleAutoLogout(navigate, onLogout, () => {})}
           color="error"
           variant="outlined"
           sx={{ borderRadius: 2, paddingX: 3 }}
