@@ -1,44 +1,43 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext, useCallback, FC } from 'react';
 import {
+  TableCell,
   Typography,
   TextField,
   Button,
   Grid,
-  CircularProgress,
   Box,
   Checkbox,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
+  Skeleton,
 } from '@mui/material';
 import Modules from '../../app/api/agent';
 import UserInfoContext from '../../stores/userInfo';
+import PaginatedSortableTable from '../../components/PaginatedSortableTable'; // Adjust the path to your file
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
+import { formatPhoneNumber } from '../../utils/dataManipulation';
 
 interface PODetailProps {
-  poDetail: PODetailUpdateDto;
+  poDetail: PODetailUpdateDto | null;
   onClose: () => void;
+  loading: boolean;
 }
 
-const PODetail: React.FC<PODetailProps> = ({ poDetail, onClose }) => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [notes, setNotes] = useState<string>('');
-  const [expectedDelivery, setExpectedDelivery] = useState<string>('');
+const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading }) => {
+  const [notes, setNotes] = useState(poDetail?.newNote || '');
+  const [expectedDelivery, setExpectedDelivery] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [urgentEmail, setUrgentEmail] = useState<boolean>(false);
-  const [updateAllDates, setUpdateAllDates] = useState<boolean>(false);
-  const [previousNotes, setPreviousNotes] = useState<{ date: string; enteredBy: string; note: string }[]>([]);
-
+  const [urgentEmail, setUrgentEmail] = useState(false);
+  const [updateAllDates, setUpdateAllDates] = useState(false);
+  const [previousNotes, setPreviousNotes] = useState<Array<{ date: string; enteredBy: string; note: string }>>([]);
   const userInfo = useContext(UserInfoContext);
 
   const fetchPreviousNotes = useCallback(async () => {
+    if (!poDetail) return;
+
     try {
       const notesData = await Modules.PODeliveryLogService.getPODetailByID(poDetail.id);
-      if (notesData && Array.isArray(notesData.notesList)) {
+      if (notesData?.notesList) {
         setPreviousNotes(
-          notesData.notesList.map(note => {
+          notesData.notesList.map((note: string) => {
             const [enteredBy, content, date] = note.split('::');
             return { date: date || 'No Date', enteredBy, note: content };
           })
@@ -48,7 +47,7 @@ const PODetail: React.FC<PODetailProps> = ({ poDetail, onClose }) => {
       console.error('Error fetching previous notes:', err);
       setPreviousNotes([]);
     }
-  }, [poDetail.id]);
+  }, [poDetail]);
 
   useEffect(() => {
     if (poDetail) {
@@ -59,99 +58,146 @@ const PODetail: React.FC<PODetailProps> = ({ poDetail, onClose }) => {
   }, [poDetail, fetchPreviousNotes]);
 
   const handleUpdatePO = async () => {
-    setLoading(true);
     setError(null);
     try {
       const updateDto: PODetailUpdateDto = {
-        id: poDetail.id,
-        poNum: poDetail.poNum,
-        soNum: poDetail.soNum,
-        partNum: poDetail.partNum,
+        ...poDetail!,
         newNote: notes,
         expectedDelivery: expectedDelivery ? new Date(expectedDelivery) : null,
         userId: parseInt(userInfo.userid, 10),
         userName: userInfo.username,
         password: userInfo.password,
-        contactID: poDetail.contactID ?? 0,
-        updateAllDates: updateAllDates,
-        urgentEmail: urgentEmail,
+        updateAllDates,
+        urgentEmail,
         notesList: previousNotes.map((note) => `${note.enteredBy}:${note.note}:${note.date}`),
       };
 
-      await Modules.PODeliveryLogService.updatePODetail(poDetail.id, updateDto);
+      await Modules.PODeliveryLogService.updatePODetail(poDetail!.id, updateDto);
       onClose();
     } catch (err) {
       console.error('Error updating PO:', err);
       setError('Failed to update PO. Please try again.');
-    } finally {
-      setLoading(false);
     }
   };
 
+  // Configure columns for the PaginatedSortableTable component
+  const columns = ['date', 'enteredBy', 'note'];
+  const columnNames = ['Date', 'Entered By', 'Note'];
+
+  // Function to render each row in the table, with row structure inferred
+  const renderRow = (row: typeof previousNotes[number]) => [
+    <TableCell key="date">{row.date}</TableCell>,
+    <TableCell key="enteredBy">{row.enteredBy}</TableCell>,
+    <TableCell key="note">{row.note}</TableCell>,
+  ];
+
   return (
-    <Box sx={{ padding: 3, backgroundColor: '#f9f9f9', borderRadius: 2 }}>
+    <Box sx={{ padding: 3, backgroundColor: 'background.paper', borderRadius: 2 }}>
       <Typography variant="h5" gutterBottom>
-        {`PO#${poDetail.poNum} || P/N#${poDetail.partNum}`}
+        {loading ? <Skeleton variant="text" width="60%" animation="wave" /> : <span>Update Info for <b>{poDetail?.partNum}</b> on <b>PO#{poDetail?.poNum}</b></span>}
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            label="Expected Delivery"
-            type="date"
-            value={expectedDelivery}
-            onChange={(e) => setExpectedDelivery(e.target.value)}
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            label="Sales Order Number"
-            value={poDetail.soNum}
-            fullWidth
-            InputProps={{ readOnly: true }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            label="Item Number"
-            value={poDetail.partNum}
-            fullWidth
-            InputProps={{ readOnly: true }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            label="Quantity Ordered"
-            value={poDetail.qtyOrdered}
-            fullWidth
-            InputProps={{ readOnly: true }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            label="Quantity Received"
-            value={poDetail.qtyReceived}
-            fullWidth
-            InputProps={{ readOnly: true }}
-          />
+
+        {/* Contact Information */}
+        <Grid item xs={12}>
+          <Box sx={{ padding: 2, backgroundColor: 'grey.100', borderRadius: 2, boxShadow: 1 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                {loading ? <Skeleton variant="text" width="80%" animation="wave" /> : (
+                  <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                    <strong>Contact:</strong> {poDetail?.contactName}
+                  </Typography>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                {loading ? <Skeleton variant="text" width="80%" animation="wave" /> : (
+                  <Typography variant="body1" sx={{ textAlign: 'center' }}>
+                    <strong>Company:</strong> {poDetail?.company}
+                  </Typography>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                {loading ? <Skeleton variant="text" width="80%" animation="wave" /> : (
+                  <Typography variant="body1" sx={{ textAlign: 'right' }}>
+                    <strong>Phone:</strong> {formatPhoneNumber(poDetail?.phone || '')}
+                  </Typography>
+                )}
+              </Grid>
+            </Grid>
+          </Box>
         </Grid>
 
+        {/* Additional PO Details */}
         <Grid item xs={12}>
-          <Grid container spacing={2}>
+          <Box sx={{ padding: 2, backgroundColor: 'grey.100', borderRadius: 2, boxShadow: 1, marginTop: 2 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                {loading ? <Skeleton variant="rectangular" width="100%" height={40} animation="wave" /> : (
+                  <TextField disabled label="SO#" sx={{backgroundColor:'background.paper'}} value={poDetail?.soNum || ''} fullWidth />
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                {loading ? <Skeleton variant="rectangular" width="100%" height={40} animation="wave" /> : (
+                  <TextField disabled label="Receiver Number" sx={{backgroundColor:'background.paper'}} value={poDetail?.receiverNum || ''} fullWidth />
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                {loading ? <Skeleton variant="rectangular" width="100%" height={40} animation="wave" /> : (
+                  <TextField disabled label="Quantity Ordered" sx={{backgroundColor:'background.paper'}} value={poDetail?.qtyOrdered || '0'} fullWidth />
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                {loading ? <Skeleton variant="rectangular" width="100%" height={40} animation="wave" /> : (
+                  <TextField disabled label="Quantity Received" sx={{backgroundColor:'background.paper'}} value={poDetail?.qtyReceived || '0'} fullWidth />
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                {loading ? <Skeleton variant="rectangular" width="100%" height={40} animation="wave" /> : (
+                  <TextField label="Expected Delivery" sx={{backgroundColor:'background.paper'}} type="date" value={expectedDelivery || ''} onChange={(e) => setExpectedDelivery(e.target.value)} fullWidth InputLabelProps={{ shrink: true }} />
+                )}
+                {!loading && poDetail?.expDelEditDate && (
+                  <Typography variant="caption" color="textSecondary" sx={{ marginTop: 1, display: 'block' }}>
+                    Edited by <b>{poDetail?.editedBy}</b> on <b>{new Date(poDetail.expDelEditDate).toLocaleDateString()}</b>
+                  </Typography>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                {loading ? <Skeleton variant="rectangular" width="100%" height={40} animation="wave" /> : (
+                  <TextField disabled label="Delivery Date" sx={{backgroundColor:'background.paper'}} value={poDetail?.dateDelivered ? new Date(poDetail.dateDelivered).toLocaleDateString() : ''} fullWidth />
+                )}
+              </Grid>
+            </Grid>
+          </Box>
+        </Grid>
+
+        {/* Checkboxes */}
+        <Grid item xs={12}>
+          <Grid container spacing={2} alignItems="center">
             <Grid item>
-              <Checkbox
-                checked={updateAllDates}
-                onChange={(e) => setUpdateAllDates(e.target.checked)}
-              />
-              Update ALL PO Delivery Dates
+              {loading ? (
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Skeleton variant="circular" width={24} height={24} animation="wave" />
+                  <Skeleton variant="text" width={150} sx={{ marginLeft: 1 }} animation="wave" />
+                </Box>
+              ) : (
+                <>
+                  <Checkbox checked={updateAllDates} onChange={(e) => setUpdateAllDates(e.target.checked)} />
+                  <Typography component="span">Update All Delivery Dates</Typography>
+                </>
+              )}
             </Grid>
             <Grid item>
-              <Checkbox
-                checked={urgentEmail}
-                onChange={(e) => setUrgentEmail(e.target.checked)}
-              />
-              Urgent Email Update
+              {loading ? (
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Skeleton variant="circular" width={24} height={24} animation="wave" />
+                  <Skeleton variant="text" width={120} sx={{ marginLeft: 1 }} animation="wave" />
+                </Box>
+              ) : (
+                <>
+                  <Checkbox checked={urgentEmail} onChange={(e) => setUrgentEmail(e.target.checked)} />
+                  <Typography component="span">Urgent Email Update</Typography>
+                </>
+              )}
             </Grid>
           </Grid>
         </Grid>
@@ -162,45 +208,46 @@ const PODetail: React.FC<PODetailProps> = ({ poDetail, onClose }) => {
           </Grid>
         )}
 
+        {/* Notes Section */}
         <Grid item xs={12}>
-          <Typography variant="h6">PO Notes</Typography>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell>Entered By</TableCell>
-                <TableCell>Note</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {previousNotes.map((note, index) => (
-                <TableRow key={index}>
-                  <TableCell>{note.date}</TableCell>
-                  <TableCell>{note.enteredBy}</TableCell>
-                  <TableCell>{note.note}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <Box sx={{ padding: 2, backgroundColor: 'grey.100', borderRadius: 2, boxShadow: 1 }}>
+            <Typography variant="h6">
+              {loading ? <Skeleton variant="text" width="40%" animation="wave" /> : `Notes for PO#${poDetail?.poNum}`}
+            </Typography>
+            {loading ? (
+              <>
+                <Skeleton variant="rectangular" width="100%" height={100} animation="wave" />
+                <Skeleton variant="rectangular" width="100%" height={100} animation="wave" sx={{ marginTop: 2 }} />
+              </>
+            ) : (
+              <PaginatedSortableTable
+                columns={columns}
+                columnNames={columnNames}
+                tableData={previousNotes}
+                func={renderRow}
+                headerBackgroundColor="#384959"
+                hoverColor="#f5f5f5"
+              />
+            )}
+            <TextField
+              label="Add note..."
+              multiline
+              rows={4}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              fullWidth
+              sx={{ marginTop: 2, backgroundColor: 'background.paper' }}
+            />
+          </Box>
         </Grid>
 
-        <Grid item xs={12}>
-          <TextField
-            label={`Notes for PO#${poDetail.poNum}`}
-            multiline
-            rows={4}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            fullWidth
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <Button variant="contained" color="primary" onClick={handleUpdatePO} disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : 'Update PO'}
-          </Button>
-          <Button variant="outlined" onClick={onClose} style={{ marginLeft: '10px' }}>
+        {/* Buttons */}
+        <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2}>
+          <Button variant="outlined" onClick={onClose}>
             Cancel
+          </Button>
+          <Button variant="contained" color="primary" onClick={handleUpdatePO}>
+            Update PO
           </Button>
         </Grid>
       </Grid>
