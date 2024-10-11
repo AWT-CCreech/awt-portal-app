@@ -10,10 +10,11 @@ import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { grey } from '@mui/material/colors';
 import * as XLSX from 'xlsx';
 import { TrkSoNote } from '../../models/TrkSoNote';
+import { TrkPoLog } from '../../models/TrkPoLog';
 
 const OpenSalesOrderReport: React.FC = () => {
   const [searchParams, setSearchParams] = useState<OpenSalesOrderSearchInput>({} as OpenSalesOrderSearchInput);
-  const [searchResult, setSearchResult] = useState<(OpenSOReport & { Notes: TrkSoNote[] })[]>([]);
+  const [searchResult, setSearchResult] = useState<(OpenSOReport & { notes: TrkSoNote[], poLog?: TrkPoLog })[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [uniqueSalesOrders, setUniqueSalesOrders] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -25,6 +26,7 @@ const OpenSalesOrderReport: React.FC = () => {
     setError(null);
     try {
       const response = await agent.OpenSalesOrderReport.fetchOpenSalesOrders(searchParams);
+      // Ensure that 'notes' and 'poLog' are included in the response
       setSearchResult(response);
       setUniqueSalesOrders(new Set(response.map(order => order.sonum)).size);
       setTotalItems(response.length);
