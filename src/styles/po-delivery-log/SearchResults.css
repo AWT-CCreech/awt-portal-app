@@ -1,0 +1,29 @@
+/* PODeliveryLogSearchResults.css */
+
+/* Center-align flex container for expected delivery */
+.expected-delivery {
+    display: flex;
+    align-items: center;
+}
+
+/* Center-align flex container for PO required date */
+.po-required-date {
+    display: flex;
+    align-items: center;
+}
+
+/* Styling for notes icon container */
+.notes-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Styling for notes edit date text */
+.note-edit-date {
+    font-size: 0.8em;
+    margin-top: 4px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
