@@ -13,6 +13,7 @@ import {
   Card as MuiCard,
   Stack,
 } from '@mui/material';
+import { Login } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import UserInfo from '../../stores/userInfo';
@@ -220,10 +221,11 @@ const LoginPage: React.FC = observer(() => {
               type="submit"
               fullWidth
               variant="contained"
+              color="primary"
               disabled={pageLoading}
-              sx={{ mt: 2 }}
+              endIcon={!pageLoading && <Login />}
             >
-              {pageLoading ? <CircularProgress size={24} /> : 'Sign in'}
+              {pageLoading ? <CircularProgress size={24} /> : 'Login'}
             </Button>
           </Box>
         </Card>
