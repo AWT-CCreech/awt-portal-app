@@ -4,13 +4,16 @@ import SearchBox from './SearchBox';
 import agent from '../../app/api/agent';
 import { formatAmount } from '../../utils/dataManipulation';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
-import { Box, Container, Grid, Typography, Snackbar } from '@mui/material';
+import { Box, Container, Grid, Typography, Snackbar, Modal } from '@mui/material';
 import SearchResults from './SearchResults';
 import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { grey } from '@mui/material/colors';
 import * as XLSX from 'xlsx';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { TrkPoLog } from '../../models/TrkPoLog';
+import NoteModal from './NoteModal';
+import PODetail from '../po-delivery-log/PODetail';
+import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
 
 const OpenSalesOrderReport: React.FC = () => {
   const [searchParams, setSearchParams] = useState<OpenSalesOrderSearchInput>({} as OpenSalesOrderSearchInput);
@@ -21,12 +24,21 @@ const OpenSalesOrderReport: React.FC = () => {
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
 
+  // Modal state variables
+  const [showNoteModal, setShowNoteModal] = useState<boolean>(false);
+  const [selectedSONum, setSelectedSONum] = useState<string>('');
+  const [selectedPartNum, setSelectedPartNum] = useState<string>('');
+  const [selectedNotes, setSelectedNotes] = useState<TrkSoNote[]>([]);
+
+  const [selectedPO, setSelectedPO] = useState<PODetailUpdateDto | null>(null);
+  const [poDetailModalOpen, setPoDetailModalOpen] = useState(false);
+  const [poDetailLoading, setPoDetailLoading] = useState(false);
+
   const getResultSets = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await agent.OpenSalesOrderReport.fetchOpenSalesOrders(searchParams);
-      // Ensure that 'notes' and 'poLog' are included in the response
       setSearchResult(response);
       setUniqueSalesOrders(new Set(response.map(order => order.sonum)).size);
       setTotalItems(response.length);
@@ -52,6 +64,59 @@ const OpenSalesOrderReport: React.FC = () => {
 
   const handleCloseSnackbar = useCallback(() => {
     setError(null);
+  }, []);
+
+  // Function to fetch notes for a line item
+  const fetchNotesForLineItem = useCallback(async (soNum: string, partNum: string) => {
+    try {
+      const response = await agent.OpenSalesOrderNotes.getNotes(soNum, partNum);
+      setSearchResult((prevResults) =>
+        prevResults.map((order) => {
+          if (order.sonum === soNum && order.itemNum === partNum) {
+            return { ...order, notes: response };
+          }
+          return order;
+        })
+      );
+    } catch (error) {
+      console.error('Error fetching notes', error);
+    }
+  }, []);
+
+  // Function to handle opening the note modal
+  const handleOpenNoteModal = useCallback((soNum: string, partNum: string, notes: TrkSoNote[]) => {
+    setSelectedSONum(soNum);
+    setSelectedPartNum(partNum);
+    setSelectedNotes(notes);
+    setShowNoteModal(true);
+  }, []);
+
+  // Function to handle closing the note modal
+  const handleCloseNoteModal = useCallback(() => {
+    setShowNoteModal(false);
+    fetchNotesForLineItem(selectedSONum, selectedPartNum); // Refetch notes when closing the modal
+  }, [selectedSONum, selectedPartNum, fetchNotesForLineItem]);
+
+  // Function to open the PO Log modal
+  const openPoLog = useCallback(async (id: number) => {
+    setPoDetailModalOpen(true);
+    setSelectedPO(null); // Reset selected PO
+    setPoDetailLoading(true); // Start loading
+
+    try {
+      const poDetail = await agent.PODeliveryLogService.getPODetailByID(id);
+      if (poDetail) {
+        setSelectedPO(poDetail);
+      } else {
+        console.error('PO Detail not found');
+        setPoDetailModalOpen(false); // Close modal if no data
+      }
+    } catch (error) {
+      console.error('Error fetching PO detail:', error);
+      setPoDetailModalOpen(false); // Close modal if error occurs
+    } finally {
+      setPoDetailLoading(false); // Stop loading
+    }
   }, []);
 
   return (
@@ -90,6 +155,8 @@ const OpenSalesOrderReport: React.FC = () => {
                   results={searchResult}
                   groupBySo={searchParams.chkGroupBySo || false}
                   containerHeight="100%"
+                  onOpenNoteModal={handleOpenNoteModal}
+                  onOpenPoLog={openPoLog}
                 />
               </Box>
             ) : (
@@ -128,6 +195,80 @@ const OpenSalesOrderReport: React.FC = () => {
           message={error}
         />
       )}
+      {/* Modals */}
+      <Modal
+        open={showNoteModal}
+        onClose={handleCloseNoteModal}
+        aria-labelledby="note-modal-title"
+        aria-describedby="note-modal-description"
+        closeAfterTransition
+        slotProps={{
+          backdrop: {
+            style: {
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(3px)',
+            }
+          }
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            width: '90%',
+            maxWidth: '800px',
+            borderRadius: 5,
+            overflow: 'auto',
+            maxHeight: '90vh'
+          }}
+        >
+          <NoteModal
+            soNum={selectedSONum}
+            partNum={selectedPartNum}
+            notes={selectedNotes}
+            onClose={handleCloseNoteModal}
+            onNoteAdded={() => fetchNotesForLineItem(selectedSONum, selectedPartNum)} // Refetch notes when a new note is added
+          />
+        </Box>
+      </Modal>
+      <Modal
+        open={poDetailModalOpen}
+        onClose={() => setPoDetailModalOpen(false)}
+        aria-labelledby="po-detail-modal-title"
+        aria-describedby="po-detail-modal-description"
+        closeAfterTransition
+        slotProps={{
+          backdrop: {
+            style: {
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(3px)',
+            }
+          }
+        }}
+      >
+        <Box
+          sx={{
+            width: '80vw',
+            margin: '50px auto',
+            backgroundColor: '#fff',
+            padding: '20px',
+            borderRadius: '10px',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+          }}
+        >
+          <PODetail
+            poDetail={selectedPO}
+            onClose={() => setPoDetailModalOpen(false)}
+            loading={poDetailLoading}
+          />
+        </Box>
+      </Modal>
     </div>
   );
 };
