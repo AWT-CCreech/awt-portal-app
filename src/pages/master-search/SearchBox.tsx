@@ -1,4 +1,7 @@
+// React and Hooks
 import React, { useEffect, useRef } from 'react';
+
+// MUI Components and Icons
 import {
   Box,
   Button,
@@ -17,6 +20,8 @@ import {
   SelectChangeEvent,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+
+// Utilities
 import { isNumber } from 'lodash';
 
 interface IProps {

@@ -1,10 +1,29 @@
+// React and Hooks
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Grid, TableCell, Typography, TextField, Button, ButtonGroup, Autocomplete, Checkbox } from '@mui/material';
+
+// MUI Components and Icons
+import {
+  Box,
+  Grid,
+  TableCell,
+  Typography,
+  TextField,
+  Button,
+  ButtonGroup,
+  Autocomplete,
+  Checkbox,
+} from '@mui/material';
 import { Close, Save } from '@mui/icons-material';
+
+// API
 import Modules from '../../app/api/agent';
+
+// Models
 import { CamContact } from '../../models/CamContact';
 import { NoteList } from '../../models/OpenSOReport/NoteList';
 import { TrkSoNote } from '../../models/TrkSoNote';
+
+// Components
 import SortableTable from '../../components/SortableTable'; // Adjust the import path as needed
 
 interface NoteModalProps {

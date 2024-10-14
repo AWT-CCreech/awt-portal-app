@@ -1,11 +1,22 @@
+// React and Hooks
 import React, { useCallback } from 'react';
+
+// MUI Components and Icons
 import { Box, TableCell, Link, IconButton } from '@mui/material';
 import { Warning, Add, Note } from '@mui/icons-material';
+
+// Components
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
+
+// Utilities
 import { formatAmount } from '../../utils/dataManipulation';
+
+// Models
 import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { TrkPoLog } from '../../models/TrkPoLog';
+
+// Styles
 import '../../styles/open-so-report/SearchResults.css';
 
 interface SearchResultsProps {

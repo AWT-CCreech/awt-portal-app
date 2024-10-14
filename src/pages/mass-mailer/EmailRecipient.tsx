@@ -1,4 +1,7 @@
+// React and Hooks
 import React, { useState, useEffect, ChangeEvent } from 'react';
+
+// MUI Components
 import {
   Box,
   Button,
@@ -17,10 +20,18 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+
+// API
 import agent from '../../app/api/agent';
+
+// Models
 import { IMassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
+
+// Components
 import VendorListItem from './components/VendorListItem';
 import SelectedVendor from './components/SelectedVendor';
+
+// Styles
 import '../../styles/mass-mailer/EmailRecipient.css';
 
 interface IProps {

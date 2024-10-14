@@ -1,15 +1,28 @@
+// React and Hooks
 import React, { useState, useEffect, useContext } from 'react';
+
+// Components
 import EmailProperties from './EmailProperties';
 import PartTable from './PartTable';
 import EmailRecipient from './EmailRecipient';
+import PageHeader from '../../components/PageHeader';
+
+// Models
 import { IMassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
 import { IMassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
-import agent from '../../app/api/agent';
-import { observer } from 'mobx-react-lite';
 import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
+
+// API
+import agent from '../../app/api/agent';
+
+// State Management
+import { observer } from 'mobx-react-lite';
 import AppState from '../../stores/app';
+
+// Utilities
 import { trim } from 'lodash';
-import PageHeader from '../../components/PageHeader';
+
+// MUI Components
 import {
   Box,
   Button,

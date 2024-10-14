@@ -1,7 +1,16 @@
+// React
 import React from 'react';
+
+// Models
 import BuyOppEvent from '../../models/MasterSearch/BuyOppEvent';
+
+// Components
 import SortableTable from '../../components/SortableTable';
+
+// Utilities
 import { getDateString } from '../../utils/dataManipulation';
+
+// MUI Components
 import {
   Box,
   Paper,

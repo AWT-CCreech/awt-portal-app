@@ -1,14 +1,44 @@
+// React and Hooks
 import React, { useEffect, useState, useRef } from 'react';
-import { 
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, 
-  Dialog, DialogActions, DialogContent, DialogTitle, TextField, 
-  Snackbar, Alert, CircularProgress, Button, IconButton, Tooltip, Typography, TableSortLabel 
+
+// MUI Components and Icons
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Snackbar,
+  Alert,
+  CircularProgress,
+  Button,
+  IconButton,
+  Tooltip,
+  Typography,
+  TableSortLabel,
 } from '@mui/material';
 import { Add, Delete, GetApp } from '@mui/icons-material';
+
+// API
 import Modules from '../../app/api/agent';
+
+// Models
 import { User } from '../../models/User';
+
+// Components
 import PageHeader from '../../components/PageHeader';
+
+// Utilities
 import * as XLSX from 'xlsx';
+
+// Styles
 import '../../styles/user-list/UserListPage.css';
 
 const UserListPage: React.FC = () => {

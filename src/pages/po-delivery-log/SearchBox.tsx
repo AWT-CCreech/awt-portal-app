@@ -1,4 +1,7 @@
+// React and Hooks
 import React, { ChangeEvent, useEffect, useState } from 'react';
+
+// MUI Components and Icons
 import {
   Box,
   Button,
@@ -15,8 +18,14 @@ import {
   Autocomplete,
 } from '@mui/material';
 import { GetApp, Search } from '@mui/icons-material';
+
+// Utilities
 import { debounce } from 'lodash';
+
+// Models
 import SearchInput from '../../models/PODeliveryLog/SearchInput';
+
+// API
 import Modules from '../../app/api/agent';
 
 interface SearchBoxProps {

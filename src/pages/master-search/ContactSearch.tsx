@@ -1,6 +1,13 @@
+// React
 import React from 'react';
+
+// Models
 import MasterSearchContact from '../../models/MasterSearch/MasterSearchContact';
+
+// Components
 import SortableTable from '../../components/SortableTable';
+
+// MUI Components and Icons
 import {
   Box,
   Paper,

@@ -1,4 +1,7 @@
+// React and Hooks
 import React, { useState } from 'react';
+
+// MUI Components and Icons
 import {
   Button,
   Dialog,
@@ -18,6 +21,8 @@ import {
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
+
+// Models
 import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
 
 interface IProps {

@@ -1,6 +1,13 @@
+// React
 import React from 'react';
+
+// Routing
 import { Navigate, useNavigate } from 'react-router-dom';
+
+// Utilities
 import { isAuthenticated } from '../../utils/authentication';
+
+// MUI Components
 import { Container, Grid, Button } from '@mui/material';
 
 const Home: React.FC = () => {

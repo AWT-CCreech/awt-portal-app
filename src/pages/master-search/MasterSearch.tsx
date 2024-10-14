@@ -1,12 +1,19 @@
-import React, { useEffect, useState } from 'react';
+// React and Hooks
+import React, { useState } from 'react';
+
+// Components
 import PageHeader from '../../components/PageHeader';
 import BuyOppsEvent from './BuyOppsEvent';
 import SellOppsEvent from './SellOppsEvent';
 import SellOppsDetail from './SellOppsDetail';
 import BuyOppsDetail from './BuyOppsDetail';
 import SearchBox from './SearchBox';
-import agent from '../../app/api/agent';
 import ContactSearch from './ContactSearch';
+
+// API
+import agent from '../../app/api/agent';
+
+// MUI Components
 import {
   Box,
   Container,

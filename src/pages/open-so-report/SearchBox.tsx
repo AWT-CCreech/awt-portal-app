@@ -1,13 +1,33 @@
+// React and Hooks
 import React, { ChangeEvent, KeyboardEvent, useEffect, useCallback, useState } from 'react';
+
+// MUI Components and Icons
 import {
-  Box, Button, TextField, Grid, Checkbox, FormControlLabel, Select, SelectChangeEvent, MenuItem, InputLabel, FormControl, IconButton, Tooltip, CircularProgress
+  Box,
+  Button,
+  TextField,
+  Grid,
+  Checkbox,
+  FormControlLabel,
+  Select,
+  SelectChangeEvent,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  IconButton,
+  Tooltip,
+  CircularProgress,
 } from '@mui/material';
 import { GetApp, Search } from '@mui/icons-material';
+
+// Models
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
 import { AccountNumbers } from '../../models/Data/AccountNumbers';
 import { ActiveSalesReps } from '../../models/Data/ActiveSalesReps';
 import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
 import { ItemCategories } from '../../models/Data/ItemCategories';
+
+// API
 import Modules from '../../app/api/agent';
 
 interface SearchBoxProps {

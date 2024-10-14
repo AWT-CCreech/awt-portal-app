@@ -1,8 +1,27 @@
+// React and Hooks
 import React, { useEffect, useState, useRef } from 'react';
-import { Container, Grid, Box, Chip, TextField, Button, Typography, CircularProgress, Alert } from '@mui/material';
+
+// MUI Components and Icons
+import {
+  Container,
+  Grid,
+  Box,
+  Chip,
+  TextField,
+  Button,
+  Typography,
+  CircularProgress,
+  Alert,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+
+// API
 import agent from '../../app/api/agent';
+
+// Models
 import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
+
+// Components
 import PageHeader from '../../components/PageHeader';
 import RecipientPopUp from './RecipientPopUp';
 
@@ -15,7 +34,7 @@ const DropShip = () => {
   const [PartNum, setPartNum] = useState<string>("");
   const [Qty, setQty] = useState<string>("");
   const [Tracking, setTracking] = useState<string>("");
-  const [SerialNum, setSerialNum] = useState<string>("");
+  const [SerialNum, setSerialNum] = useState<string>(""); //implement eventually, would benefit purchasing greatly
   const [Freight, setFreight] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [noMatchingMessage, setNoMatchingMessage] = useState("");

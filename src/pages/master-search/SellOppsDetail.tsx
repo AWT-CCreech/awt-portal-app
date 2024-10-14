@@ -1,14 +1,23 @@
+// React
 import React from 'react';
+
+// MUI Components
 import {
   Box,
   Paper,
   Divider,
   Typography,
   TableCell,
-  Link
+  Link,
 } from '@mui/material';
+
+// Models
 import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
+
+// Components
 import SortableTable from '../../components/SortableTable';
+
+// Utilities
 import { getDateString } from '../../utils/dataManipulation';
 
 interface IProps {

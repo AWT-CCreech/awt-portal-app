@@ -1,4 +1,7 @@
+// React
 import React from 'react';
+
+// MUI Components and Icons
 import { Chip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 

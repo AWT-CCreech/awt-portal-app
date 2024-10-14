@@ -1,4 +1,7 @@
+// React
 import React from 'react';
+
+// MUI Components and Icons
 import { ListItem, ListItemText, ListItemSecondaryAction, IconButton } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 

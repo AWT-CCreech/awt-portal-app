@@ -1,6 +1,13 @@
+// React and Hooks
 import React, { useEffect, useState } from 'react';
+
+// API
 import agent from '../../app/api/agent';
+
+// Models
 import { IMassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
+
+// MUI Components
 import {
   Box,
   Button,

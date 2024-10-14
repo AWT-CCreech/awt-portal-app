@@ -1,8 +1,13 @@
+// React
 import * as React from 'react';
+
+// MUI Components
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+
+// MUI Utilities
 import { styled } from '@mui/material/styles';
 
 const HomeButton = styled(Button)({

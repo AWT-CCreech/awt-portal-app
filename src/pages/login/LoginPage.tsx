@@ -1,4 +1,7 @@
+// React and Hooks
 import React, { useContext, FormEvent, useState, useEffect, useCallback } from 'react';
+
+// MUI Components and Icons
 import {
   Box,
   Button,
@@ -10,16 +13,26 @@ import {
   CircularProgress,
   IconButton,
   InputAdornment,
-  Card as MuiCard,
   Stack,
+  Card as MuiCard,
 } from '@mui/material';
 import { Login, Visibility, VisibilityOff } from '@mui/icons-material';
+
+// Routing
 import { useNavigate } from 'react-router-dom';
+
+// State Management
 import { observer } from 'mobx-react-lite';
 import UserInfo from '../../stores/userInfo';
-import LoginInfo from '../../models/Login/LoginInfo';
-import agent from '../../app/api/agent';
 import AppState from '../../stores/app';
+
+// Models
+import LoginInfo from '../../models/Login/LoginInfo';
+
+// API
+import agent from '../../app/api/agent';
+
+// Styles
 import '../../styles/login/LoginPage.css';
 
 const LoginPage: React.FC = observer(() => {

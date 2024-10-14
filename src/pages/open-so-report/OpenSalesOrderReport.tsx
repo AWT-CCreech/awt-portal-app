@@ -1,18 +1,27 @@
+// React and Hooks
 import React, { useState, useCallback } from 'react';
+
+// Components
 import PageHeader from '../../components/PageHeader';
 import SearchBox from './SearchBox';
-import agent from '../../app/api/agent';
-import { formatAmount } from '../../utils/dataManipulation';
-import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
-import { Box, Container, Grid, Typography, Snackbar, Modal } from '@mui/material';
 import SearchResults from './SearchResults';
-import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
-import { grey } from '@mui/material/colors';
-import * as XLSX from 'xlsx';
-import { TrkSoNote } from '../../models/TrkSoNote';
-import { TrkPoLog } from '../../models/TrkPoLog';
 import NoteModal from './NoteModal';
 import PODetail from '../po-delivery-log/PODetail';
+
+// API and Data Manipulation
+import agent from '../../app/api/agent';
+import { formatAmount } from '../../utils/dataManipulation';
+import * as XLSX from 'xlsx';
+
+// MUI Components and Styling
+import { Box, Container, Grid, Typography, Snackbar, Modal } from '@mui/material';
+import { grey } from '@mui/material/colors';
+
+// Models
+import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
+import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
+import { TrkSoNote } from '../../models/TrkSoNote';
+import { TrkPoLog } from '../../models/TrkPoLog';
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
 
 const OpenSalesOrderReport: React.FC = () => {

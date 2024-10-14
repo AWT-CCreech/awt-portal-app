@@ -1,6 +1,20 @@
+// React and Hooks
 import React, { useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Chip } from '@mui/material';
+
+// MUI Components and Icons
+import { 
+  Button, 
+  Dialog, 
+  DialogActions, 
+  DialogContent, 
+  DialogTitle, 
+  Grid, 
+  TextField, 
+  Chip 
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+
+// Models
 import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
 
 interface IProps {

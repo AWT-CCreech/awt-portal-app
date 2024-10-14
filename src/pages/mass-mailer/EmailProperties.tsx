@@ -1,4 +1,7 @@
+// React and Hooks
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+
+// MUI Components and Icons
 import {
   Box,
   Button,
@@ -12,17 +15,25 @@ import {
   Typography,
   FormControl,
   Tooltip,
-  Popover
+  Popover,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+
+// API
 import agent from '../../app/api/agent';
+
+// Models
 import { IMassMailerEmailTemplate } from '../../models/MassMailer/MassMailerEmailTemplate';
+import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
+
+// Components
 import SelectedFile from './components/SelectedFile';
 import CcPopUp from './CCPopUp';
-import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
 import AddCC from './AddCC';
+
+// Styles
 import '../../styles/mass-mailer/EmailProperties.css';
 
 interface IProps {

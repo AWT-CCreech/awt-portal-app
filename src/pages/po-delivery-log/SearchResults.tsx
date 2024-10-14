@@ -1,8 +1,17 @@
+// React
 import React from 'react';
+
+// MUI Components and Icons
 import { TableCell, TableRow, Box } from '@mui/material';
 import { Note, LocalFireDepartment, LocalShipping } from '@mui/icons-material';
+
+// Components
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
+
+// Models
 import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs';
+
+// Styles
 import '../../styles/po-delivery-log/SearchResults.css';
 
 interface SearchResultsProps {
