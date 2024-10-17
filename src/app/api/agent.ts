@@ -23,6 +23,7 @@ import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { User } from '../../models/User';
 import { ItemCategories } from '../../models/Data/ItemCategories';
+import { DropShipPart } from '../../models/DropShip/DropShipPart'; 
 
 const devURL = 'http://localhost:5001/api'; // Use for development environment
 const prodURL = 'http://10.0.0.8:82/api'; // Use for production environment
@@ -148,7 +149,7 @@ const DataFetch = {
       throw error;
     }
   },
-  fetchPurchasingReps: async (): Promise<any[]> => {  // Adding new method to fetch purchasing reps
+  fetchPurchasingReps: async (): Promise<any[]> => {
     try {
       const response = await requests.get('/Purchasing/GetPurchasingReps');
       return response;
@@ -157,8 +158,19 @@ const DataFetch = {
       throw error;
     }
   },
+  fetchDropShipParts: async (poNo?: string, soNo?: string): Promise<DropShipPart[]> => {
+    try {
+      const params: any = {};
+      if (poNo) params.poNo = poNo;
+      if (soNo) params.soNo = soNo;
+      const response = await requests.getWithParams('/ScanHistory/GetDropShipParts', params);
+      return response as DropShipPart[];
+    } catch (error) {
+      console.error('Error fetching drop ship parts', error);
+      throw error;
+    }
+  },
 };
-
 
 const DropShip = {
   dropShipSendEmail: (emailInput: object) => requests.post('/DropShipSendEmail', emailInput),
