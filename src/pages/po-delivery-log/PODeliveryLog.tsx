@@ -14,6 +14,7 @@ import { Box, Container, Grid, Typography, Modal } from '@mui/material';
 
 // Components
 import PageHeader from '../../components/PageHeader';
+import { ROUTE_PATHS } from '../../routes';
 import SearchBox from './SearchBox';
 import SearchResults from './SearchResults';
 import PODetail from './PODetail';
@@ -89,7 +90,7 @@ const PODeliveryLog: React.FC = () => {
 
   return (
     <div>
-      <PageHeader pageName="PO Delivery Log" pageHref="/podeliverylog" />
+      <PageHeader pageName="PO Delivery Log" pageHref={ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG} />
       <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
         <Grid container justifyContent="center">
           <Grid item xs={12}>
