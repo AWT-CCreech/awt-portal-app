@@ -27,7 +27,7 @@ interface IProps {
   salesReps: IMassMailerUser[];
 }
 
-const RecipientPopUp: React.FC<IProps> = ({ recipients, setRecipients, salesReps }) => {
+const RecipientModal: React.FC<IProps> = ({ recipients, setRecipients, salesReps }) => {
   const [searchRecipient, setSearchRecipient] = useState<string>("");
 
   const handleSelectRecipient = (email: string) => {
@@ -102,4 +102,4 @@ const RecipientPopUp: React.FC<IProps> = ({ recipients, setRecipients, salesReps
   );
 };
 
-export default RecipientPopUp;
+export default RecipientModal;
