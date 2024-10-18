@@ -1,7 +1,4 @@
-// React and Hooks
 import React, { useContext, FormEvent, useState, useEffect, useCallback } from 'react';
-
-// MUI Components and Icons
 import {
   Box,
   Button,
@@ -17,22 +14,12 @@ import {
   Card as MuiCard,
 } from '@mui/material';
 import { Login, Visibility, VisibilityOff } from '@mui/icons-material';
-
-// Routing
 import { useNavigate } from 'react-router-dom';
-
-// State Management
 import { observer } from 'mobx-react-lite';
 import UserInfo from '../../stores/userInfo';
 import AppState from '../../stores/app';
-
-// Models
 import LoginInfo from '../../models/Login/LoginInfo';
-
-// API
 import agent from '../../app/api/agent';
-
-// Styles
 import '../../styles/login/LoginPage.css';
 
 const LoginPage: React.FC = observer(() => {
@@ -41,7 +28,7 @@ const LoginPage: React.FC = observer(() => {
   const appState = useContext(AppState);
   const { pageLoading, setPageLoading } = appState;
 
-  const [hiddenLoginError, setHiddenLoginError] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -80,7 +67,7 @@ const LoginPage: React.FC = observer(() => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setPageLoading(true);
-    setHiddenLoginError(true);
+    setErrorMessage(''); // Clear any previous error messages
 
     const loginPayload: LoginInfo = {
       userid: '',
@@ -107,15 +94,26 @@ const LoginPage: React.FC = observer(() => {
         setUserName(response.username);
         setPassWord(response.password);
 
-        setPageLoading(false);
         navigate('/');
       } else {
-        setPageLoading(false);
-        setHiddenLoginError(false);
+        setErrorMessage('Incorrect username or password');
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response) {
+        if (error.response.status === 401) {
+          setErrorMessage('Incorrect username or password');
+        } else if (error.response.status >= 500) {
+          setErrorMessage('Server error. Please try again later.');
+        } else {
+          setErrorMessage(`Error: ${error.response.data.message || 'An unexpected error occurred.'}`);
+        }
+      } else if (error.request) {
+        setErrorMessage('Unable to reach the server. Please check your internet connection and try again.');
+      } else {
+        setErrorMessage('An unexpected error occurred. Please try again.');
+      }
+    } finally {
       setPageLoading(false);
-      setHiddenLoginError(false);
     }
   };
 
@@ -172,9 +170,9 @@ const LoginPage: React.FC = observer(() => {
                 }}
               />
             </FormControl>
-            {!hiddenLoginError && (
+            {errorMessage && (
               <Alert severity="error" className="login-error-alert">
-                Incorrect username or password
+                {errorMessage}
               </Alert>
             )}
             <Button
