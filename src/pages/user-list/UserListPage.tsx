@@ -34,6 +34,7 @@ import { User } from '../../models/User';
 
 // Components
 import PageHeader from '../../components/PageHeader';
+import { ROUTE_PATHS } from '../../routes';
 
 // Utilities
 import * as XLSX from 'xlsx';
@@ -189,7 +190,7 @@ const UserListPage: React.FC = () => {
 
   return (
     <div>
-      <PageHeader pageName="User List" pageHref="/userlist" />
+      <PageHeader pageName="User List" pageHref={ROUTE_PATHS.USER_LIST} />
       <Paper className="padded user-table-paper">
         <div className="header-container">
           <Typography variant="h5">AWT User List</Typography>
