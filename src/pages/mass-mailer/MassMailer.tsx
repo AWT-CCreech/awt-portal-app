@@ -6,6 +6,7 @@ import EmailProperties from './EmailProperties';
 import PartTable from './PartTable';
 import EmailRecipient from './EmailRecipient';
 import PageHeader from '../../components/PageHeader';
+import { ROUTE_PATHS } from '../../routes';
 
 // Models
 import { IMassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
@@ -124,7 +125,7 @@ const MassMailer: React.FC = () => {
 
   return (
     <div>
-      <PageHeader pageName="Mass Mailer" pageHref="/massmailer" />
+      <PageHeader pageName="Mass Mailer" pageHref={ROUTE_PATHS.PURCHASING.MASS_MAILER} />
       <Container maxWidth="lg" sx={{ padding: '40px 100px' }}>
         <EmailProperties
           emailBody={emailBody}
