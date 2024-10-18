@@ -1,3 +1,5 @@
+// PortalMenu.tsx
+
 import React, { useState, useEffect, useContext } from 'react';
 import {
   Box,
@@ -32,13 +34,15 @@ import {
   PinDropOutlined,
   EmailOutlined,
   ContactsOutlined,
-  SellOutlined
+  SellOutlined,
+  MarkunreadMailboxOutlined,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { handleLogOut } from '../utils/authentication';
 import UserInfoContext from '../stores/userInfo';
 import logo from '../assets/images/fullLogo.png';
+import { ROUTE_PATHS } from '../routes'; // Import the path constants
 
 const drawerWidth = 280;
 
@@ -87,6 +91,9 @@ const iconMap: { [key: string]: React.ElementType } = {
   PeopleOutlined,
   PinDropOutlined,
   EmailOutlined,
+  ContactsOutlined,
+  SellOutlined,
+  MarkunreadMailboxOutlined,
   Folder,
   FolderOpen,
   // Add other icons as needed
@@ -184,14 +191,16 @@ const PortalMenu: React.FC = () => {
   };
 
   const getFolderTitle = (folder: string) => {
-    return folder === 'it'
-      ? 'IT'
-      : folder === 'cam'
-      ? 'CAM'
-      : folder.charAt(0).toUpperCase() + folder.slice(1);
+    const specialCases: { [key: string]: string } = {
+      it: 'IT',
+      cam: 'CAM',
+    };
+    return specialCases[folder] || capitalizeFirstLetter(folder);
   };
 
-  const formatPath = (path: string) => path.toLowerCase().replace(/\s+/g, '');
+  const capitalizeFirstLetter = (string: string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
 
   // Helper function to get the name of the icon component
   const getIconName = (icon?: React.ElementType): string => {
@@ -241,15 +250,21 @@ const PortalMenu: React.FC = () => {
     purchasing: [
       {
         label: 'Drop Ship',
-        path: '/dropship',
+        path: ROUTE_PATHS.PURCHASING.DROPSHIP,
         iconName: 'PinDropOutlined',
         icon: PinDropOutlined,
       },
       {
         label: 'Mass Mailer',
-        path: '/massmailer',
+        path: ROUTE_PATHS.PURCHASING.MASS_MAILER,
         iconName: 'EmailOutlined',
         icon: EmailOutlined,
+      },
+      {
+        label: 'PO Delivery Log',
+        path: ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG,
+        iconName: 'MarkunreadMailboxOutlined',
+        icon: MarkunreadMailboxOutlined,
       },
       // Add more items as needed
     ],
@@ -258,7 +273,12 @@ const PortalMenu: React.FC = () => {
       // Add more items as needed
     ],
     sales: [
-      { label: 'Open SO Report', path: '/opensalesorderreport', icon: SellOutlined},
+      {
+        label: 'Open SO Report',
+        path: ROUTE_PATHS.SALES.OPEN_SO_REPORT,
+        iconName: 'SellOutlined',
+        icon: SellOutlined,
+      },
       // Add more items as needed
     ],
     shipping: [
@@ -272,13 +292,13 @@ const PortalMenu: React.FC = () => {
       label: 'Master Search',
       iconName: 'TravelExploreOutlined',
       icon: TravelExploreOutlined,
-      path: '/mastersearch',
+      path: ROUTE_PATHS.MASTER_SEARCH,
     },
     {
       label: 'User List',
       iconName: 'PeopleOutlined',
       icon: PeopleOutlined,
-      path: '/userlist',
+      path: ROUTE_PATHS.USER_LIST,
     },
   ];
 
