@@ -1,20 +1,14 @@
-// React
 import React from 'react';
-
-// Routing
 import { Navigate, useNavigate } from 'react-router-dom';
-
-// Utilities
-import { isAuthenticated } from '../../utils/authentication';
-
-// MUI Components
 import { Container, Grid, Button } from '@mui/material';
+import { isAuthenticated } from '../../utils/authentication';
+import { ROUTE_PATHS } from '../../routes'; // Import the path constants
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
 
   if (!isAuthenticated()) {
-    return <Navigate to="/login" />;
+    return <Navigate to={ROUTE_PATHS.LOGIN} />;
   }
 
   return (
@@ -24,7 +18,7 @@ const Home: React.FC = () => {
           <Button
             variant="contained"
             sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
-            onClick={() => navigate('/dropship')}
+            onClick={() => navigate(ROUTE_PATHS.PURCHASING.DROPSHIP)}
           >
             Drop Ship
           </Button>
@@ -33,7 +27,7 @@ const Home: React.FC = () => {
           <Button
             variant="contained"
             sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
-            onClick={() => navigate('/massmailer')}
+            onClick={() => navigate(ROUTE_PATHS.PURCHASING.MASS_MAILER)}
           >
             Mass Mailer
           </Button>
@@ -42,7 +36,7 @@ const Home: React.FC = () => {
           <Button
             variant="contained"
             sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
-            onClick={() => navigate('/timetracker')}
+            onClick={() => navigate(ROUTE_PATHS.TIME_TRACKER)}
           >
             Time Tracker
           </Button>
@@ -51,7 +45,7 @@ const Home: React.FC = () => {
           <Button
             variant="contained"
             sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
-            onClick={() => navigate('/mastersearch')}
+            onClick={() => navigate(ROUTE_PATHS.MASTER_SEARCH)}
           >
             Master Search
           </Button>
@@ -60,7 +54,7 @@ const Home: React.FC = () => {
           <Button
             variant="contained"
             sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
-            onClick={() => navigate('/podeliverylog')}
+            onClick={() => navigate(ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG)}
           >
             PO Delivery Log
           </Button>
@@ -69,7 +63,7 @@ const Home: React.FC = () => {
           <Button
             variant="contained"
             sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
-            onClick={() => navigate('/opensalesorderreport')}
+            onClick={() => navigate(ROUTE_PATHS.SALES.OPEN_SO_REPORT)}
           >
             Open SO Report
           </Button>
@@ -78,7 +72,7 @@ const Home: React.FC = () => {
           <Button
             variant="contained"
             sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
-            onClick={() => navigate('/userlist')}
+            onClick={() => navigate(ROUTE_PATHS.USER_LIST)}
           >
             User List
           </Button>
