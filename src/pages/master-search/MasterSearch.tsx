@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 
 // Components
 import PageHeader from '../../components/PageHeader';
+import { ROUTE_PATHS } from '../../routes';
 import BuyOppsEvent from './BuyOppsEvent';
 import SellOppsEvent from './SellOppsEvent';
 import SellOppsDetail from './SellOppsDetail';
@@ -119,7 +120,7 @@ const MasterSearch: React.FC<IProps> = () => {
 
   return (
     <div>
-      <PageHeader pageName="Master Search" pageHref="/mastersearch" />
+      <PageHeader pageName="Master Search" pageHref={ROUTE_PATHS.MASTER_SEARCH} />
       <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
         <Grid container justifyContent="center">
           <Grid item xs={12}>
