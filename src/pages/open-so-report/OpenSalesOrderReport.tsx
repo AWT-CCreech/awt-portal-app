@@ -3,6 +3,7 @@ import React, { useState, useCallback } from 'react';
 
 // Components
 import PageHeader from '../../components/PageHeader';
+import { ROUTE_PATHS } from '../../routes';
 import SearchBox from './SearchBox';
 import SearchResults from './SearchResults';
 import NoteModal from './NoteModal';
@@ -130,7 +131,7 @@ const OpenSalesOrderReport: React.FC = () => {
 
   return (
     <div>
-      <PageHeader pageName="Open Sales Order Report" pageHref="/opensalesorderreport" />
+      <PageHeader pageName="Open Sales Order Report" pageHref={ROUTE_PATHS.SALES.OPEN_SO_REPORT} />
       <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
         <Grid container justifyContent="center">
           <Grid item xs={12}>
