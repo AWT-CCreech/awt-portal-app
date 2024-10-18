@@ -1,5 +1,4 @@
 /* PODeliveryLogSearchResults.css */
-
 /* Center-align flex container for expected delivery */
 .expected-delivery {
     display: flex;
@@ -11,6 +10,16 @@
     display: flex;
     align-items: center;
 }
+
+.po-sonum {
+    display: flex;
+    align-items: center;
+}
+
+.alert-icon {
+    margin-left: 8px; /* Optional: adjust spacing between text and icon */
+}
+  
 
 /* Styling for notes icon container */
 .notes-container {
