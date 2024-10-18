@@ -1,24 +1,15 @@
 import React, { useEffect, useContext, useState, useCallback, useRef } from 'react';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useRoutes } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import theme from '../../styles/themes/theme'; // adjust the path as necessary
+import theme from '../../styles/themes/theme';
 
-import LoginPage from '../../pages/login/LoginPage';
-import Home from '../../pages/home/Home';
-import NotFound from '../../pages/exception-pages/NotFound';
 import UserInfoContext from '../../stores/userInfo';
-import PrivateRoute from '../../components/PrivateRoute';
-import MassMailer from '../../pages/mass-mailer/MassMailer';
-import MasterSearch from '../../pages/master-search/MasterSearch';
-import OpenSalesOrderReport from '../../pages/open-so-report/OpenSalesOrderReport';
-import DropShip from '../../pages/dropship/DropShip';
-import UserListPage from '../../pages/user-list/UserListPage';
-import setDocumentTitle from '../../utils/setDocumentTitle';
 import InactivityModal from '../../components/InactivityModal';
 import agent from '../../app/api/agent';
 import { isAuthenticated, handleAutoLogout } from '../../utils/authentication';
-import PODeliveryLog from '../../pages/po-delivery-log/PODeliveryLog';
+import { routes } from '../../routes'; // Import the centralized routes
+import setDocumentTitle from '../../utils/setDocumentTitle';
 
 const App: React.FC = () => {
   const userInfo = useContext(UserInfoContext);
@@ -113,6 +104,9 @@ const App: React.FC = () => {
     };
   }, [resetInactivityTimeout]);
 
+  // Use the centralized routes with useRoutes
+  const routing = useRoutes(routes);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -128,19 +122,7 @@ const App: React.FC = () => {
           onLogout={handleLogout}
         />
       )}
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route element={<PrivateRoute />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/dropship" element={<DropShip />} />
-          <Route path="/massmailer" element={<MassMailer />} />
-          <Route path="/mastersearch" element={<MasterSearch />} />
-          <Route path="/opensalesorderreport" element={<OpenSalesOrderReport />} />
-          <Route path="/podeliverylog" element={<PODeliveryLog />} />
-          <Route path="/userlist" element={<UserListPage />} />
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      {routing}
     </ThemeProvider>
   );
 };
