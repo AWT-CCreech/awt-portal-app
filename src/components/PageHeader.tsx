@@ -1,13 +1,10 @@
-// PageHeader.tsx
-
 import React from 'react';
 import { Box, Container, Grid, Typography, Breadcrumbs } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PortalMenu from './PortalMenu';
 import { useLocation } from 'react-router-dom';
-import { ROUTE_PATHS } from '../routes'; // Adjust the import path as necessary
-import HomeIcon from '@mui/icons-material/Home';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { ROUTE_PATHS } from '../routes';
+import { Home } from '@mui/icons-material';
 
 interface IProps {
   pageName: string;
@@ -99,7 +96,7 @@ const PageHeader: React.FC<IProps> = ({ pageName, pageHref }) => {
           >
             {/* Home Icon and Name */}
             <Box sx={{ display: 'flex', alignItems: 'center', color: '#384959' }}>
-              <HomeIcon fontSize="small" sx={{ marginRight: '4px' }} />
+              <Home fontSize="small" sx={{ marginRight: '4px' }} />
               <Typography variant="body2">Home</Typography>
             </Box>
 
