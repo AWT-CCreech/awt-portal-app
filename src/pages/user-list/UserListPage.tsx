@@ -37,10 +37,10 @@ import PageHeader from '../../components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';
 
 // Utilities
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 // Styles
-import '../../styles/user-list/UserListPage.css';
+import '../../styles/user-list/UserListPage.scss';
 
 const UserListPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -98,11 +98,51 @@ const UserListPage: React.FC = () => {
     }
   };
 
-  const handleExportExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(users);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Users');
-    XLSX.writeFile(wb, 'UserList.xlsx');
+  const handleExportExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Users');
+  
+    // Define columns
+    worksheet.columns = [
+      { header: 'Last Name', key: 'lname', width: 20 },
+      { header: 'First Name', key: 'fname', width: 20 },
+      { header: 'Username', key: 'uname', width: 20 },
+      { header: 'Extension', key: 'extension', width: 10 },
+      { header: 'Direct Phone', key: 'directPhone', width: 15 },
+      { header: 'Mobile Phone', key: 'mobilePhone', width: 15 },
+    ];
+  
+    // Add rows
+    users.forEach(user => {
+      worksheet.addRow({
+        lname: user.lname,
+        fname: user.fname,
+        uname: user.uname,
+        extension: user.extension,
+        directPhone: user.directPhone,
+        mobilePhone: user.mobilePhone,
+      });
+    });
+  
+    // Write the workbook to a buffer
+    const buffer = await workbook.xlsx.writeBuffer();
+    
+    // Create a Blob from the buffer
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    // Create a download link
+    const url = window.URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'UserList.xlsx';
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    window.URL.revokeObjectURL(url);
+    
+    setSuccess('Excel file exported successfully!');
   };
 
   const handleUpdateUser = async () => {
