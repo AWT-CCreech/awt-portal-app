@@ -1,0 +1,46 @@
+// Define variables for commonly used values to enhance consistency and ease of updates
+$spacing-small: 10px;
+$spacing-medium: 16px;
+$spacing-large: 20px;
+$max-width-message: 200px;
+
+// Table Wrapper Styles
+.table-wrapper {
+  flex-grow: 1;
+  position: relative;
+  padding-top: 0; // Remove top padding to align with the header
+  margin-top: $spacing-small; // Add margin to separate from the header and button
+
+  tr {
+    cursor: pointer;
+  }
+}
+
+// Message Container Styles
+.message-container {
+  position: fixed;
+  bottom: $spacing-large;
+  left: $spacing-large;
+  z-index: 1; // Ensure it's above other content
+  width: auto;
+  max-width: $max-width-message; // Adjust width as needed
+}
+
+// Header Container Styles
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// Button Margin Right Utility
+.button-margin-right {
+  padding-right: $spacing-small;
+}
+
+// User Table Paper Styles
+.user-table-paper {
+  margin: $spacing-medium;
+  padding: $spacing-medium;
+  max-width: 100%;
+}
