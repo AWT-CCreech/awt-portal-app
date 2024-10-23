@@ -3,6 +3,7 @@ import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import SelectPayPeriodForm from './SelectPayPeriodForm';
 import agent from '../../app/api/agent';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Grid, Button, Paper } from '@mui/material';
+import '../../styles/time-tracker/TimeSheet.scss'; // Import the SCSS file
 
 interface IProps {
     trackersInPeriod: TimeTracker[],
@@ -50,9 +51,9 @@ const TimeSheet: React.FC<IProps> = ({ trackersInPeriod, previousPeriod, setPrev
                 arr[2] = temp.join(':');
                 
                 if(t[0] === "+")
-                    return (<span key={t} style={{ display: "inline" }}><b>In: </b> {`${arr[2]} ${arr[3]}`}</span>)
+                    return (<span key={t} className="in-out-span"><b>In: </b> {`${arr[2]} ${arr[3]}`}</span>)
                 else if (t[0] === "-")
-                    return (<span key={t} style={{ display: "inline" }}><b>Out: </b> {`${arr[2]} ${arr[3]}`}</span>)
+                    return (<span key={t} className="in-out-span"><b>Out: </b> {`${arr[2]} ${arr[3]}`}</span>)
                 else
                     return (<span key={t}></span>);
             }).reduce((prev, curr) => [prev, '; ', curr])
@@ -93,6 +94,7 @@ const TimeSheet: React.FC<IProps> = ({ trackersInPeriod, previousPeriod, setPrev
             var element = document.createElement('a');
             element.setAttribute('href', 'data:application/vnd.ms-excel,' + encodeURIComponent(content));
             element.setAttribute('download', title);
+            element.className = 'hidden-download-link'; // Optional: for accessibility or additional styling
             element.style.display = 'none';
             document.body.appendChild(element);
             element.click();
@@ -101,7 +103,7 @@ const TimeSheet: React.FC<IProps> = ({ trackersInPeriod, previousPeriod, setPrev
     }
 
     return (
-        <div style={{ marginTop: '50px'}}>
+        <div className="time-sheet-container">
             <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                     <SelectPayPeriodForm 
@@ -116,7 +118,7 @@ const TimeSheet: React.FC<IProps> = ({ trackersInPeriod, previousPeriod, setPrev
                 </Grid>
             </Grid>
 
-            <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+            <TableContainer component={Paper} className="time-sheet-table-container">
                 <Table>
                     <TableHead>
                         <TableRow>
