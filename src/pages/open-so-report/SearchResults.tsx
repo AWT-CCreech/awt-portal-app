@@ -17,7 +17,7 @@ import { TrkSoNote } from '../../models/TrkSoNote';
 import { TrkPoLog } from '../../models/TrkPoLog';
 
 // Styles
-import '../../styles/open-so-report/SearchResults.css';
+import '../../styles/open-so-report/SearchResults.scss';
 
 interface SearchResultsProps {
   results: (OpenSOReport & { notes: TrkSoNote[], poLog?: TrkPoLog })[];
