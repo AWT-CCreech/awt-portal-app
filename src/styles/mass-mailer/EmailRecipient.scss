@@ -1,0 +1,23 @@
+// Variables
+$border-color: #ccc;
+$padding-large: 24px;
+$margin-top-large: 24px;
+$border-radius-medium: 8px;
+
+// Mixins
+@mixin box-style($padding, $border, $border-radius, $margin-top) {
+  padding: $padding;
+  border: $border;
+  border-radius: $border-radius;
+  margin-top: $margin-top;
+}
+
+// Email Recipient Container Styles
+.email-recipient-container {
+  @include box-style(
+    $padding-large,         // padding: 24px;
+    1px solid $border-color, // border: 1px solid #ccc;
+    $border-radius-medium,   // border-radius: 8px;
+    $margin-top-large        // margin-top: 24px;
+  );
+}
