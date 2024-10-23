@@ -9,11 +9,9 @@ import {
   TextField,
   Grid,
   FormControl,
-  IconButton,
   InputLabel,
   Select,
   SelectChangeEvent,
-  Tooltip,
   MenuItem,
   Autocomplete,
 } from '@mui/material';
@@ -24,6 +22,7 @@ import { debounce } from 'lodash';
 
 // Models
 import SearchInput from '../../models/PODeliveryLog/SearchInput';
+import { Rep } from '../../models/Data/Rep';
 
 // API
 import Modules from '../../app/api/agent';
@@ -34,6 +33,7 @@ interface SearchBoxProps {
   onSearch: () => void;
   loading: boolean;
   handleExport: () => void;
+  loadingExport: boolean;
   searchResultLength: number;
 }
 
@@ -43,10 +43,11 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   onSearch,
   loading,
   handleExport,
+  loadingExport,
   searchResultLength,
 }) => {
-  const [salesReps, setSalesReps] = useState<any[]>([]);
-  const [purchasingReps, setPurchasingReps] = useState<any[]>([]);
+  const [salesReps, setSalesReps] = useState<Rep[]>([]);
+  const [purchasingReps, setPurchasingReps] = useState<Rep[]>([]);
   const [vendors, setVendors] = useState<string[]>([]); // State for vendor list
   const [vendorLoading, setVendorLoading] = useState<boolean>(false); // Loading state for vendors
 
@@ -119,7 +120,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   ]);
 
   // Handle input changes for text fields
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setSearchParams((prevParams: SearchInput) => ({
       ...prevParams,
@@ -128,7 +129,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   };
 
   // Handle changes for select fields
-  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+  const handleSelectChange = (e: SelectChangeEvent<string>): void => {
     const { name, value } = e.target;
     setSearchParams((prevParams: SearchInput) => ({
       ...prevParams,
@@ -137,7 +138,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   };
 
   // Handle notes change specifically
-  const handleNotesChange = (e: SelectChangeEvent<string>) => {
+  const handleNotesChange = (e: SelectChangeEvent<string>): void => {
     setSearchParams((prevParams) => ({
       ...prevParams,
       HasNotes: e.target.value,
@@ -145,7 +146,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   };
 
   // Handle form submission
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     onSearch();
   };
@@ -261,15 +262,15 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               freeSolo
               fullWidth
               options={vendors}
-              getOptionLabel={(option) => option}
+              getOptionLabel={(option: string) => option}
               value={searchParams.Vendor || ''}
-              onChange={(event, newValue) => {
+              onChange={(event: React.SyntheticEvent, newValue: string | null) => {
                 setSearchParams((prevParams) => ({
                   ...prevParams,
                   Vendor: newValue || '',
                 }));
               }}
-              onInputChange={(event, newInputValue) => {
+              onInputChange={(event: React.SyntheticEvent, newInputValue: string) => {
                 setSearchParams((prevParams) => ({
                   ...prevParams,
                   Vendor: newInputValue || '',
@@ -285,9 +286,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                     ...params.InputProps,
                     endAdornment: (
                       <>
-                        {vendorLoading ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : null}
+                        {vendorLoading ? <CircularProgress color="inherit" size={20} /> : null}
                         {params.InputProps.endAdornment}
                       </>
                     ),
@@ -366,25 +365,22 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             <Button
               variant="contained"
               color="primary"
-              type="submit" // Changed to 'submit'
-              fullWidth
+              type="submit"
               disabled={loading}
               startIcon={!loading && <Search />}
+              sx={{ mr: 2 }} // Add some margin between buttons
             >
               {loading ? <CircularProgress size={24} /> : 'Search'}
             </Button>
-            <Tooltip title="Export to Excel">
-              <span>
-                <IconButton
-                  color="success"
-                  onClick={handleExport}
-                  sx={{ ml: 2 }}
-                  disabled={loading || searchResultLength === 0}
-                >
-                  <GetApp />
-                </IconButton>
-              </span>
-            </Tooltip>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleExport}
+              disabled={loadingExport || searchResultLength === 0}
+              startIcon={loadingExport ? <CircularProgress size={20} /> : <GetApp />}
+            >
+              Export to Excel
+            </Button>
           </Grid>
         </Grid>
       </Box>
