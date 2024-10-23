@@ -34,7 +34,7 @@ import CcPopUp from './CCPopUp';
 import AddCC from './AddCC';
 
 // Styles
-import '../../styles/mass-mailer/EmailProperties.css';
+import '../../styles/mass-mailer/EmailProperties.scss';
 
 interface IProps {
   emailBody: string;
