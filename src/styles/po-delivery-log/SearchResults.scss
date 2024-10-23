@@ -1,0 +1,41 @@
+// Variables
+$spacing-small: 8px;
+$spacing-extra-small: 4px;
+$font-size-small: 0.8em;
+
+// Center-align flex container for expected delivery
+.expected-delivery {
+  display: flex;
+  align-items: center;
+}
+
+// Center-align flex container for PO required date
+.po-required-date {
+  display: flex;
+  align-items: center;
+}
+
+.po-sonum {
+  display: flex;
+  align-items: center;
+}
+
+.alert-icon {
+  margin-left: $spacing-small; // Optional: adjust spacing between text and icon
+}
+
+// Styling for notes icon container
+.notes-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+// Styling for notes edit date text
+.note-edit-date {
+  font-size: $font-size-small;
+  margin-top: $spacing-extra-small;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
