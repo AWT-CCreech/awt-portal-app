@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useState, useCallback, useRef } from 'rea
 import { useLocation, useNavigate, useRoutes } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import theme from '../../styles/themes/theme';
+import theme from '../../themes/theme';
 
 import UserInfoContext from '../../stores/userInfo';
 import InactivityModal from '../../components/InactivityModal';
