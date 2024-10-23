@@ -13,8 +13,8 @@ interface SearchInput {
     chkGroupBySo?: boolean;
     chkAllHere?: boolean;
     dateFilterType?: string;
-    date1?: Date;
-    date2?: Date;
+    date1?: string | null;
+    date2?: string | null;
 }
 
 export default SearchInput;
