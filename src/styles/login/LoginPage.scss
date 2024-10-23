@@ -1,0 +1,106 @@
+// Variables
+$border-color: #ccc;
+$background-gradient-start: hsl(210, 100%, 97%);
+$background-gradient-end: hsl(0, 0%, 100%);
+$box-shadow-light: hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px;
+$box-shadow-dark: hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px;
+$padding-small: 16px;
+$padding-medium: 20px;
+$padding-large: 24px;
+$margin-small: 16px;
+$margin-medium: 20px;
+$gap-medium: 16px;
+$font-size-title: clamp(2rem, 10vw, 2.15rem);
+$popup-width: 450px;
+$logo-width: 150px;
+
+// Mixins
+@mixin flex-center($direction: row, $justify: center, $align: center) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+@mixin box-shadow($shadow-light, $shadow-dark) {
+  box-shadow: $shadow-light, $shadow-dark;
+}
+
+@mixin responsive-max-width($width, $breakpoint: 600px) {
+  @media (min-width: $breakpoint) {
+    max-width: $width;
+  }
+}
+
+// General styles for the login container
+.login-container {
+  min-height: 100vh;
+  padding: $padding-medium;
+  position: relative;
+  @include flex-center();
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: radial-gradient(ellipse at 50% 50%, $background-gradient-start, $background-gradient-end);
+    background-repeat: no-repeat;
+  }
+}
+
+// Card styling
+.login-card {
+  @include flex-center(column, center, center);
+  width: 100%;
+  padding: $padding-small;
+  gap: $gap-medium;
+  margin: auto;
+  @include box-shadow($box-shadow-light, $box-shadow-dark);
+  @include responsive-max-width($popup-width);
+
+  // Ensure full width of form controls within the card
+  .login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: $gap-medium;
+
+    // Styling for the input fields (full width)
+    .MuiFormControl-root {
+      width: 100%; // Ensures the inputs are full width
+    }
+  }
+}
+
+// Logo box styling
+.logo-box {
+  @include flex-center();
+
+  img {
+    width: $logo-width;
+    height: auto;
+  }
+}
+
+// Title typography
+.login-title {
+  width: 100%;
+  font-size: $font-size-title;
+  text-align: center;
+}
+
+// Error alert styling
+.login-error-alert {
+  margin-top: $margin-small;
+}
+
+// Submit button styling
+.submit-button {
+  @include flex-center();
+  width: 100%; // Ensure the submit button is also full width
+}
