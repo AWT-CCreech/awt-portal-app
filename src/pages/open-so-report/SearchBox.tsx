@@ -23,7 +23,7 @@ import { GetApp, Search } from '@mui/icons-material';
 // Models
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
 import { AccountNumbers } from '../../models/Data/AccountNumbers';
-import { ActiveSalesReps } from '../../models/Data/ActiveSalesReps';
+import { Rep } from '../../models/Data/Rep';
 import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
 import { ItemCategories } from '../../models/Data/ItemCategories';
 
@@ -36,11 +36,20 @@ interface SearchBoxProps {
   getResultSets: () => void;
   handleExport: () => void;
   searchResultLength: number;
-  loading: boolean;  // Add the loading prop to control the state of the button
+  loading: boolean;
+  loadingExport: boolean;
 }
 
-const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, getResultSets, handleExport, searchResultLength, loading }) => {
-  const [salesReps, setSalesReps] = useState<ActiveSalesReps[]>([]);
+const SearchBox: React.FC<SearchBoxProps> = ({
+  searchParams,
+  setSearchParams,
+  getResultSets,
+  handleExport,
+  searchResultLength,
+  loading,
+  loadingExport,
+}) => {
+  const [salesReps, setSalesReps] = useState<Rep[]>([]);
   const [salesTeams, setSalesTeams] = useState<ActiveSalesTeams[]>([]);
   const [itemCategories, setItemCategories] = useState<ItemCategories[]>([]);
   const [accountNumbers, setAccountNumbers] = useState<AccountNumbers[]>([]);
@@ -87,27 +96,36 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
     fetchSalesReps();
     fetchSalesTeams();
 
+    // Set default date range from one year ago to today
     const today = new Date();
     const lastYear = new Date();
     lastYear.setFullYear(today.getFullYear() - 1);
 
+    // Format dates to 'YYYY-MM-DD' for the input fields
+    const todayStr = today.toISOString().substring(0, 10); // 'YYYY-MM-DD'
+    const lastYearStr = lastYear.toISOString().substring(0, 10); // 'YYYY-MM-DD'
+
+    console.log('Setting default date range:', { date1: lastYearStr, date2: todayStr });
+
     setSearchParams(prevParams => ({
       ...prevParams,
-      date1: lastYear,
-      date2: today,
+      date1: lastYearStr,
+      date2: todayStr,
     }));
   }, [setSearchParams]);
 
   const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+    console.log(`Input Change - ${name}:`, value);
     setSearchParams(prevParams => ({
       ...prevParams,
-      [name]: name === 'date1' || name === 'date2' ? (value ? new Date(value) : null) : value,
+      [name]: value || null,
     }));
   }, [setSearchParams]);
 
   const handleSelectChange = useCallback((event: SelectChangeEvent<string>) => {
     const { name, value } = event.target;
+    console.log(`Select Change - ${name}:`, value);
     setSearchParams(prevParams => ({
       ...prevParams,
       [name!]: value as string,
@@ -116,6 +134,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
 
   const handleCheckboxChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
+    console.log(`Checkbox Change - ${name}:`, checked);
     setSearchParams(prevParams => ({
       ...prevParams,
       [name]: checked,
@@ -124,6 +143,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (event.key === 'Enter') {
+      console.log('Enter key pressed - triggering search');
       getResultSets();
     }
   }, [getResultSets]);
@@ -131,6 +151,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
   return (
     <Box sx={{ width: '100%', p: { xs: 1, md: 2 }, boxShadow: 3, bgcolor: 'background.paper', boxSizing: 'border-box' }}>
       <Grid container spacing={2} onKeyDown={handleKeyDown}>
+        {/* Date Filter Type */}
         <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
             <InputLabel id="dateFilterType-label">Date Filter Type</InputLabel>
@@ -139,34 +160,40 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
               name="dateFilterType"
               value={searchParams.dateFilterType || 'OrderDate'}
               onChange={handleSelectChange}
+              label="Date Filter Type"
             >
               <MenuItem key="OrderDate" value="OrderDate">Sales Order Date</MenuItem>
               <MenuItem key="ExpectedDelivery" value="ExpectedDelivery">Expected Delivery Date</MenuItem>
             </Select>
           </FormControl>
         </Grid>
+        {/* Start Date */}
         <Grid item xs={12} sm={3}>
           <TextField
             fullWidth
             type="date"
             label="Start Date"
             name="date1"
-            value={searchParams.date1 ? new Date(searchParams.date1).toISOString().substring(0, 10) : ''}
+            value={searchParams.date1 || ''}
             onChange={handleInputChange}
             InputLabelProps={{ shrink: true }}
+            inputProps={{ min: '2000-01-01', max: '2030-12-31' }}
           />
         </Grid>
+        {/* End Date */}
         <Grid item xs={12} sm={3}>
           <TextField
             fullWidth
             type="date"
             label="End Date"
             name="date2"
-            value={searchParams.date2 ? new Date(searchParams.date2).toISOString().substring(0, 10) : ''}
+            value={searchParams.date2 || ''}
             onChange={handleInputChange}
             InputLabelProps={{ shrink: true }}
+            inputProps={{ min: '2000-01-01', max: '2030-12-31' }}
           />
         </Grid>
+        {/* Req Date Status */}
         <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
             <InputLabel id="reqDateStatus-label">Req Date Status</InputLabel>
@@ -175,13 +202,14 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
               name="reqDateStatus"
               value={searchParams.reqDateStatus || 'All'}
               onChange={handleSelectChange}
+              label="Req Date Status"
             >
               <MenuItem key="All" value="All">All</MenuItem>
               <MenuItem key="Late" value="Late">Late</MenuItem>
             </Select>
           </FormControl>
         </Grid>
-
+        {/* Sales Team */}
         <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
             <InputLabel id="salesTeam-label">Sales Team</InputLabel>
@@ -190,6 +218,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
               name="salesTeam"
               value={searchParams.salesTeam || 'All'}
               onChange={handleSelectChange}
+              label="Sales Team"
             >
               <MenuItem key="All" value="All">All</MenuItem>
               {salesTeams.map((team) => (
@@ -200,6 +229,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             </Select>
           </FormControl>
         </Grid>
+        {/* Sales Rep */}
         <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
             <InputLabel id="salesRep-label">Sales Rep</InputLabel>
@@ -208,6 +238,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
               name="salesRep"
               value={searchParams.salesRep || 'All'}
               onChange={handleSelectChange}
+              label="Sales Rep"
             >
               <MenuItem key="All" value="All">All</MenuItem>
               {salesReps.map((rep) => (
@@ -218,6 +249,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             </Select>
           </FormControl>
         </Grid>
+        {/* AirWay SO */}
         <Grid item xs={12} sm={3}>
           <TextField
             fullWidth
@@ -227,6 +259,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             onChange={handleInputChange}
           />
         </Grid>
+        {/* Part Number */}
         <Grid item xs={12} sm={3}>
           <TextField
             fullWidth
@@ -236,7 +269,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             onChange={handleInputChange}
           />
         </Grid>
-
+        {/* Account Number */}
         <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
             <InputLabel id="accountNumber-label">Account Number</InputLabel>
@@ -245,6 +278,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
               name="accountNo"
               value={searchParams.accountNo || 'All'}
               onChange={handleSelectChange}
+              label="Account Number"
             >
               <MenuItem key="All" value="All">All</MenuItem>
               {accountNumbers.map((accountNumber) => (
@@ -255,6 +289,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             </Select>
           </FormControl>
         </Grid>
+        {/* Category */}
         <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
             <InputLabel id="category-label">Category</InputLabel>
@@ -263,6 +298,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
               name="category"
               value={searchParams.category || 'All'}
               onChange={handleSelectChange}
+              label="Category"
             >
               <MenuItem key="All" value="All">All</MenuItem>
               {itemCategories.map((category) => (
@@ -273,6 +309,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             </Select>
           </FormControl>
         </Grid>
+        {/* AirWay PO */}
         <Grid item xs={12} sm={3}>
           <TextField
             fullWidth
@@ -282,6 +319,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             onChange={handleInputChange}
           />
         </Grid>
+        {/* Customer PO */}
         <Grid item xs={12} sm={3}>
           <TextField
             fullWidth
@@ -291,7 +329,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             onChange={handleInputChange}
           />
         </Grid>
-
+        {/* Customer */}
         <Grid item xs={12} sm={9}>
           <TextField
             fullWidth
@@ -301,6 +339,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             onChange={handleInputChange}
           />
         </Grid>
+        {/* Checkboxes */}
         <Grid item xs={12} sm={3}>
           <FormControlLabel
             control={
@@ -333,21 +372,26 @@ const SearchBox: React.FC<SearchBoxProps> = ({ searchParams, setSearchParams, ge
             label="Group by SO"
           />
         </Grid>
-
+        {/* Buttons */}
         <Grid item xs={12} display="flex" justifyContent="flex-start" alignItems="center">
           <Button
             variant="contained"
             color="primary"
             onClick={getResultSets}
             fullWidth
-            disabled={loading}  // Disable the button when loading
-            startIcon={!loading && <Search />}  // Add the magnifying glass icon only when not loading
+            disabled={loading}
+            startIcon={!loading && <Search />}
           >
-            {loading ? <CircularProgress size={24} /> : 'Search'}  {/* Show CircularProgress when loading */}
+            {loading ? <CircularProgress size={24} /> : 'Search'}
           </Button>
           <Tooltip title="Export to Excel">
             <span>
-              <IconButton color="success" onClick={handleExport} sx={{ ml: 2 }} disabled={searchResultLength === 0}>
+              <IconButton
+                color="success"
+                onClick={handleExport}
+                sx={{ ml: 2 }}
+                disabled={loading || searchResultLength === 0 || loadingExport}
+              >
                 <GetApp />
               </IconButton>
             </span>
