@@ -12,11 +12,17 @@ import PODetail from '../po-delivery-log/PODetail';
 // API and Data Manipulation
 import agent from '../../app/api/agent';
 import { formatAmount } from '../../utils/dataManipulation';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 // MUI Components and Styling
-import { Box, Container, Grid, Typography, Snackbar, Modal } from '@mui/material';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Snackbar from '@mui/material/Snackbar';
+import Modal from '@mui/material/Modal';
 import { grey } from '@mui/material/colors';
+import { Alert } from '@mui/material';
 
 // Models
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
@@ -26,20 +32,45 @@ import { TrkPoLog } from '../../models/TrkPoLog';
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
 
 const OpenSalesOrderReport: React.FC = () => {
-  const [searchParams, setSearchParams] = useState<OpenSalesOrderSearchInput>({} as OpenSalesOrderSearchInput);
-  const [searchResult, setSearchResult] = useState<(OpenSOReport & { notes: TrkSoNote[], poLog?: TrkPoLog })[]>([]);
+  const [searchParams, setSearchParams] = useState<OpenSalesOrderSearchInput>({
+    soNum: '',
+    poNum: '',
+    custPO: '',
+    partNum: '',
+    reqDateStatus: 'All',
+    salesTeam: 'All',
+    category: 'All',
+    salesRep: 'All',
+    accountNo: 'All',
+    customer: '',
+    chkExcludeCo: false,
+    chkGroupBySo: false,
+    chkAllHere: false,
+    dateFilterType: 'OrderDate',
+    date1: null,
+    date2: null,
+  });
+  const [searchResult, setSearchResult] = useState<
+    (OpenSOReport & { notes: TrkSoNote[]; poLog?: TrkPoLog })[]
+  >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [uniqueSalesOrders, setUniqueSalesOrders] = useState<number>(0);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
 
-  // Modal state variables
+  // Export states
+  const [loadingExport, setLoadingExport] = useState<boolean>(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [exportSuccess, setExportSuccess] = useState<string | null>(null);
+
+  // Modal state variables for Notes
   const [showNoteModal, setShowNoteModal] = useState<boolean>(false);
   const [selectedSONum, setSelectedSONum] = useState<string>('');
   const [selectedPartNum, setSelectedPartNum] = useState<string>('');
   const [selectedNotes, setSelectedNotes] = useState<TrkSoNote[]>([]);
 
+  // Modal state variables for PO Detail
   const [selectedPO, setSelectedPO] = useState<PODetailUpdateDto | null>(null);
   const [poDetailModalOpen, setPoDetailModalOpen] = useState(false);
   const [poDetailLoading, setPoDetailLoading] = useState(false);
@@ -48,12 +79,16 @@ const OpenSalesOrderReport: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log('Sending searchParams:', searchParams);
       const response = await agent.OpenSalesOrderReport.fetchOpenSalesOrders(searchParams);
+      console.log('Received response:', response);
       setSearchResult(response);
-      setUniqueSalesOrders(new Set(response.map(order => order.sonum)).size);
+      setUniqueSalesOrders(new Set(response.map((order) => order.sonum)).size);
       setTotalItems(response.length);
-      setTotalAmount(response.reduce((acc, order) => acc + (order.amountLeft || 0), 0));
-    } catch (error) {
+      setTotalAmount(
+        response.reduce((acc, order) => acc + (order.amountLeft || 0), 0)
+      );
+    } catch (error: any) {
       console.error('Error fetching open sales orders', error);
       setError('Failed to fetch sales orders. Please try again.');
       setSearchResult([]);
@@ -65,56 +100,181 @@ const OpenSalesOrderReport: React.FC = () => {
     }
   }, [searchParams]);
 
-  const handleExport = useCallback(() => {
-    const ws = XLSX.utils.json_to_sheet(searchResult);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'OpenSOReport');
-    XLSX.writeFile(wb, 'OpenSOReport.xlsx');
+  const handleExport = useCallback(async () => {
+    setLoadingExport(true);
+    setExportError(null);
+    setExportSuccess(null);
+
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('OpenSOReport');
+
+      // Define columns with headers and keys matching the data structure
+      worksheet.columns = [
+        { header: 'EID', key: 'eventId', width: 15 },
+        { header: 'SO #', key: 'sonum', width: 15 },
+        { header: 'Team', key: 'accountTeam', width: 15 },
+        { header: 'Customer', key: 'customerName', width: 20 },
+        { header: 'Cust PO', key: 'custPo', width: 15 },
+        { header: 'Order Date', key: 'orderDate', width: 15 },
+        { header: 'Req. Date', key: 'requiredDate', width: 15 },
+        { header: 'Missing P/N', key: 'itemNum', width: 20 },
+        { header: 'Vendor P/N', key: 'mfgNum', width: 20 },
+        { header: 'Amount', key: 'amountLeft', width: 15 },
+        { header: 'PO #', key: 'ponum', width: 15 },
+        { header: 'PO Issue Date', key: 'poissueDate', width: 15 },
+        { header: 'Exp. Delivery', key: 'expectedDelivery', width: 15 },
+        { header: 'Qty Ordered', key: 'qtyOrdered', width: 15 },
+        { header: 'Qty Received', key: 'qtyReceived', width: 15 },
+        { header: 'PO Log', key: 'poLog', width: 25 },
+        { header: 'Notes', key: 'notesExist', width: 10 },
+      ];
+
+      // Add rows to the worksheet
+      searchResult.forEach((order) => {
+        worksheet.addRow({
+          eventId: order.eventId,
+          sonum: order.sonum,
+          accountTeam: order.accountTeam || order.salesRep,
+          customerName: order.customerName,
+          custPo: order.custPo,
+          orderDate: order.orderDate
+            ? new Date(order.orderDate).toLocaleDateString()
+            : '',
+          requiredDate: order.requiredDate
+            ? new Date(order.requiredDate).toLocaleDateString()
+            : '',
+          itemNum: order.itemNum
+            ? `${order.itemNum} (${order.leftToShip ?? 0})`
+            : '',
+          mfgNum: order.mfgNum,
+          amountLeft: order.amountLeft ?? 0,
+          ponum: order.ponum,
+          poissueDate:
+          order.poissueDate &&
+          order.poissueDate.getTime() !== new Date('1900-01-01T00:00:00').getTime()
+            ? order.poissueDate.toLocaleDateString()
+            : '',
+        expectedDelivery:
+          order.expectedDelivery &&
+          order.expectedDelivery.getTime() !== new Date('1900-01-01T00:00:00').getTime()
+            ? order.expectedDelivery.toLocaleDateString()
+            : '',
+          qtyOrdered: order.qtyOrdered,
+          qtyReceived: order.qtyReceived,
+          poLog: order.poLog
+            ? `${new Date(order.poLog.entryDate).toLocaleDateString()} (${order.poLog.enteredBy})`
+            : '',
+          notesExist: order.notes.length > 0 ? 'Yes' : 'No',
+        });
+      });
+
+      // Style the header row
+      worksheet.getRow(1).eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFB0C4DE' }, // LightSteelBlue background
+        };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+
+      // Format the 'Amount' column as currency
+      worksheet.getColumn('amountLeft').numFmt = '$#,##0.00';
+
+      // Write the workbook to a buffer
+      const buffer = await workbook.xlsx.writeBuffer();
+
+      // Create a Blob from the buffer
+      const blob = new Blob([buffer], {
+        type:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      // Create a temporary anchor element and trigger the download
+      const url = window.URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `OpenSOReport_${new Date()
+        .toISOString()
+        .split('T')[0]}.xlsx`;
+      document.body.appendChild(anchor); // Append to body to ensure it works in Firefox
+      anchor.click();
+      document.body.removeChild(anchor); // Remove from body after clicking
+      window.URL.revokeObjectURL(url);
+
+      setExportSuccess('Excel file exported successfully!');
+      console.log('Excel export successful');
+    } catch (error) {
+      console.error('Error exporting Excel file:', error);
+      setExportError('Failed to export Excel file.');
+    } finally {
+      setLoadingExport(false);
+    }
   }, [searchResult]);
 
   const handleCloseSnackbar = useCallback(() => {
     setError(null);
+    setExportError(null);
+    setExportSuccess(null);
   }, []);
 
   // Function to fetch notes for a line item
-  const fetchNotesForLineItem = useCallback(async (soNum: string, partNum: string) => {
-    try {
-      const response = await agent.OpenSalesOrderNotes.getNotes(soNum, partNum);
-      setSearchResult((prevResults) =>
-        prevResults.map((order) => {
-          if (order.sonum === soNum && order.itemNum === partNum) {
-            return { ...order, notes: response };
-          }
-          return order;
-        })
-      );
-    } catch (error) {
-      console.error('Error fetching notes', error);
-    }
-  }, []);
+  const fetchNotesForLineItem = useCallback(
+    async (soNum: string, partNum: string) => {
+      try {
+        const response = await agent.OpenSalesOrderNotes.getNotes(soNum, partNum);
+        console.log(`Fetched notes for SO: ${soNum}, Part: ${partNum}`, response);
+        setSearchResult((prevResults) =>
+          prevResults.map((order) => {
+            if (order.sonum === soNum && order.itemNum === partNum) {
+              return { ...order, notes: response };
+            }
+            return order;
+          })
+        );
+      } catch (error) {
+        console.error('Error fetching notes', error);
+      }
+    },
+    []
+  );
 
   // Function to handle opening the note modal
-  const handleOpenNoteModal = useCallback((soNum: string, partNum: string, notes: TrkSoNote[]) => {
-    setSelectedSONum(soNum);
-    setSelectedPartNum(partNum);
-    setSelectedNotes(notes);
-    setShowNoteModal(true);
-  }, []);
+  const handleOpenNoteModal = useCallback(
+    (soNum: string, partNum: string, notes: TrkSoNote[]) => {
+      console.log(`Opening Note Modal for SO: ${soNum}, Part: ${partNum}`);
+      setSelectedSONum(soNum);
+      setSelectedPartNum(partNum);
+      setSelectedNotes(notes);
+      setShowNoteModal(true);
+    },
+    []
+  );
 
   // Function to handle closing the note modal
   const handleCloseNoteModal = useCallback(() => {
+    console.log('Closing Note Modal');
     setShowNoteModal(false);
     fetchNotesForLineItem(selectedSONum, selectedPartNum); // Refetch notes when closing the modal
   }, [selectedSONum, selectedPartNum, fetchNotesForLineItem]);
 
   // Function to open the PO Log modal
   const openPoLog = useCallback(async (id: number) => {
+    console.log(`Opening PO Detail Modal for ID: ${id}`);
     setPoDetailModalOpen(true);
     setSelectedPO(null); // Reset selected PO
     setPoDetailLoading(true); // Start loading
 
     try {
       const poDetail = await agent.PODeliveryLogService.getPODetailByID(id);
+      console.log('Fetched PO Detail:', poDetail);
       if (poDetail) {
         setSelectedPO(poDetail);
       } else {
@@ -131,10 +291,16 @@ const OpenSalesOrderReport: React.FC = () => {
 
   return (
     <div>
-      <PageHeader pageName="Open Sales Order Report" pageHref={ROUTE_PATHS.SALES.OPEN_SO_REPORT} />
-      <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
-        <Grid container justifyContent="center">
-          <Grid item xs={12}>
+      <PageHeader
+        pageName="Open Sales Order Report"
+        pageHref={ROUTE_PATHS.SALES.OPEN_SO_REPORT}
+      />
+      <Container
+        maxWidth={false}
+        sx={{ padding: { xs: '20px', md: '20px' } }}
+      >
+        <Grid container justifyContent="center" spacing={2}>
+          <Grid item xs={12} component="div">
             <SearchBox
               searchParams={searchParams}
               setSearchParams={setSearchParams}
@@ -142,19 +308,17 @@ const OpenSalesOrderReport: React.FC = () => {
               handleExport={handleExport}
               searchResultLength={searchResult.length}
               loading={loading}
+              loadingExport={loadingExport}
             />
           </Grid>
-          <Grid item xs={12} sx={{ paddingTop: { xs: '15px' } }}>
+          <Grid item xs={12} sx={{ paddingTop: { xs: '15px' } }} component="div">
             {loading ? (
               <Box display="flex" justifyContent="center" alignItems="center" mt={10}>
-                <Typography variant="h6" component="div" sx={{ ml: 2 }}>
-                  Loading...
-                </Typography>
               </Box>
             ) : searchResult.length > 0 ? (
               <Box
                 sx={{
-                  height: '80vh', 
+                  height: '80vh',
                   display: 'flex',
                   flexDirection: 'column',
                   boxShadow: 3,
@@ -192,20 +356,68 @@ const OpenSalesOrderReport: React.FC = () => {
             zIndex: 1000,
           }}
         >
-          <Typography variant="body1"><strong>Total Amount:</strong> {formatAmount(totalAmount)}</Typography>
-          <Typography variant="body1"><strong>Sales Orders:</strong> {uniqueSalesOrders}</Typography>
-          <Typography variant="body1"><strong>Total Items:</strong> {totalItems}</Typography>
+          <Typography variant="body1">
+            <strong>Total Amount:</strong> {formatAmount(totalAmount)}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Sales Orders:</strong> {uniqueSalesOrders}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Total Items:</strong> {totalItems}
+          </Typography>
         </Box>
+      )}
+      {/* Snackbars for Export Success and Error */}
+      {exportSuccess && (
+        <Snackbar
+          open={Boolean(exportSuccess)}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
+            {exportSuccess}
+          </Alert>
+        </Snackbar>
+      )}
+      {exportError && (
+        <Snackbar
+          open={Boolean(exportError)}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity="error"
+            sx={{ width: '100%' }}
+          >
+            {exportError}
+          </Alert>
+        </Snackbar>
       )}
       {error && (
         <Snackbar
-          open={true}
+          open={Boolean(error)}
           autoHideDuration={6000}
           onClose={handleCloseSnackbar}
-          message={error}
-        />
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity="error"
+            sx={{ width: '100%' }}
+          >
+            {error}
+          </Alert>
+        </Snackbar>
       )}
       {/* Modals */}
+      {/* Note Modal */}
       <Modal
         open={showNoteModal}
         onClose={handleCloseNoteModal}
@@ -217,8 +429,8 @@ const OpenSalesOrderReport: React.FC = () => {
             style: {
               backgroundColor: 'rgba(0,0,0,0.5)',
               backdropFilter: 'blur(3px)',
-            }
-          }
+            },
+          },
         }}
       >
         <Box
@@ -234,7 +446,7 @@ const OpenSalesOrderReport: React.FC = () => {
             maxWidth: '800px',
             borderRadius: 5,
             overflow: 'auto',
-            maxHeight: '90vh'
+            maxHeight: '90vh',
           }}
         >
           <NoteModal
@@ -242,10 +454,13 @@ const OpenSalesOrderReport: React.FC = () => {
             partNum={selectedPartNum}
             notes={selectedNotes}
             onClose={handleCloseNoteModal}
-            onNoteAdded={() => fetchNotesForLineItem(selectedSONum, selectedPartNum)} // Refetch notes when a new note is added
+            onNoteAdded={() =>
+              fetchNotesForLineItem(selectedSONum, selectedPartNum)
+            }
           />
         </Box>
       </Modal>
+      {/* PO Detail Modal */}
       <Modal
         open={poDetailModalOpen}
         onClose={() => setPoDetailModalOpen(false)}
@@ -257,19 +472,24 @@ const OpenSalesOrderReport: React.FC = () => {
             style: {
               backgroundColor: 'rgba(0,0,0,0.5)',
               backdropFilter: 'blur(3px)',
-            }
-          }
+            },
+          },
         }}
       >
         <Box
           sx={{
-            width: '80vw',
-            margin: '50px auto',
-            backgroundColor: '#fff',
-            padding: '20px',
-            borderRadius: '10px',
-            maxHeight: '80vh',
-            overflowY: 'auto',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            width: '90%',
+            maxWidth: '800px',
+            borderRadius: 5,
+            overflow: 'auto',
+            maxHeight: '90vh',
           }}
         >
           <PODetail
