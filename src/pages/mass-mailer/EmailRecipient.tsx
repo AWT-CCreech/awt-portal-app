@@ -32,7 +32,7 @@ import VendorListItem from './components/VendorListItem';
 import SelectedVendor from './components/SelectedVendor';
 
 // Styles
-import '../../styles/mass-mailer/EmailRecipient.css';
+import '../../styles/mass-mailer/EmailRecipient.scss';
 
 interface IProps {
   selectedVendors: IMassMailerVendor[];
