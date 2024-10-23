@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
 import { AccountNumbers } from '../../models/Data/AccountNumbers';
-import { ActiveSalesReps } from '../../models/Data/ActiveSalesReps';
 import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
 import { CamContact } from '../../models/CamContact';
 import { IMassMailerEmailTemplate } from '../../models/MassMailer/MassMailerEmailTemplate';
@@ -24,6 +23,8 @@ import { TrkSoNote } from '../../models/TrkSoNote';
 import { User } from '../../models/User';
 import { ItemCategories } from '../../models/Data/ItemCategories';
 import { DropShipPart } from '../../models/DropShip/DropShipPart'; 
+import { Rep } from '../../models/Data/Rep';
+import { DropShipPartsParams } from '../../models/DropShip/DropShipPartParams';
 
 const devURL = 'http://localhost:5001/api'; // Use for development environment
 const prodURL = 'http://10.0.0.8:82/api'; // Use for production environment
@@ -37,13 +38,48 @@ const responseBody = (response: AxiosResponse) => response.data;
 
 // Axios request methods wrapped for easier use
 const requests = {
-  get: (url: string) => axios.get(url).then(responseBody),
-  getWithParams: (url: string, body: Object) =>
-    axios.get(url, { params: body }).then(responseBody),
-  post: (url: string, body: Object) => axios.post(url, body).then(responseBody),
-  postNoBody: (url: string) => axios.post(url).then(responseBody),
-  put: (url: string, body: Object) => axios.put(url, body).then(responseBody),
-  delete: (url: string) => axios.delete(url).then(responseBody),
+  get: async (url: string) => {
+    console.log(`GET Request to: ${url}`);
+    return axios.get(url).then(responseBody).then(data => {
+      console.log(`GET Response from: ${url}`, data);
+      return data;
+    });
+  },
+  getWithParams: async (url: string, params: object) => {
+    console.log(`GET Request to: ${url} with params:`, params);
+    return axios.get(url, { params }).then(responseBody).then(data => {
+      console.log(`GET Response from: ${url} with params:`, data);
+      return data;
+    });
+  },
+  post: async (url: string, body: object) => {
+    console.log(`POST Request to: ${url} with body:`, body);
+    return axios.post(url, body).then(responseBody).then(data => {
+      console.log(`POST Response from: ${url}`, data);
+      return data;
+    });
+  },
+  postNoBody: async (url: string) => {
+    console.log(`POST Request to: ${url} with no body`);
+    return axios.post(url).then(responseBody).then(data => {
+      console.log(`POST Response from: ${url}`, data);
+      return data;
+    });
+  },
+  put: async (url: string, body: object) => {
+    console.log(`PUT Request to: ${url} with body:`, body);
+    return axios.put(url, body).then(responseBody).then(data => {
+      console.log(`PUT Response from: ${url}`, data);
+      return data;
+    });
+  },
+  delete: async (url: string) => {
+    console.log(`DELETE Request to: ${url}`);
+    return axios.delete(url).then(responseBody).then(data => {
+      console.log(`DELETE Response from: ${url}`, data);
+      return data;
+    });
+  },
 };
 
 // Automatically attach the JWT token to every request if it exists in localStorage
@@ -122,10 +158,10 @@ const DataFetch = {
       throw error;
     }
   },
-  fetchActiveSalesReps: async (): Promise<ActiveSalesReps[]> => {
+  fetchActiveSalesReps: async (): Promise<Rep[]> => {
     try {
       const response = await requests.get('/Sales/GetSalesReps');
-      return response as ActiveSalesReps[];
+      return response as Rep[];
     } catch (error) {
       console.error('Error fetching sales reps', error);
       throw error;
@@ -149,7 +185,7 @@ const DataFetch = {
       throw error;
     }
   },
-  fetchPurchasingReps: async (): Promise<any[]> => {
+  fetchPurchasingReps: async (): Promise<Rep[]> => {
     try {
       const response = await requests.get('/Purchasing/GetPurchasingReps');
       return response;
@@ -160,7 +196,7 @@ const DataFetch = {
   },
   fetchDropShipParts: async (poNo?: string, soNo?: string): Promise<DropShipPart[]> => {
     try {
-      const params: any = {};
+      const params: DropShipPartsParams = {};
       if (poNo) params.poNo = poNo;
       if (soNo) params.soNo = soNo;
       const response = await requests.getWithParams('/ScanHistory/GetDropShipParts', params);
@@ -183,7 +219,7 @@ const MassMailer = {
     clear: (userid: string): Promise<any> => requests.get(`/MassMailerClearPartItems/${userid}`),
   },
   EmailOuts: {
-    sendEmail: (body: Object) => requests.post('/MassMailerEmailOuts', body),
+    sendEmail: (body: object) => requests.post('/MassMailerEmailOuts', body),
   },
   EmailTemplates: {
     templatesForUser: (user: string): Promise<IMassMailerEmailTemplate[]> =>
@@ -319,7 +355,7 @@ const TimeTrackers = {
     requests.get(`/PeriodTimeTrackers?userId=${userId}&previousPeriod=${previousPeriod}`),
   isApproved: (userId: string, previousPeriod: boolean) =>
     requests.get(`/TimeTrackerApprovals?userId=${userId}&previousPeriod=${previousPeriod}`),
-  sendEmailReport: (body: Object) => requests.post('/TimeTrackerReportSender', body),
+  sendEmailReport: (body: object) => requests.post('/TimeTrackerReportSender', body),
   update: (body: TimeTracker): Promise<TimeTracker> => requests.put('/TimeTrackers', body),
 };
 
