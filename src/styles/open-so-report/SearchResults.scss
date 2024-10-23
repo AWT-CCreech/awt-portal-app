@@ -1,0 +1,52 @@
+// Variables
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$color-gray: #888;
+$font-size-small: 0.8em;
+
+// Mixins
+@mixin flex-center($direction: row, $align: center, $justify: center) {
+  display: flex;
+  flex-direction: $direction;
+  align-items: $align;
+  justify-content: $justify;
+}
+
+@mixin text-overflow-ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+// General Text Overflow and Ellipsis
+.text-overflow {
+  @include text-overflow-ellipsis;
+}
+
+// Flex Alignment and Spacing within a Cell
+.required-date {
+  @include flex-center();
+}
+
+// Alert Icon with Margin-Left
+.alert-icon {
+  margin-left: $spacing-xs; // 4px
+  visibility: visible;
+  display: inline-block;
+}
+
+// Pointer Cursor Utility
+.pointer {
+  cursor: pointer;
+}
+
+// Modal Date Display in Notes
+.notes-edit-date {
+  font-size: $font-size-small;
+  color: $color-gray;
+}
+
+// Icon Button Container
+.notes-container {
+  @include text-overflow-ellipsis;
+}
