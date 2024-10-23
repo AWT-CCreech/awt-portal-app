@@ -1,0 +1,54 @@
+/* TimeSheet.scss */
+
+/* Variables */
+$margin-top-large: 50px;
+$margin-top-medium: 20px;
+$margin-left-large: 16px;
+$margin-left-small: 8px;
+$border-color: #ccc;
+$background-gradient-start: hsl(210, 100%, 97%);
+$background-gradient-end: hsl(0, 0%, 100%);
+$box-shadow-light: hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px;
+$box-shadow-dark: hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px;
+$padding-container: 50px; /* Assuming original div had margin-top:50px, adjust if needed */
+$padding-table-container: 20px;
+$display-inline: inline;
+$hidden-download-link-display: none;
+
+/* Mixins */
+@mixin flex-center($direction: row, $justify: center, $align: center) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+@mixin box-shadow($shadow-light, $shadow-dark) {
+  box-shadow: $shadow-light, $shadow-dark;
+}
+
+@mixin responsive-max-width($width, $breakpoint: 600px) {
+  @media (min-width: $breakpoint) {
+    max-width: $width;
+  }
+}
+
+/* Main Container */
+.time-sheet-container {
+  margin-top: $margin-top-large;
+}
+
+/* Table Container */
+.time-sheet-table-container {
+  margin-top: $margin-top-medium;
+}
+
+/* In and Out Span */
+.in-out-span {
+  display: $display-inline;
+}
+
+/* Hidden Download Link (Optional) */
+.hidden-download-link {
+  display: $hidden-download-link-display;
+}
