@@ -84,7 +84,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
     }
   }, [activeOnly, contactQuery, companyQuery, fetchSuggestions]);
 
-  const handleContactInputChange = (event: React.ChangeEvent<{}>, value: string) => {
+  const handleContactInputChange = (event: React.SyntheticEvent<Element, Event>, value: string) => {
     setSearchBy('Contact');
     setContactQuery(value);
     if (!value) {
@@ -96,7 +96,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
     }
   };
 
-  const handleCompanyInputChange = (event: React.ChangeEvent<{}>, value: string) => {
+  const handleCompanyInputChange = (event: React.SyntheticEvent<Element, Event>, value: string) => {
     setSearchBy('Company');
     setCompanyQuery(value);
     if (!value) {
