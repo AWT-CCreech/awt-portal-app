@@ -13,6 +13,7 @@ import {
   Stack,
   Card as MuiCard,
 } from '@mui/material';
+import axios from 'axios';
 import { Login, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
@@ -20,7 +21,7 @@ import UserInfo from '../../stores/userInfo';
 import AppState from '../../stores/app';
 import LoginInfo from '../../models/Login/LoginInfo';
 import agent from '../../app/api/agent';
-import '../../styles/login/LoginPage.css';
+import '../../styles/login/LoginPage.scss';
 
 const LoginPage: React.FC = observer(() => {
   const userInfo = useContext(UserInfo);
@@ -98,18 +99,27 @@ const LoginPage: React.FC = observer(() => {
       } else {
         setErrorMessage('Incorrect username or password');
       }
-    } catch (error: any) {
-      if (error.response) {
-        if (error.response.status === 401) {
-          setErrorMessage('Incorrect username or password');
-        } else if (error.response.status >= 500) {
-          setErrorMessage('Server error. Please try again later.');
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          if (error.response.status === 401) {
+            setErrorMessage('Incorrect username or password');
+          } else if (error.response.status >= 500) {
+            setErrorMessage('Server error. Please try again later.');
+          } else {
+            setErrorMessage(
+              `Error: ${error.response.data.message || 'An unexpected error occurred.'}`
+            );
+          }
+        } else if (error.request) {
+          setErrorMessage(
+            'Unable to reach the server. Please check your internet connection and try again.'
+          );
         } else {
-          setErrorMessage(`Error: ${error.response.data.message || 'An unexpected error occurred.'}`);
+          setErrorMessage('An unexpected error occurred. Please try again.');
         }
-      } else if (error.request) {
-        setErrorMessage('Unable to reach the server. Please check your internet connection and try again.');
       } else {
+        // Handle non-Axios errors
         setErrorMessage('An unexpected error occurred. Please try again.');
       }
     } finally {
