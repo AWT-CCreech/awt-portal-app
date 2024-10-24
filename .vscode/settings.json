@@ -3,7 +3,10 @@
         "warn": 3000,
         "error": 6000
     },
-    "eslint.workingDirectories": ["./src"],  // Specify the directories ESLint should run in
+    "eslint.workingDirectories": [
+        "./",       // Add the root directory
+        "./src"     // Retain the src directory if needed
+    ],
     "eslint.options": {
         "overrideConfigFile": "./eslint.config.mjs"
     },
