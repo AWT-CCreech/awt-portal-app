@@ -1,5 +1,5 @@
 import globals from "globals";
-import pluginJs from "@eslint/js";
+import js from "@eslint/js";
 import tseslint from "@typescript-eslint/eslint-plugin";
 import pluginReact from "eslint-plugin-react";
 
@@ -14,7 +14,7 @@ export default [
       "react/prop-types": "off",
     },
   },
-  pluginJs.configs.recommended,
-  tseslint.configs.recommended,
-  pluginReact.configs.recommended,
+  js.configs.recommended,  // Correct usage for js
+  tseslint.configs.recommended,  // TypeScript ESLint config
+  pluginReact.configs.recommended,  // React ESLint config
 ];
