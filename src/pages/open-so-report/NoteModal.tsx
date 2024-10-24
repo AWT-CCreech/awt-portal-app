@@ -24,14 +24,14 @@ import { NoteList } from '../../models/OpenSOReport/NoteList';
 import { TrkSoNote } from '../../models/TrkSoNote';
 
 // Components
-import SortableTable from '../../components/SortableTable'; // Adjust the import path as needed
+import SortableTable from '../../components/SortableTable';
 
 interface NoteModalProps {
   soNum: string;
   partNum: string;
   notes: NoteList[];
   onClose: () => void;
-  onNoteAdded: () => void; // New prop for handling note addition
+  onNoteAdded: () => void;
 }
 
 const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, onNoteAdded }) => {
@@ -40,8 +40,8 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
   const [noteList, setNoteList] = useState<NoteList[]>(notes);
   const [username, setUsername] = useState<string>('');
   const [suggestions, setSuggestions] = useState<CamContact[]>([]);
-  const [contactQuery, setContactQuery] = useState<string>(''); // For the contact field
-  const [companyQuery, setCompanyQuery] = useState<string>(''); // For the company field
+  const [contactQuery, setContactQuery] = useState<string>('');
+  const [companyQuery, setCompanyQuery] = useState<string>('');
   const [searchBy, setSearchBy] = useState<'Contact' | 'Company'>('Contact');
   const [activeOnly, setActiveOnly] = useState<boolean>(true);
 
@@ -158,7 +158,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
     }
   };
 
-  // Custom rendering function for the table rows (optional)
+  // Custom rendering function for the table rows
   const renderRow = (row: NoteList) => [
     <TableCell key="notes">{row.notes}</TableCell>,
     <TableCell key="contactName" sx={{ whiteSpace: 'nowrap' }}>{row.contactName || 'N/A'}</TableCell>,
