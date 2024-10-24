@@ -3,5 +3,9 @@
         "warn": 3000,
         "error": 6000
     },
-    "eslint.workingDirectories": []
+    "eslint.workingDirectories": ["./src"],  // Specify the directories ESLint should run in
+    "eslint.options": {
+        "overrideConfigFile": "eslint.config.mjs"
+    },
+    "eslint.validate": ["javascript", "typescript", "typescriptreact", "javascriptreact"]
 }
