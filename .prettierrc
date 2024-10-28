@@ -3,5 +3,7 @@
   "singleQuote": true,
   "trailingComma": "es5",
   "jsxSingleQuote": false,
-  "endOfLine": "auto"
+  "endOfLine": "auto",
+  "tabWidth": 2,
+  "useTabs": false
 }
