@@ -56,12 +56,35 @@ const BuyOppsDetail: React.FC<IProps> = ({ buyOppDetails, partJumpTo }) => {
             Buy Opp Details
           </Typography>
           <Divider />
-          <Box sx={{ border: 'none', maxHeight: 300, overflow: 'auto', marginTop: 2 }}>
+          <Box
+            sx={{
+              border: 'none',
+              maxHeight: 300,
+              overflow: 'auto',
+              marginTop: 2,
+            }}
+          >
             {buyOppDetails.length > 0 ? (
               <SortableTable
                 tableData={buyOppDetails}
-                columns={['detailId', 'entryDate', 'company', 'partNum', 'partDesc', 'quantity', 'uname']}
-                columnNames={['DID', 'Entry Date', 'Seller', 'Part #', 'Part Desc', 'Qty', 'Purch Rep']}
+                columns={[
+                  'detailId',
+                  'entryDate',
+                  'company',
+                  'partNum',
+                  'partDesc',
+                  'quantity',
+                  'uname',
+                ]}
+                columnNames={[
+                  'DID',
+                  'Entry Date',
+                  'Seller',
+                  'Part #',
+                  'Part Desc',
+                  'Qty',
+                  'Purch Rep',
+                ]}
                 headerBackgroundColor="#384959"
                 hoverColor="#f5f5f5"
                 func={func}

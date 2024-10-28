@@ -19,7 +19,10 @@ interface SearchResultsProps {
   onRowClick: (event: React.MouseEvent, poDetail: PODeliveryLogs) => void;
 }
 
-const SearchResults: React.FC<SearchResultsProps> = ({ results, onRowClick }) => {
+const SearchResults: React.FC<SearchResultsProps> = ({
+  results,
+  onRowClick,
+}) => {
   const columns = [
     'ponum',
     'vendorName',
@@ -69,12 +72,22 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, onRowClick }) =>
 
     // Only check for alerts if PO is not complete
     if (!isPOComplete) {
-      const expectedDelivery = po.expectedDelivery ? new Date(po.expectedDelivery) : null;
-      const poRequiredDate = po.poRequiredDate ? new Date(po.poRequiredDate) : null;
-      const soRequiredDate = po.soRequiredDate ? new Date(po.soRequiredDate) : null;
+      const expectedDelivery = po.expectedDelivery
+        ? new Date(po.expectedDelivery)
+        : null;
+      const poRequiredDate = po.poRequiredDate
+        ? new Date(po.poRequiredDate)
+        : null;
+      const soRequiredDate = po.soRequiredDate
+        ? new Date(po.soRequiredDate)
+        : null;
 
       // Check for ExpDeliveryAlert
-      if (expectedDelivery && soRequiredDate && expectedDelivery > soRequiredDate) {
+      if (
+        expectedDelivery &&
+        soRequiredDate &&
+        expectedDelivery > soRequiredDate
+      ) {
         ExpDeliveryAlert = true;
       }
 
@@ -90,17 +103,31 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, onRowClick }) =>
     }
 
     const rowCells = [
-      <TableCell key="ponum" align="left">{po.ponum}</TableCell>,
-      <TableCell key="vendorName" align="left">{po.vendorName}</TableCell>,
-      <TableCell key="itemNum" align="left">{po.itemNum}</TableCell>,
-      <TableCell key="altPartNum" align="left">{po.altPartNum}</TableCell>,
+      <TableCell key="ponum" align="left">
+        {po.ponum}
+      </TableCell>,
+      <TableCell key="vendorName" align="left">
+        {po.vendorName}
+      </TableCell>,
+      <TableCell key="itemNum" align="left">
+        {po.itemNum}
+      </TableCell>,
+      <TableCell key="altPartNum" align="left">
+        {po.altPartNum}
+      </TableCell>,
       <TableCell key="issueDate" align="left">
         {po.issueDate ? new Date(po.issueDate).toLocaleDateString() : ''}
       </TableCell>,
-      <TableCell key="issuedBy" align="left">{po.issuedBy}</TableCell>,
+      <TableCell key="issuedBy" align="left">
+        {po.issuedBy}
+      </TableCell>,
       <TableCell key="expectedDelivery" align="left">
         <Box className="expected-delivery">
-          <span>{po.expectedDelivery ? new Date(po.expectedDelivery).toLocaleDateString() : ''}</span>
+          <span>
+            {po.expectedDelivery
+              ? new Date(po.expectedDelivery).toLocaleDateString()
+              : ''}
+          </span>
           {ExpDeliveryAlert && (
             <LocalFireDepartment color="error" className="alert-icon" />
           )}
@@ -108,17 +135,29 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, onRowClick }) =>
       </TableCell>,
       <TableCell key="poRequiredDate" align="left">
         <Box className="po-required-date">
-          <span>{po.poRequiredDate ? new Date(po.poRequiredDate).toLocaleDateString() : ''}</span>
+          <span>
+            {po.poRequiredDate
+              ? new Date(po.poRequiredDate).toLocaleDateString()
+              : ''}
+          </span>
           {DeliveryAlert && (
             <LocalFireDepartment color="error" className="alert-icon" />
           )}
         </Box>
       </TableCell>,
-      <TableCell key="qtyOrdered" align="left">{po.qtyOrdered}</TableCell>,
-      <TableCell key="qtyReceived" align="left">{po.qtyReceived}</TableCell>,
-      <TableCell key="receiverNum" align="left">{po.receiverNum}</TableCell>,
+      <TableCell key="qtyOrdered" align="left">
+        {po.qtyOrdered}
+      </TableCell>,
+      <TableCell key="qtyReceived" align="left">
+        {po.qtyReceived}
+      </TableCell>,
+      <TableCell key="receiverNum" align="left">
+        {po.receiverNum}
+      </TableCell>,
       <TableCell key="dateDelivered" align="left">
-        {po.dateDelivered ? new Date(po.dateDelivered).toLocaleDateString() : ''}
+        {po.dateDelivered
+          ? new Date(po.dateDelivered).toLocaleDateString()
+          : ''}
       </TableCell>,
       <TableCell key="sonum" align="left">
         <Box className="po-sonum">
@@ -128,16 +167,18 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, onRowClick }) =>
           )}
         </Box>
       </TableCell>,
-      <TableCell key="customerName" align="left">{po.customerName}</TableCell>,
-      <TableCell key="soRequiredDate" align="left">
-        {po.soRequiredDate ? new Date(po.soRequiredDate).toLocaleDateString() : ''}
+      <TableCell key="customerName" align="left">
+        {po.customerName}
       </TableCell>,
-      <TableCell key="salesRep" align="left">{po.salesRep}</TableCell>,
-      <TableCell
-        key="notes"
-        align="left"
-        className="note-edit-date"
-      >
+      <TableCell key="soRequiredDate" align="left">
+        {po.soRequiredDate
+          ? new Date(po.soRequiredDate).toLocaleDateString()
+          : ''}
+      </TableCell>,
+      <TableCell key="salesRep" align="left">
+        {po.salesRep}
+      </TableCell>,
+      <TableCell key="notes" align="left" className="note-edit-date">
         {po.notesExist ? (
           <div className="notes-container">
             <Note color="primary" />

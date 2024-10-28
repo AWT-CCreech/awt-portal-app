@@ -2,15 +2,15 @@
 import React, { useState } from 'react';
 
 // MUI Components and Icons
-import { 
-  Button, 
-  Dialog, 
-  DialogActions, 
-  DialogContent, 
-  DialogTitle, 
-  Grid, 
-  TextField, 
-  Chip 
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  TextField,
+  Chip,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -24,18 +24,23 @@ interface IProps {
 
 const AddCC: React.FC<IProps> = ({ CC, setCC }) => {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
 
   const addCC = () => {
     setCC([...CC, { fullName: name, email: email }]);
-    setEmail("");
-    setName("");
+    setEmail('');
+    setName('');
   };
 
   return (
     <>
-      <Button variant="contained" color="primary" size="small" onClick={() => setOpen(true)}>
+      <Button
+        variant="contained"
+        color="primary"
+        size="small"
+        onClick={() => setOpen(true)}
+      >
         Add CC
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
@@ -72,7 +77,9 @@ const AddCC: React.FC<IProps> = ({ CC, setCC }) => {
                 <Chip
                   label={selected.fullName || selected.email}
                   color="success"
-                  onDelete={() => setCC(CC.filter(c => c.email !== selected.email))}
+                  onDelete={() =>
+                    setCC(CC.filter((c) => c.email !== selected.email))
+                  }
                   deleteIcon={<DeleteIcon />}
                   style={{ margin: '8px' }}
                 />

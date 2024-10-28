@@ -1,5 +1,14 @@
 import React, { useReducer, useEffect } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell, TableSortLabel, Paper, TableContainer } from '@mui/material';
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableSortLabel,
+  Paper,
+  TableContainer,
+} from '@mui/material';
 import _ from 'lodash';
 import styled from 'styled-components';
 import { toPascalCase, toLowerFirstLetter } from '../utils/dataManipulation';
@@ -51,7 +60,7 @@ const StyledTable = styled(Table)`
 
 const StyledTableRow = styled(TableRow)<{ hovercolor?: string }>`
   &:hover {
-    background-color: ${props => props.hovercolor ?? 'none'} !important;
+    background-color: ${(props) => props.hovercolor ?? 'none'} !important;
   }
 `;
 
@@ -78,7 +87,14 @@ const HeaderTableCell = styled(StyledTableCell)`
   }
 `;
 
-const SortableTable: React.FC<IProps> = ({ columns, columnNames, tableData, func, headerBackgroundColor, hoverColor }) => {
+const SortableTable: React.FC<IProps> = ({
+  columns,
+  columnNames,
+  tableData,
+  func,
+  headerBackgroundColor,
+  hoverColor,
+}) => {
   const [state, dispatchState] = useReducer(reducer, {
     column: null,
     data: tableData,
@@ -116,7 +132,9 @@ const SortableTable: React.FC<IProps> = ({ columns, columnNames, tableData, func
                       dispatchState({ type: 'CHANGE_SORT', column: col });
                     }}
                   >
-                    {columnNames && columnNames.length === columns?.length ? columnNames[index] : toPascalCase(col)}
+                    {columnNames && columnNames.length === columns?.length
+                      ? columnNames[index]
+                      : toPascalCase(col)}
                   </TableSortLabel>
                 </HeaderTableCell>
               ))}
@@ -127,8 +145,10 @@ const SortableTable: React.FC<IProps> = ({ columns, columnNames, tableData, func
               <StyledTableRow key={id} hovercolor={hoverColor}>
                 {func
                   ? func(row)
-                  : columnNamesInCamelCase.map(col => (
-                      <StyledTableCell key={col}>{row[toLowerFirstLetter(col)]}</StyledTableCell>
+                  : columnNamesInCamelCase.map((col) => (
+                      <StyledTableCell key={col}>
+                        {row[toLowerFirstLetter(col)]}
+                      </StyledTableCell>
                     ))}
               </StyledTableRow>
             ))}

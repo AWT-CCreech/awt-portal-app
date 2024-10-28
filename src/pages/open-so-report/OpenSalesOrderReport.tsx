@@ -80,7 +80,8 @@ const OpenSalesOrderReport: React.FC = () => {
     setError(null);
     try {
       console.log('Sending searchParams:', searchParams);
-      const response = await agent.OpenSalesOrderReport.fetchOpenSalesOrders(searchParams);
+      const response =
+        await agent.OpenSalesOrderReport.fetchOpenSalesOrders(searchParams);
       console.log('Received response:', response);
       setSearchResult(response);
       setUniqueSalesOrders(new Set(response.map((order) => order.sonum)).size);
@@ -151,15 +152,17 @@ const OpenSalesOrderReport: React.FC = () => {
           amountLeft: order.amountLeft ?? 0,
           ponum: order.ponum,
           poissueDate:
-          order.poissueDate &&
-          order.poissueDate.getTime() !== new Date('1900-01-01T00:00:00').getTime()
-            ? order.poissueDate.toLocaleDateString()
-            : '',
-        expectedDelivery:
-          order.expectedDelivery &&
-          order.expectedDelivery.getTime() !== new Date('1900-01-01T00:00:00').getTime()
-            ? order.expectedDelivery.toLocaleDateString()
-            : '',
+            order.poissueDate &&
+            order.poissueDate.getTime() !==
+              new Date('1900-01-01T00:00:00').getTime()
+              ? order.poissueDate.toLocaleDateString()
+              : '',
+          expectedDelivery:
+            order.expectedDelivery &&
+            order.expectedDelivery.getTime() !==
+              new Date('1900-01-01T00:00:00').getTime()
+              ? order.expectedDelivery.toLocaleDateString()
+              : '',
           qtyOrdered: order.qtyOrdered,
           qtyReceived: order.qtyReceived,
           poLog: order.poLog
@@ -193,17 +196,16 @@ const OpenSalesOrderReport: React.FC = () => {
 
       // Create a Blob from the buffer
       const blob = new Blob([buffer], {
-        type:
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
 
       // Create a temporary anchor element and trigger the download
       const url = window.URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = `OpenSOReport_${new Date()
-        .toISOString()
-        .split('T')[0]}.xlsx`;
+      anchor.download = `OpenSOReport_${
+        new Date().toISOString().split('T')[0]
+      }.xlsx`;
       document.body.appendChild(anchor); // Append to body to ensure it works in Firefox
       anchor.click();
       document.body.removeChild(anchor); // Remove from body after clicking
@@ -229,8 +231,14 @@ const OpenSalesOrderReport: React.FC = () => {
   const fetchNotesForLineItem = useCallback(
     async (soNum: string, partNum: string) => {
       try {
-        const response = await agent.OpenSalesOrderNotes.getNotes(soNum, partNum);
-        console.log(`Fetched notes for SO: ${soNum}, Part: ${partNum}`, response);
+        const response = await agent.OpenSalesOrderNotes.getNotes(
+          soNum,
+          partNum
+        );
+        console.log(
+          `Fetched notes for SO: ${soNum}, Part: ${partNum}`,
+          response
+        );
         setSearchResult((prevResults) =>
           prevResults.map((order) => {
             if (order.sonum === soNum && order.itemNum === partNum) {
@@ -295,10 +303,7 @@ const OpenSalesOrderReport: React.FC = () => {
         pageName="Open Sales Order Report"
         pageHref={ROUTE_PATHS.SALES.OPEN_SO_REPORT}
       />
-      <Container
-        maxWidth={false}
-        sx={{ padding: { xs: '20px', md: '20px' } }}
-      >
+      <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
         <Grid container justifyContent="center" spacing={2}>
           <Grid item xs={12} component="div">
             <SearchBox
@@ -311,10 +316,19 @@ const OpenSalesOrderReport: React.FC = () => {
               loadingExport={loadingExport}
             />
           </Grid>
-          <Grid item xs={12} sx={{ paddingTop: { xs: '15px' } }} component="div">
+          <Grid
+            item
+            xs={12}
+            sx={{ paddingTop: { xs: '15px' } }}
+            component="div"
+          >
             {loading ? (
-              <Box display="flex" justifyContent="center" alignItems="center" mt={10}>
-              </Box>
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                mt={10}
+              ></Box>
             ) : searchResult.length > 0 ? (
               <Box
                 sx={{

@@ -39,8 +39,8 @@ const TimeTrackerPage: React.FC = () => {
   useEffect(() => {
     const userid = localStorage.getItem('userid');
     if (userid !== null && !supervisorIds.includes(userid)) {
-      agent.TimeTrackers.get(localStorage.getItem('userid')!.trim()).then((response) =>
-        setTodayTimeTrack(response)
+      agent.TimeTrackers.get(localStorage.getItem('userid')!.trim()).then(
+        (response) => setTodayTimeTrack(response)
       );
     } else {
       setPreviousPeriod(true);
@@ -49,9 +49,10 @@ const TimeTrackerPage: React.FC = () => {
 
   useEffect(() => {
     if (!supervisorIds.includes(selectedSuperviseeId)) {
-      agent.TimeTrackers.getAllInPeriod(selectedSuperviseeId, previousPeriod).then((response) =>
-        setTrackersInPeriod(response)
-      );
+      agent.TimeTrackers.getAllInPeriod(
+        selectedSuperviseeId,
+        previousPeriod
+      ).then((response) => setTrackersInPeriod(response));
     }
   }, [todayTimeTrack, previousPeriod, selectedSuperviseeId, supervisorIds]);
 
@@ -86,7 +87,14 @@ const TimeTrackerPage: React.FC = () => {
     );
   } else {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
         <CircularProgress size="large" />
       </Box>
     );

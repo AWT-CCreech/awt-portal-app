@@ -27,33 +27,42 @@ interface IProps {
   setSelectedPartItems: (item: IMassMailerPartItem[]) => void;
 }
 
-const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }) => {
+const PartTable: React.FC<IProps> = ({
+  selectedpartItems,
+  setSelectedPartItems,
+}) => {
   const [partItems, setPartItems] = useState<IMassMailerPartItem[]>([]);
 
   useEffect(() => {
     const userid = localStorage.getItem('userid');
     if (userid !== null)
-      agent.MassMailer.PartItems.partItemsForUser(userid).then(response => {
+      agent.MassMailer.PartItems.partItemsForUser(userid).then((response) => {
         setPartItems(response);
         setSelectedPartItems(response);
       });
   }, [setSelectedPartItems]);
 
-  const handleCheckbox = (id: string | number | undefined, checked: boolean | undefined) => {
+  const handleCheckbox = (
+    id: string | number | undefined,
+    checked: boolean | undefined
+  ) => {
     if (checked === false)
-      setSelectedPartItems(selectedpartItems.filter(item => item.id !== id));
+      setSelectedPartItems(selectedpartItems.filter((item) => item.id !== id));
     else if (checked === true)
-      setSelectedPartItems([...selectedpartItems, ...partItems.filter(item => item.id === id)]);
+      setSelectedPartItems([
+        ...selectedpartItems,
+        ...partItems.filter((item) => item.id === id),
+      ]);
   };
 
   const handleInputChange = (target: string, value: string) => {
     const field = target.split('-')[0];
     const index = parseInt(target.split('-')[1]);
 
-    let items = [...partItems];
-    let selectedItems = [...selectedpartItems];
+    const items = [...partItems];
+    const selectedItems = [...selectedpartItems];
 
-    let item = { ...items[index] };
+    const item = { ...items[index] };
     if (field === 'qty') item[field] = Number(value);
     else item[field] = value;
 
@@ -95,7 +104,9 @@ const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }
                   <Checkbox
                     defaultChecked
                     id={String(item.id)}
-                    onChange={(event) => handleCheckbox(item.id, event.target.checked)}
+                    onChange={(event) =>
+                      handleCheckbox(item.id, event.target.checked)
+                    }
                   />
                 </TableCell>
                 <TableCell>
@@ -103,7 +114,9 @@ const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }
                     name={`partNum-${index}`}
                     style={{ width: '200px' }}
                     value={item.partNum}
-                    onChange={(event) => handleInputChange(event.target.name, event.target.value)}
+                    onChange={(event) =>
+                      handleInputChange(event.target.name, event.target.value)
+                    }
                   />
                 </TableCell>
                 <TableCell>
@@ -111,7 +124,9 @@ const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }
                     name={`altPartNum-${index}`}
                     style={{ width: '200px' }}
                     value={item.altPartNum}
-                    onChange={(event) => handleInputChange(event.target.name, event.target.value)}
+                    onChange={(event) =>
+                      handleInputChange(event.target.name, event.target.value)
+                    }
                   />
                 </TableCell>
                 <TableCell>
@@ -119,7 +134,9 @@ const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }
                     name={`partDesc-${index}`}
                     style={{ width: '400px' }}
                     value={item.partDesc}
-                    onChange={(event) => handleInputChange(event.target.name, event.target.value)}
+                    onChange={(event) =>
+                      handleInputChange(event.target.name, event.target.value)
+                    }
                   />
                 </TableCell>
                 <TableCell>
@@ -127,7 +144,9 @@ const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }
                     name={`qty-${index}`}
                     style={{ width: '80px' }}
                     value={item.qty}
-                    onChange={(event) => handleInputChange(event.target.name, event.target.value)}
+                    onChange={(event) =>
+                      handleInputChange(event.target.name, event.target.value)
+                    }
                   />
                 </TableCell>
                 <TableCell>{item.company}</TableCell>
@@ -137,7 +156,9 @@ const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }
                     name={`revision-${index}`}
                     style={{ width: '80px' }}
                     value={item.revision}
-                    onChange={(event) => handleInputChange(event.target.name, event.target.value)}
+                    onChange={(event) =>
+                      handleInputChange(event.target.name, event.target.value)
+                    }
                   />
                 </TableCell>
               </TableRow>
@@ -150,7 +171,9 @@ const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }
           variant="contained"
           color="error"
           onClick={() =>
-            agent.MassMailer.ClearPartItems.clear(localStorage.getItem('userid') ?? '').then(() => window.location.reload())
+            agent.MassMailer.ClearPartItems.clear(
+              localStorage.getItem('userid') ?? ''
+            ).then(() => window.location.reload())
           }
         >
           Unmark Mailers

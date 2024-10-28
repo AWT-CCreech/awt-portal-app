@@ -89,7 +89,8 @@ const SearchBox: React.FC<SearchBoxProps> = ({
     const debouncedFetchVendors = debounce(async () => {
       setVendorLoading(true);
       try {
-        const vendorList = await Modules.PODeliveryLogService.getVendors(params);
+        const vendorList =
+          await Modules.PODeliveryLogService.getVendors(params);
         setVendors(vendorList);
       } catch (error) {
         console.error('Error fetching vendors:', error);
@@ -264,13 +265,19 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               options={vendors}
               getOptionLabel={(option: string) => option}
               value={searchParams.Vendor || ''}
-              onChange={(event: React.SyntheticEvent, newValue: string | null) => {
+              onChange={(
+                event: React.SyntheticEvent,
+                newValue: string | null
+              ) => {
                 setSearchParams((prevParams) => ({
                   ...prevParams,
                   Vendor: newValue || '',
                 }));
               }}
-              onInputChange={(event: React.SyntheticEvent, newInputValue: string) => {
+              onInputChange={(
+                event: React.SyntheticEvent,
+                newInputValue: string
+              ) => {
                 setSearchParams((prevParams) => ({
                   ...prevParams,
                   Vendor: newInputValue || '',
@@ -286,7 +293,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                     ...params.InputProps,
                     endAdornment: (
                       <>
-                        {vendorLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                        {vendorLoading ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : null}
                         {params.InputProps.endAdornment}
                       </>
                     ),
@@ -361,7 +370,13 @@ const SearchBox: React.FC<SearchBoxProps> = ({
           </Grid>
 
           {/* Search and Export Buttons */}
-          <Grid item xs={12} display="flex" justifyContent="flex-start" alignItems="center">
+          <Grid
+            item
+            xs={12}
+            display="flex"
+            justifyContent="flex-start"
+            alignItems="center"
+          >
             <Button
               variant="contained"
               color="primary"
@@ -377,7 +392,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               color="secondary"
               onClick={handleExport}
               disabled={loadingExport || searchResultLength === 0}
-              startIcon={loadingExport ? <CircularProgress size={20} /> : <GetApp />}
+              startIcon={
+                loadingExport ? <CircularProgress size={20} /> : <GetApp />
+              }
             >
               Export to Excel
             </Button>

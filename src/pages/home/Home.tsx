@@ -17,7 +17,11 @@ const Home: React.FC = () => {
         <Grid item xs={3} textAlign="center">
           <Button
             variant="contained"
-            sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              '&:hover': { backgroundColor: 'grey' },
+            }}
             onClick={() => navigate(ROUTE_PATHS.PURCHASING.DROPSHIP)}
           >
             Drop Ship
@@ -26,7 +30,11 @@ const Home: React.FC = () => {
         <Grid item xs={3} textAlign="center">
           <Button
             variant="contained"
-            sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              '&:hover': { backgroundColor: 'grey' },
+            }}
             onClick={() => navigate(ROUTE_PATHS.PURCHASING.MASS_MAILER)}
           >
             Mass Mailer
@@ -44,7 +52,11 @@ const Home: React.FC = () => {
         <Grid item xs={3} textAlign="center">
           <Button
             variant="contained"
-            sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              '&:hover': { backgroundColor: 'grey' },
+            }}
             onClick={() => navigate(ROUTE_PATHS.MASTER_SEARCH)}
           >
             Master Search
@@ -53,7 +65,11 @@ const Home: React.FC = () => {
         <Grid item xs={3} textAlign="center">
           <Button
             variant="contained"
-            sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              '&:hover': { backgroundColor: 'grey' },
+            }}
             onClick={() => navigate(ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG)}
           >
             PO Delivery Log
@@ -62,7 +78,11 @@ const Home: React.FC = () => {
         <Grid item xs={3} textAlign="center">
           <Button
             variant="contained"
-            sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              '&:hover': { backgroundColor: 'grey' },
+            }}
             onClick={() => navigate(ROUTE_PATHS.SALES.OPEN_SO_REPORT)}
           >
             Open SO Report
@@ -71,7 +91,11 @@ const Home: React.FC = () => {
         <Grid item xs={3} textAlign="center">
           <Button
             variant="contained"
-            sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              '&:hover': { backgroundColor: 'grey' },
+            }}
             onClick={() => navigate(ROUTE_PATHS.USER_LIST)}
           >
             User List

@@ -47,7 +47,9 @@ const DropShip = () => {
   const [selectedParts, setSelectedParts] = useState<DropShipPart[]>([]);
 
   useEffect(() => {
-    agent.DropShip.getAllDropShipSalesReps().then((reps) => setAllSalesReps(reps));
+    agent.DropShip.getAllDropShipSalesReps().then((reps) =>
+      setAllSalesReps(reps)
+    );
   }, []);
 
   const handleGetRep = () => {
@@ -56,7 +58,9 @@ const DropShip = () => {
         if (!res) {
           setAutoFillRep(null);
           if (noMatchingMessage === '')
-            setNoMatchingMessage('No Sales Rep found with this SO. Please add manually!');
+            setNoMatchingMessage(
+              'No Sales Rep found with this SO. Please add manually!'
+            );
         } else {
           setAutoFillRep({ fullName: res.fullName, email: res.email });
         }
@@ -74,7 +78,9 @@ const DropShip = () => {
       SONumRef.current?.focus();
       return;
     } else if (selectedParts.length === 0) {
-      setAlertMessage('Please select at least one PartNumber/SerialNumber pair');
+      setAlertMessage(
+        'Please select at least one PartNumber/SerialNumber pair'
+      );
       return;
     } else if (addedSalesReps.length === 0 && !autoFillRep) {
       setAlertMessage('Please select Sales Rep to send email');
@@ -82,29 +88,29 @@ const DropShip = () => {
     }
 
     setLoading(true);
-    const recipientEmails = [autoFillRep?.email, ...addedSalesReps.map((sr) => sr.email)].filter(
-      Boolean
-    ) as string[];
+    const recipientEmails = [
+      autoFillRep?.email,
+      ...addedSalesReps.map((sr) => sr.email),
+    ].filter(Boolean) as string[];
     const recipientNames = [
       autoFillRep?.fullName,
       ...addedSalesReps.map((sr) => sr.fullName),
     ].filter(Boolean) as string[];
 
-    agent.DropShip
-      .dropShipSendEmail({
-        subject: `Drop Ship Complete: SO#${SONum}`,
-        senderUserName: localStorage.getItem('username'),
-        password: localStorage.getItem('password'),
-        recipientEmails: recipientEmails,
-        recipientNames: recipientNames,
-        PONumber: PONum,
-        SONumber: SONum,
-        PartNumbers: selectedParts.map((p) => p.partNumber),
-        Quantities: selectedParts.length.toString(),
-        SerialNumbers: selectedParts.map((p) => p.serialNumber),
-        Tracking: Tracking,
-        Freight: Freight,
-      })
+    agent.DropShip.dropShipSendEmail({
+      subject: `Drop Ship Complete: SO#${SONum}`,
+      senderUserName: localStorage.getItem('username'),
+      password: localStorage.getItem('password'),
+      recipientEmails: recipientEmails,
+      recipientNames: recipientNames,
+      PONumber: PONum,
+      SONumber: SONum,
+      PartNumbers: selectedParts.map((p) => p.partNumber),
+      Quantities: selectedParts.length.toString(),
+      SerialNumbers: selectedParts.map((p) => p.serialNumber),
+      Tracking: Tracking,
+      Freight: Freight,
+    })
       .then(() => {
         document.location.reload();
       })
@@ -117,7 +123,12 @@ const DropShip = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="90vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="90vh"
+      >
         <CircularProgress size={60} />
       </Box>
     );
@@ -125,14 +136,21 @@ const DropShip = () => {
 
   return (
     <>
-      <PageHeader pageName="Drop Ship" pageHref={ROUTE_PATHS.PURCHASING.DROPSHIP} />
+      <PageHeader
+        pageName="Drop Ship"
+        pageHref={ROUTE_PATHS.PURCHASING.DROPSHIP}
+      />
       <Container maxWidth="md">
         <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
           <Typography variant="h5" component="h2" gutterBottom>
             Drop Ship Form
           </Typography>
           {alertMessage && (
-            <Alert severity="error" onClose={() => setAlertMessage(null)} sx={{ mb: 2 }}>
+            <Alert
+              severity="error"
+              onClose={() => setAlertMessage(null)}
+              sx={{ mb: 2 }}
+            >
               {alertMessage}
             </Alert>
           )}
@@ -163,9 +181,15 @@ const DropShip = () => {
             {/* PartNumber/SerialNumber selection */}
             <Grid item xs={12}>
               <Paper variant="outlined" sx={{ p: 2 }}>
-                <Grid container alignItems="center" justifyContent="space-between">
+                <Grid
+                  container
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
                   <Grid item xs={12} md={8}>
-                    <Typography variant="subtitle1">PartNumber/SerialNumber *</Typography>
+                    <Typography variant="subtitle1">
+                      PartNumber/SerialNumber *
+                    </Typography>
                     {selectedParts.length > 0 ? (
                       selectedParts.map((part, index) => (
                         <Chip
@@ -174,7 +198,9 @@ const DropShip = () => {
                           color="primary"
                           onDelete={() =>
                             setSelectedParts(
-                              selectedParts.filter((p) => p.serialNumber !== part.serialNumber)
+                              selectedParts.filter(
+                                (p) => p.serialNumber !== part.serialNumber
+                              )
                             )
                           }
                           deleteIcon={<DeleteIcon />}
@@ -191,7 +217,10 @@ const DropShip = () => {
                     item
                     xs={12}
                     md={4}
-                    sx={{ textAlign: { xs: 'left', md: 'right' }, mt: { xs: 2, md: 0 } }}
+                    sx={{
+                      textAlign: { xs: 'left', md: 'right' },
+                      mt: { xs: 2, md: 0 },
+                    }}
                   >
                     <PartNumberModal
                       selectedParts={selectedParts}
@@ -206,7 +235,11 @@ const DropShip = () => {
             {/* Sales Rep selection */}
             <Grid item xs={12}>
               <Paper variant="outlined" sx={{ p: 2 }}>
-                <Grid container alignItems="center" justifyContent="space-between">
+                <Grid
+                  container
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
                   <Grid item xs={12} md={8}>
                     <Typography variant="subtitle1">Sales Rep *</Typography>
                     {autoFillRep && (
@@ -242,7 +275,10 @@ const DropShip = () => {
                     item
                     xs={12}
                     md={4}
-                    sx={{ textAlign: { xs: 'left', md: 'right' }, mt: { xs: 2, md: 0 } }}
+                    sx={{
+                      textAlign: { xs: 'left', md: 'right' },
+                      mt: { xs: 2, md: 0 },
+                    }}
                   >
                     <RecipientModal
                       recipients={addedSalesReps}

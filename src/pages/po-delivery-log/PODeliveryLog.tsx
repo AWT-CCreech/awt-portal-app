@@ -5,12 +5,21 @@ import React, { useState, useCallback } from 'react';
 import Modules from '../../app/api/agent';
 
 // Models
-import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs'; 
+import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs';
 import SearchInput from '../../models/PODeliveryLog/SearchInput';
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
 
 // MUI Components
-import { Box, Container, Grid, Typography, Modal, CircularProgress, Snackbar, Alert } from '@mui/material';
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  Modal,
+  CircularProgress,
+  Snackbar,
+  Alert,
+} from '@mui/material';
 
 // Components
 import PageHeader from '../../components/PageHeader';
@@ -55,7 +64,8 @@ const PODeliveryLog: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await Modules.PODeliveryLogService.getPODeliveryLogs(searchParams);
+      const data =
+        await Modules.PODeliveryLogService.getPODeliveryLogs(searchParams);
       setPoData(data);
     } catch (error) {
       console.error('Error fetching PO data:', error);
@@ -70,14 +80,19 @@ const PODeliveryLog: React.FC = () => {
     fetchPOData();
   };
 
-  const handleRowClick = async (event: React.MouseEvent, poLog: PODeliveryLogs) => {
+  const handleRowClick = async (
+    event: React.MouseEvent,
+    poLog: PODeliveryLogs
+  ) => {
     event.stopPropagation();
     setModalOpen(true);
     setSelectedPO(null); // Reset selected PO
     setDetailLoading(true); // Set loading to true for fetching PO detail
     setError(null);
     try {
-      const poDetail = await Modules.PODeliveryLogService.getPODetailByID(poLog.id);
+      const poDetail = await Modules.PODeliveryLogService.getPODetailByID(
+        poLog.id
+      );
       setSelectedPO(poDetail);
     } catch (error) {
       console.error('Error fetching PO detail:', error);
@@ -123,30 +138,40 @@ const PODeliveryLog: React.FC = () => {
       ];
 
       // Add rows to the worksheet
-      poData.forEach(po => {
+      poData.forEach((po) => {
         worksheet.addRow({
           ponum: po.ponum,
           vendorName: po.vendorName,
           itemNum: po.itemNum,
           altPartNum: po.altPartNum,
-          issueDate: po.issueDate ? new Date(po.issueDate).toLocaleDateString() : '',
+          issueDate: po.issueDate
+            ? new Date(po.issueDate).toLocaleDateString()
+            : '',
           issuedBy: po.issuedBy,
-          expectedDelivery: po.expectedDelivery ? new Date(po.expectedDelivery).toLocaleDateString() : '',
-          poRequiredDate: po.poRequiredDate ? new Date(po.poRequiredDate).toLocaleDateString() : '',
+          expectedDelivery: po.expectedDelivery
+            ? new Date(po.expectedDelivery).toLocaleDateString()
+            : '',
+          poRequiredDate: po.poRequiredDate
+            ? new Date(po.poRequiredDate).toLocaleDateString()
+            : '',
           qtyOrdered: po.qtyOrdered,
           qtyReceived: po.qtyReceived,
           receiverNum: po.receiverNum,
-          dateDelivered: po.dateDelivered ? new Date(po.dateDelivered).toLocaleDateString() : '',
+          dateDelivered: po.dateDelivered
+            ? new Date(po.dateDelivered).toLocaleDateString()
+            : '',
           sonum: po.sonum,
           customerName: po.customerName,
-          soRequiredDate: po.soRequiredDate ? new Date(po.soRequiredDate).toLocaleDateString() : '',
+          soRequiredDate: po.soRequiredDate
+            ? new Date(po.soRequiredDate).toLocaleDateString()
+            : '',
           salesRep: po.salesRep,
           notesExist: po.notesExist ? 'Yes' : 'No',
         });
       });
 
       // Style the header row
-      worksheet.getRow(1).eachCell(cell => {
+      worksheet.getRow(1).eachCell((cell) => {
         cell.font = { bold: true };
         cell.fill = {
           type: 'pattern',
@@ -163,7 +188,9 @@ const PODeliveryLog: React.FC = () => {
 
       // Write the workbook to a buffer and trigger download
       const buffer = await workbook.xlsx.writeBuffer();
-      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
       const url = window.URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
@@ -182,7 +209,10 @@ const PODeliveryLog: React.FC = () => {
 
   return (
     <div>
-      <PageHeader pageName="PO Delivery Log" pageHref={ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG} />
+      <PageHeader
+        pageName="PO Delivery Log"
+        pageHref={ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG}
+      />
       <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
         <Grid container justifyContent="center" spacing={2}>
           <Grid item xs={12}>
@@ -198,8 +228,7 @@ const PODeliveryLog: React.FC = () => {
           </Grid>
           <Grid item xs={12}>
             {loading ? (
-              <Box display="flex" justifyContent="center" mt={4}>
-              </Box>
+              <Box display="flex" justifyContent="center" mt={4}></Box>
             ) : poData.length > 0 ? (
               <Box
                 sx={{
@@ -228,7 +257,11 @@ const PODeliveryLog: React.FC = () => {
         onClose={() => setSuccess(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
+        <Alert
+          onClose={() => setSuccess(null)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
           {success}
         </Alert>
       </Snackbar>
@@ -240,7 +273,11 @@ const PODeliveryLog: React.FC = () => {
         onClose={() => setError(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
+        <Alert
+          onClose={() => setError(null)}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
           {error}
         </Alert>
       </Snackbar>
@@ -252,7 +289,11 @@ const PODeliveryLog: React.FC = () => {
         onClose={() => setExportSuccess(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={() => setExportSuccess(null)} severity="success" sx={{ width: '100%' }}>
+        <Alert
+          onClose={() => setExportSuccess(null)}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
           {exportSuccess}
         </Alert>
       </Snackbar>
@@ -264,7 +305,11 @@ const PODeliveryLog: React.FC = () => {
         onClose={() => setExportError(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={() => setExportError(null)} severity="error" sx={{ width: '100%' }}>
+        <Alert
+          onClose={() => setExportError(null)}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
           {exportError}
         </Alert>
       </Snackbar>
@@ -287,7 +332,11 @@ const PODeliveryLog: React.FC = () => {
               <CircularProgress />
             </Box>
           ) : (
-            <PODetail poDetail={selectedPO} onClose={handleCloseModal} loading={detailLoading} />
+            <PODetail
+              poDetail={selectedPO}
+              onClose={handleCloseModal}
+              loading={detailLoading}
+            />
           )}
         </Box>
       </Modal>

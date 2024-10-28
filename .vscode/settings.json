@@ -1,14 +1,23 @@
 {
-    "eslint.timeBudget.onFixes": {
-        "warn": 3000,
-        "error": 6000
-    },
-    "eslint.workingDirectories": [
-        "./",       // Add the root directory
-        "./src"     // Retain the src directory if needed
-    ],
-    "eslint.options": {
-        "overrideConfigFile": "./eslint.config.mjs"
-    },
-    "eslint.validate": ["javascript", "typescript", "typescriptreact", "javascriptreact"]
+  "files.associations": {
+    ".eslintrc.cjs": "javascript",
+    ".eslintrc.js": "javascript",
+    "eslint.config.js": "javascript",
+    "eslint.config.mjs": "javascript",
+    "eslint.config.cjs": "javascript"
+  },
+  "eslint.workingDirectories": [
+    "./"
+  ],
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "typescriptreact",
+    "javascriptreact"
+  ],
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "prettier.requireConfig": true
 }

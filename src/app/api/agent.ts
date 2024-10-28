@@ -22,7 +22,7 @@ import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { User } from '../../models/User';
 import { ItemCategories } from '../../models/Data/ItemCategories';
-import { DropShipPart } from '../../models/DropShip/DropShipPart'; 
+import { DropShipPart } from '../../models/DropShip/DropShipPart';
 import { Rep } from '../../models/Data/Rep';
 import { DropShipPartsParams } from '../../models/DropShip/DropShipPartParams';
 
@@ -40,45 +40,63 @@ const responseBody = (response: AxiosResponse) => response.data;
 const requests = {
   get: async (url: string) => {
     console.log(`GET Request to: ${url}`);
-    return axios.get(url).then(responseBody).then(data => {
-      console.log(`GET Response from: ${url}`, data);
-      return data;
-    });
+    return axios
+      .get(url)
+      .then(responseBody)
+      .then((data) => {
+        console.log(`GET Response from: ${url}`, data);
+        return data;
+      });
   },
   getWithParams: async (url: string, params: object) => {
     console.log(`GET Request to: ${url} with params:`, params);
-    return axios.get(url, { params }).then(responseBody).then(data => {
-      console.log(`GET Response from: ${url} with params:`, data);
-      return data;
-    });
+    return axios
+      .get(url, { params })
+      .then(responseBody)
+      .then((data) => {
+        console.log(`GET Response from: ${url} with params:`, data);
+        return data;
+      });
   },
   post: async (url: string, body: object) => {
     console.log(`POST Request to: ${url} with body:`, body);
-    return axios.post(url, body).then(responseBody).then(data => {
-      console.log(`POST Response from: ${url}`, data);
-      return data;
-    });
+    return axios
+      .post(url, body)
+      .then(responseBody)
+      .then((data) => {
+        console.log(`POST Response from: ${url}`, data);
+        return data;
+      });
   },
   postNoBody: async (url: string) => {
     console.log(`POST Request to: ${url} with no body`);
-    return axios.post(url).then(responseBody).then(data => {
-      console.log(`POST Response from: ${url}`, data);
-      return data;
-    });
+    return axios
+      .post(url)
+      .then(responseBody)
+      .then((data) => {
+        console.log(`POST Response from: ${url}`, data);
+        return data;
+      });
   },
   put: async (url: string, body: object) => {
     console.log(`PUT Request to: ${url} with body:`, body);
-    return axios.put(url, body).then(responseBody).then(data => {
-      console.log(`PUT Response from: ${url}`, data);
-      return data;
-    });
+    return axios
+      .put(url, body)
+      .then(responseBody)
+      .then((data) => {
+        console.log(`PUT Response from: ${url}`, data);
+        return data;
+      });
   },
   delete: async (url: string) => {
     console.log(`DELETE Request to: ${url}`);
-    return axios.delete(url).then(responseBody).then(data => {
-      console.log(`DELETE Response from: ${url}`, data);
-      return data;
-    });
+    return axios
+      .delete(url)
+      .then(responseBody)
+      .then((data) => {
+        console.log(`DELETE Response from: ${url}`, data);
+        return data;
+      });
   },
 };
 
@@ -97,12 +115,18 @@ axios.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
 
       try {
         const currentToken = localStorage.getItem('token');
-        const refreshResponse = await axios.post('/UserLogins/refresh', { token: currentToken });
+        const refreshResponse = await axios.post('/UserLogins/refresh', {
+          token: currentToken,
+        });
         const newToken = refreshResponse.data.token;
 
         localStorage.setItem('token', newToken);
@@ -127,7 +151,9 @@ axios.interceptors.response.use(
 );
 
 const CamSearch = {
-  getAdvancedSearchFields: (): Promise<{ FieldValue: string; FieldValue2: string; FieldValue4: string }[]> => {
+  getAdvancedSearchFields: (): Promise<
+    { FieldValue: string; FieldValue2: string; FieldValue4: string }[]
+  > => {
     return requests.get('/Cam/AdvancedSearchFields');
   },
   getContactTypes: (): Promise<string[]> => {
@@ -194,12 +220,18 @@ const DataFetch = {
       throw error;
     }
   },
-  fetchDropShipParts: async (poNo?: string, soNo?: string): Promise<DropShipPart[]> => {
+  fetchDropShipParts: async (
+    poNo?: string,
+    soNo?: string
+  ): Promise<DropShipPart[]> => {
     try {
       const params: DropShipPartsParams = {};
       if (poNo) params.poNo = poNo;
       if (soNo) params.soNo = soNo;
-      const response = await requests.getWithParams('/ScanHistory/GetDropShipParts', params);
+      const response = await requests.getWithParams(
+        '/ScanHistory/GetDropShipParts',
+        params
+      );
       return response as DropShipPart[];
     } catch (error) {
       console.error('Error fetching drop ship parts', error);
@@ -209,14 +241,17 @@ const DataFetch = {
 };
 
 const DropShip = {
-  dropShipSendEmail: (emailInput: object) => requests.post('/DropShipSendEmail', emailInput),
-  getAllDropShipSalesReps: () => requests.get(`/DropShipSalesReps`),
-  getDropShipInfo: (poNum: string): Promise<any> => requests.get(`/DropShipInfo/${poNum}`),
+  dropShipSendEmail: (emailInput: object) =>
+    requests.post('/DropShipSendEmail', emailInput),
+  getAllDropShipSalesReps: () => requests.get('/DropShipSalesReps'),
+  getDropShipInfo: (poNum: string): Promise<any> =>
+    requests.get(`/DropShipInfo/${poNum}`),
 };
 
 const MassMailer = {
   ClearPartItems: {
-    clear: (userid: string): Promise<any> => requests.get(`/MassMailerClearPartItems/${userid}`),
+    clear: (userid: string): Promise<any> =>
+      requests.get(`/MassMailerClearPartItems/${userid}`),
   },
   EmailOuts: {
     sendEmail: (body: object) => requests.post('/MassMailerEmailOuts', body),
@@ -226,18 +261,25 @@ const MassMailer = {
       requests.get(`/MassMailerEmailTemplates/${user}`),
   },
   FileUpload: {
-    clear: (username: string): Promise<any> => requests.get(`/MassMailerFileUpload/${username}`),
-    upload: (body: FormData): Promise<string[]> => requests.post('/MassMailerFileUpload', body),
+    clear: (username: string): Promise<any> =>
+      requests.get(`/MassMailerFileUpload/${username}`),
+    upload: (body: FormData): Promise<string[]> =>
+      requests.post('/MassMailerFileUpload', body),
   },
   Manufacturers: {
-    manufacturerList: (): Promise<string[]> => requests.get('/MassMailerManufacturers'),
+    manufacturerList: (): Promise<string[]> =>
+      requests.get('/MassMailerManufacturers'),
   },
   PartItems: {
     partItemsForUser: (user: string): Promise<IMassMailerPartItem[]> =>
       requests.get(`/MassMailerPartItems/${user}`),
   },
   Vendors: {
-    vendorList: (mfg: string, anc: boolean, fne: boolean): Promise<IMassMailerVendor[]> => {
+    vendorList: (
+      mfg: string,
+      anc: boolean,
+      fne: boolean
+    ): Promise<IMassMailerVendor[]> => {
       return requests.get(`/MassMailerVendors/${mfg}/${anc}/${fne}`);
     },
   },
@@ -251,7 +293,10 @@ const MasterSearches = {
     requests.getWithParams('/MasterSearch/BuyOppDetails', input),
   getBuyOppEvents: (input: MasterSearchInput): Promise<BuyOppEvent[]> =>
     requests.getWithParams('/MasterSearch/BuyOppEvents', input),
-  getContacts: (searchValue: string, active: boolean): Promise<MasterSearchContact[]> =>
+  getContacts: (
+    searchValue: string,
+    active: boolean
+  ): Promise<MasterSearchContact[]> =>
     requests.getWithParams('/MasterSearch/Contacts', { searchValue, active }),
   getSellOppDetails: (input: MasterSearchInput): Promise<SellOppDetail[]> =>
     requests.getWithParams('/MasterSearch/SellOppDetails', input),
@@ -262,7 +307,10 @@ const MasterSearches = {
 const OpenSalesOrderNotes = {
   addNote: async (note: TrkSoNote): Promise<TrkSoNote> => {
     try {
-      const response = await requests.post('/OpenSalesOrderNotes/AddNote', note);
+      const response = await requests.post(
+        '/OpenSalesOrderNotes/AddNote',
+        note
+      );
       return response as TrkSoNote;
     } catch (error) {
       console.error('Error adding note', error);
@@ -279,7 +327,9 @@ const OpenSalesOrderNotes = {
   },
   getNotes: async (soNum: string, partNum: string): Promise<TrkSoNote[]> => {
     try {
-      const response = await requests.get(`/OpenSalesOrderNotes/GetNotes/${soNum}/${partNum}`);
+      const response = await requests.get(
+        `/OpenSalesOrderNotes/GetNotes/${soNum}/${partNum}`
+      );
       return response as TrkSoNote[];
     } catch (error) {
       console.error('Error fetching notes', error);
@@ -301,7 +351,10 @@ const OpenSalesOrderReport = {
     params: OpenSalesOrderSearchInput
   ): Promise<(OpenSOReport & { Notes: TrkSoNote[] })[]> => {
     try {
-      const response = await requests.getWithParams('/OpenSalesOrder/GetOpenSalesOrders', params);
+      const response = await requests.getWithParams(
+        '/OpenSalesOrder/GetOpenSalesOrders',
+        params
+      );
       return response as (OpenSOReport & { Notes: TrkSoNote[] })[];
     } catch (error) {
       console.error('Error fetching open sales orders', error);
@@ -316,13 +369,13 @@ const PODeliveryLogService = {
   ): Promise<PODeliveryLogs[]> => {
     try {
       const response = await requests.getWithParams('/PODeliveryLog', params);
-      return response as (PODeliveryLogs)[];
+      return response as PODeliveryLogs[];
     } catch (error) {
       console.error('Error fetching open sales orders', error);
       throw error;
     }
   },
-  
+
   getVendors: (params: {
     PONum?: string;
     PartNum?: string;
@@ -345,18 +398,28 @@ const PODeliveryLogService = {
   updatePODetail: (id: number, body: PODetailUpdateDto): Promise<void> => {
     return requests.put(`/PODetail/${id}`, body);
   },
-
 };
 
 const TimeTrackers = {
-  approve: (approvals: object) => requests.post('/TimeTrackerApprovals', approvals),
-  get: (userId: string): Promise<TimeTracker> => requests.get(`/TimeTrackers/${userId}`),
-  getAllInPeriod: (userId: string, previousPeriod: boolean): Promise<TimeTracker[]> =>
-    requests.get(`/PeriodTimeTrackers?userId=${userId}&previousPeriod=${previousPeriod}`),
+  approve: (approvals: object) =>
+    requests.post('/TimeTrackerApprovals', approvals),
+  get: (userId: string): Promise<TimeTracker> =>
+    requests.get(`/TimeTrackers/${userId}`),
+  getAllInPeriod: (
+    userId: string,
+    previousPeriod: boolean
+  ): Promise<TimeTracker[]> =>
+    requests.get(
+      `/PeriodTimeTrackers?userId=${userId}&previousPeriod=${previousPeriod}`
+    ),
   isApproved: (userId: string, previousPeriod: boolean) =>
-    requests.get(`/TimeTrackerApprovals?userId=${userId}&previousPeriod=${previousPeriod}`),
-  sendEmailReport: (body: object) => requests.post('/TimeTrackerReportSender', body),
-  update: (body: TimeTracker): Promise<TimeTracker> => requests.put('/TimeTrackers', body),
+    requests.get(
+      `/TimeTrackerApprovals?userId=${userId}&previousPeriod=${previousPeriod}`
+    ),
+  sendEmailReport: (body: object) =>
+    requests.post('/TimeTrackerReportSender', body),
+  update: (body: TimeTracker): Promise<TimeTracker> =>
+    requests.put('/TimeTrackers', body),
 };
 
 const UserList = {
@@ -388,7 +451,10 @@ const UserList = {
   },
   updateUser: async (uid: number, updatedUser: User): Promise<User> => {
     try {
-      const response = await requests.put(`/UserList/UpdateUser/${uid}`, updatedUser);
+      const response = await requests.put(
+        `/UserList/UpdateUser/${uid}`,
+        updatedUser
+      );
       return response as User;
     } catch (error) {
       console.error('Error updating user', error);
@@ -398,8 +464,12 @@ const UserList = {
 };
 
 const UserLogins = {
-  authenticate: (loginInfo: LoginInfo): Promise<LoginInfo> => requests.post('/UserLogins', loginInfo),
-  refreshToken: (tokenRefreshRequest: { token: string }): Promise<{ token: string }> => requests.post('/Token/RefreshToken', tokenRefreshRequest),
+  authenticate: (loginInfo: LoginInfo): Promise<LoginInfo> =>
+    requests.post('/UserLogins', loginInfo),
+  refreshToken: (tokenRefreshRequest: {
+    token: string;
+  }): Promise<{ token: string }> =>
+    requests.post('/Token/RefreshToken', tokenRefreshRequest),
 };
 
 // Export grouped modules

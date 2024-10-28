@@ -1,4 +1,10 @@
-import React, { useEffect, useContext, useState, useCallback, useRef } from 'react';
+import React, {
+  useEffect,
+  useContext,
+  useState,
+  useCallback,
+  useRef,
+} from 'react';
 import { useLocation, useNavigate, useRoutes } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -27,7 +33,9 @@ const App: React.FC = () => {
     try {
       const currentToken = localStorage.getItem('token');
       if (currentToken) {
-        const refreshResponse = await agent.UserLogins.refreshToken({ token: currentToken });
+        const refreshResponse = await agent.UserLogins.refreshToken({
+          token: currentToken,
+        });
         const newToken = refreshResponse.token;
         localStorage.setItem('token', newToken);
 
@@ -92,7 +100,9 @@ const App: React.FC = () => {
     events.forEach((event) => window.addEventListener(event, resetHandler));
 
     return () => {
-      events.forEach((event) => window.removeEventListener(event, resetHandler));
+      events.forEach((event) =>
+        window.removeEventListener(event, resetHandler)
+      );
     };
   }, [location.pathname, resetInactivityTimeout, isModalOpen]);
 
@@ -100,7 +110,8 @@ const App: React.FC = () => {
     resetInactivityTimeout();
 
     return () => {
-      if (inactivityTimeoutRef.current) clearTimeout(inactivityTimeoutRef.current);
+      if (inactivityTimeoutRef.current)
+        clearTimeout(inactivityTimeoutRef.current);
     };
   }, [resetInactivityTimeout]);
 

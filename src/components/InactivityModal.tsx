@@ -84,11 +84,20 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
       }}
     >
       <DialogContent>
-        <Box display="flex" flexDirection="column" alignItems="center" textAlign="center">
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          textAlign="center"
+        >
           <Typography variant="h5" gutterBottom>
             Are you still there?
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ marginBottom: 2 }}>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ marginBottom: 2 }}
+          >
             For your security, you will be logged out in
           </Typography>
           <Box position="relative" display="inline-flex">

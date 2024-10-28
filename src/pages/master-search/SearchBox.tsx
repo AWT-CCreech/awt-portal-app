@@ -84,7 +84,8 @@ const SearchBox: React.FC<IProps> = ({
 
   useEffect(() => {
     // Ensure the correct input is always focused
-    const searchInput = searchFor === 4 ? searchInput2Ref.current : searchInput1Ref.current;
+    const searchInput =
+      searchFor === 4 ? searchInput2Ref.current : searchInput1Ref.current;
 
     // Using setTimeout to make sure focus is applied after render
     if (searchInput) {
@@ -92,7 +93,20 @@ const SearchBox: React.FC<IProps> = ({
         searchInput.focus();
       }, 0);
     }
-  }, [searchFor, searchValue, viewBy, chkID, chkSONo, chkPartNo, chkPartDesc, chkPONo, chkMfg, chkCompany, chkInvNo, chkActive]);
+  }, [
+    searchFor,
+    searchValue,
+    viewBy,
+    chkID,
+    chkSONo,
+    chkPartNo,
+    chkPartDesc,
+    chkPONo,
+    chkMfg,
+    chkCompany,
+    chkInvNo,
+    chkActive,
+  ]);
 
   useEffect(() => {
     if (searchFor === 2) {
@@ -104,7 +118,15 @@ const SearchBox: React.FC<IProps> = ({
   }, [searchFor, setChkInvNo, setChkMfg, setChkPONo, setChkSONo]);
 
   return (
-    <Box sx={{ width: '100%', p: { xs: 1, md: 2 }, boxShadow: 3, bgcolor: 'background.paper', boxSizing: 'border-box' }}>
+    <Box
+      sx={{
+        width: '100%',
+        p: { xs: 1, md: 2 },
+        boxShadow: 3,
+        bgcolor: 'background.paper',
+        boxSizing: 'border-box',
+      }}
+    >
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={12} md={4}>
           <FormControl fullWidth>

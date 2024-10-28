@@ -1,3 +1,3 @@
 export interface AccountNumbers {
-    accountNo?: string;
+  accountNo?: string;
 }

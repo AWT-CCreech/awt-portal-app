@@ -34,7 +34,13 @@ interface NoteModalProps {
   onNoteAdded: () => void;
 }
 
-const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, onNoteAdded }) => {
+const NoteModal: React.FC<NoteModalProps> = ({
+  soNum,
+  partNum,
+  notes,
+  onClose,
+  onNoteAdded,
+}) => {
   const [noteText, setNoteText] = useState<string>('');
   const [camContact, setCamContact] = useState<CamContact | null>(null);
   const [noteList, setNoteList] = useState<NoteList[]>(notes);
@@ -84,7 +90,10 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
     }
   }, [activeOnly, contactQuery, companyQuery, fetchSuggestions]);
 
-  const handleContactInputChange = (event: React.SyntheticEvent<Element, Event>, value: string) => {
+  const handleContactInputChange = (
+    event: React.SyntheticEvent<Element, Event>,
+    value: string
+  ) => {
     setSearchBy('Contact');
     setContactQuery(value);
     if (!value) {
@@ -96,7 +105,10 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
     }
   };
 
-  const handleCompanyInputChange = (event: React.SyntheticEvent<Element, Event>, value: string) => {
+  const handleCompanyInputChange = (
+    event: React.SyntheticEvent<Element, Event>,
+    value: string
+  ) => {
     setSearchBy('Company');
     setCompanyQuery(value);
     if (!value) {
@@ -108,7 +120,10 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
     }
   };
 
-  const handleSelection = (event: React.SyntheticEvent, value: CamContact | string | null) => {
+  const handleSelection = (
+    event: React.SyntheticEvent,
+    value: CamContact | string | null
+  ) => {
     if (typeof value === 'object' && value !== null) {
       setCamContact(value);
       setContactQuery(value.contact || ''); // Update the contact field
@@ -139,7 +154,10 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
         const savedNote = await Modules.OpenSalesOrderNotes.addNote(newNote);
 
         // Update the note list with the newly saved note
-        setNoteList([...noteList, { ...savedNote, contactName: camContact?.contact || 'N/A' }]);
+        setNoteList([
+          ...noteList,
+          { ...savedNote, contactName: camContact?.contact || 'N/A' },
+        ]);
 
         // Trigger the onNoteAdded callback to refetch notes in the parent component
         onNoteAdded();
@@ -161,8 +179,12 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
   // Custom rendering function for the table rows
   const renderRow = (row: NoteList) => [
     <TableCell key="notes">{row.notes}</TableCell>,
-    <TableCell key="contactName" sx={{ whiteSpace: 'nowrap' }}>{row.contactName || 'N/A'}</TableCell>,
-    <TableCell key="entryDate">{row.entryDate ? new Date(row.entryDate).toLocaleDateString() : 'N/A'}</TableCell>,
+    <TableCell key="contactName" sx={{ whiteSpace: 'nowrap' }}>
+      {row.contactName || 'N/A'}
+    </TableCell>,
+    <TableCell key="entryDate">
+      {row.entryDate ? new Date(row.entryDate).toLocaleDateString() : 'N/A'}
+    </TableCell>,
     <TableCell key="enteredBy">{row.enteredBy}</TableCell>,
   ];
 
@@ -178,10 +200,13 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
       }}
     >
       <Typography variant="h6" component="h2" gutterBottom>
-        Notes for SO#{soNum}{partNum && ` - ${partNum}`}
+        Notes for SO#{soNum}
+        {partNum && ` - ${partNum}`}
       </Typography>
 
-      <Box sx={{ width: '100%' }}> {/* Ensure consistent width */}
+      <Box sx={{ width: '100%' }}>
+        {' '}
+        {/* Ensure consistent width */}
         {noteList.length > 0 ? (
           <SortableTable
             tableData={noteList}
@@ -192,7 +217,10 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
             hoverColor="#f5f5f5" // Customize as needed
           />
         ) : (
-          <Typography variant="body1" sx={{ textAlign: 'center', padding: 2, color: 'gray' }}>
+          <Typography
+            variant="body1"
+            sx={{ textAlign: 'center', padding: 2, color: 'gray' }}
+          >
             No notes have been added.
           </Typography>
         )}
@@ -209,14 +237,19 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
                 freeSolo
                 options={suggestions}
                 getOptionLabel={(option) =>
-                  typeof option === 'string' ? option : `${option.contact || ''} (${option.company || ''})`
+                  typeof option === 'string'
+                    ? option
+                    : `${option.contact || ''} (${option.company || ''})`
                 }
                 inputValue={contactQuery}
                 onInputChange={handleContactInputChange}
                 onChange={handleSelection}
-                value={camContact}  // Bind the selected value to the input field
+                value={camContact} // Bind the selected value to the input field
                 renderOption={(props, option) => (
-                  <li {...props} key={typeof option === 'string' ? option : option.id}>
+                  <li
+                    {...props}
+                    key={typeof option === 'string' ? option : option.id}
+                  >
                     {typeof option === 'string'
                       ? option
                       : `${option.contact || ''} (${option.company || ''})`}
@@ -232,8 +265,18 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
                 )}
               />
             </Grid>
-            <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Grid
+              item
+              xs={2}
+              sx={{ display: 'flex', justifyContent: 'flex-end' }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
+              >
                 <Checkbox
                   checked={activeOnly}
                   onChange={(e) => setActiveOnly(e.target.checked)}
@@ -249,14 +292,19 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
             freeSolo
             options={suggestions}
             getOptionLabel={(option) =>
-              typeof option === 'string' ? option : `${option.company || ''} (${option.contact || ''})`
+              typeof option === 'string'
+                ? option
+                : `${option.company || ''} (${option.contact || ''})`
             }
             inputValue={companyQuery}
             onInputChange={handleCompanyInputChange}
             onChange={handleSelection}
-            value={camContact}  // Bind the selected value to the input field
+            value={camContact} // Bind the selected value to the input field
             renderOption={(props, option) => (
-              <li {...props} key={typeof option === 'string' ? option : option.id}>
+              <li
+                {...props}
+                key={typeof option === 'string' ? option : option.id}
+              >
                 {typeof option === 'string'
                   ? option
                   : `${option.company || ''} (${option.contact || ''})`}
@@ -276,7 +324,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
           id="noteTextarea"
           label="Note"
           value={noteText}
-          onChange={e => setNoteText(e.target.value)}
+          onChange={(e) => setNoteText(e.target.value)}
           placeholder="Enter your note here"
           multiline
           rows={5}
@@ -285,10 +333,20 @@ const NoteModal: React.FC<NoteModalProps> = ({ soNum, partNum, notes, onClose, o
         />
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
           <ButtonGroup>
-            <Button variant="outlined" color="success" startIcon={<Save />} onClick={saveNote}>
+            <Button
+              variant="outlined"
+              color="success"
+              startIcon={<Save />}
+              onClick={saveNote}
+            >
               Save
             </Button>
-            <Button variant="outlined" color="error" startIcon={<Close />} onClick={onClose}>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<Close />}
+              onClick={onClose}
+            >
               Close
             </Button>
           </ButtonGroup>
