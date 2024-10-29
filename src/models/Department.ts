@@ -11,4 +11,3 @@ interface Department {
 }
 
 export default Department;
-  

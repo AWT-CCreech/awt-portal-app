@@ -77,8 +77,12 @@ const EmailProperties: React.FC<IProps> = ({
   );
 
   const [selectedTemplate, setSelectedTemplate] = useState('None');
-  const [templatesForUser, setTemplatesForUser] = useState<IMassMailerEmailTemplate[]>([]);
-  const [templateOptions, setTemplateOptions] = useState<any[]>([{ key: 0, value: 'None', text: 'None' }]);
+  const [templatesForUser, setTemplatesForUser] = useState<
+    IMassMailerEmailTemplate[]
+  >([]);
+  const [templateOptions, setTemplateOptions] = useState<any[]>([
+    { key: 0, value: 'None', text: 'None' },
+  ]);
   const ref = useRef<HTMLInputElement>(null);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -96,15 +100,22 @@ const EmailProperties: React.FC<IProps> = ({
   useEffect(() => {
     const user = localStorage.getItem('username');
     if (user) {
-      agent.MassMailer.EmailTemplates.templatesForUser(user).then((response) => {
-        const options = response.map((template: IMassMailerEmailTemplate) => ({
-          key: template.id,
-          value: template.emailDesc,
-          text: template.emailDesc,
-        }));
-        setTemplateOptions([{ key: 0, value: 'None', text: 'None' }, ...options]);
-        setTemplatesForUser(response);
-      });
+      agent.MassMailer.EmailTemplates.templatesForUser(user).then(
+        (response) => {
+          const options = response.map(
+            (template: IMassMailerEmailTemplate) => ({
+              key: template.id,
+              value: template.emailDesc,
+              text: template.emailDesc,
+            })
+          );
+          setTemplateOptions([
+            { key: 0, value: 'None', text: 'None' },
+            ...options,
+          ]);
+          setTemplatesForUser(response);
+        }
+      );
     }
   }, []);
 
@@ -113,13 +124,21 @@ const EmailProperties: React.FC<IProps> = ({
       setEmailBody(noneTemplate.emailBody);
       setEmailSubject(noneTemplate.emailSubject);
     } else {
-      const selectedTemplateObj = templatesForUser.find((template) => template.emailDesc === selectedTemplate);
+      const selectedTemplateObj = templatesForUser.find(
+        (template) => template.emailDesc === selectedTemplate
+      );
       if (selectedTemplateObj) {
         setEmailBody(selectedTemplateObj.emailBody);
         setEmailSubject(selectedTemplateObj.emailSubject);
       }
     }
-  }, [selectedTemplate, templatesForUser, setEmailBody, setEmailSubject, noneTemplate]);
+  }, [
+    selectedTemplate,
+    templatesForUser,
+    setEmailBody,
+    setEmailSubject,
+    noneTemplate,
+  ]);
 
   const handleTemplateChange = (event: any) => {
     const value = event.target.value;
@@ -158,7 +177,11 @@ const EmailProperties: React.FC<IProps> = ({
               <Typography variant="subtitle1">Template</Typography>
             </Box>
             <FormControl fullWidth className="email-properties-formcontrol">
-              <Select id="template" value={selectedTemplate} onChange={handleTemplateChange}>
+              <Select
+                id="template"
+                value={selectedTemplate}
+                onChange={handleTemplateChange}
+              >
                 {templateOptions.map((option) => (
                   <MenuItem key={option.key} value={option.value}>
                     {option.text}
@@ -188,9 +211,15 @@ const EmailProperties: React.FC<IProps> = ({
           {CC.map((selected, index) => (
             <Chip
               key={index}
-              label={selected.fullName.trim() === '' ? selected.email : selected.fullName}
+              label={
+                selected.fullName.trim() === ''
+                  ? selected.email
+                  : selected.fullName
+              }
               color="success"
-              onDelete={() => setCC(CC.filter((c) => c.email !== selected.email))}
+              onDelete={() =>
+                setCC(CC.filter((c) => c.email !== selected.email))
+              }
               deleteIcon={<DeleteIcon />}
               className="email-properties-chip"
             />
@@ -204,10 +233,20 @@ const EmailProperties: React.FC<IProps> = ({
             >
               Attach File(s)
             </Button>
-            <input ref={ref} type="file" hidden multiple onChange={handleAttachFiles} />
+            <input
+              ref={ref}
+              type="file"
+              hidden
+              multiple
+              onChange={handleAttachFiles}
+            />
           </Box>
           {attachFiles.map((fileName) => (
-            <SelectedFile key={fileName} fileName={fileName} unselect={unselectFile} />
+            <SelectedFile
+              key={fileName}
+              fileName={fileName}
+              unselect={unselectFile}
+            />
           ))}
         </Grid>
         <Grid item xs={12} md={6}>
@@ -237,8 +276,10 @@ const EmailProperties: React.FC<IProps> = ({
               }}
             >
               <Typography className="popup-content">
-                %fullname% for recipient's full name<br />
-                %firstname% for recipient's first name<br />
+                %fullname% for recipient's full name
+                <br />
+                %firstname% for recipient's first name
+                <br />
                 %lastname% for recipient's last name
               </Typography>
             </Popover>

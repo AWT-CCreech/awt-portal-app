@@ -1,5 +1,11 @@
 // React and Hooks
-import React, { ChangeEvent, KeyboardEvent, useEffect, useCallback, useState } from 'react';
+import React, {
+  ChangeEvent,
+  KeyboardEvent,
+  useEffect,
+  useCallback,
+  useState,
+} from 'react';
 
 // MUI Components and Icons
 import {
@@ -32,7 +38,9 @@ import Modules from '../../app/api/agent';
 
 interface SearchBoxProps {
   searchParams: OpenSalesOrderSearchInput;
-  setSearchParams: React.Dispatch<React.SetStateAction<OpenSalesOrderSearchInput>>;
+  setSearchParams: React.Dispatch<
+    React.SetStateAction<OpenSalesOrderSearchInput>
+  >;
   getResultSets: () => void;
   handleExport: () => void;
   searchResultLength: number;
@@ -105,51 +113,74 @@ const SearchBox: React.FC<SearchBoxProps> = ({
     const todayStr = today.toISOString().substring(0, 10); // 'YYYY-MM-DD'
     const lastYearStr = lastYear.toISOString().substring(0, 10); // 'YYYY-MM-DD'
 
-    console.log('Setting default date range:', { date1: lastYearStr, date2: todayStr });
+    console.log('Setting default date range:', {
+      date1: lastYearStr,
+      date2: todayStr,
+    });
 
-    setSearchParams(prevParams => ({
+    setSearchParams((prevParams) => ({
       ...prevParams,
       date1: lastYearStr,
       date2: todayStr,
     }));
   }, [setSearchParams]);
 
-  const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    console.log(`Input Change - ${name}:`, value);
-    setSearchParams(prevParams => ({
-      ...prevParams,
-      [name]: value || null,
-    }));
-  }, [setSearchParams]);
+  const handleInputChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+      console.log(`Input Change - ${name}:`, value);
+      setSearchParams((prevParams) => ({
+        ...prevParams,
+        [name]: value || null,
+      }));
+    },
+    [setSearchParams]
+  );
 
-  const handleSelectChange = useCallback((event: SelectChangeEvent<string>) => {
-    const { name, value } = event.target;
-    console.log(`Select Change - ${name}:`, value);
-    setSearchParams(prevParams => ({
-      ...prevParams,
-      [name!]: value as string,
-    }));
-  }, [setSearchParams]);
+  const handleSelectChange = useCallback(
+    (event: SelectChangeEvent<string>) => {
+      const { name, value } = event.target;
+      console.log(`Select Change - ${name}:`, value);
+      setSearchParams((prevParams) => ({
+        ...prevParams,
+        [name!]: value as string,
+      }));
+    },
+    [setSearchParams]
+  );
 
-  const handleCheckboxChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = event.target;
-    console.log(`Checkbox Change - ${name}:`, checked);
-    setSearchParams(prevParams => ({
-      ...prevParams,
-      [name]: checked,
-    }));
-  }, [setSearchParams]);
+  const handleCheckboxChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { name, checked } = event.target;
+      console.log(`Checkbox Change - ${name}:`, checked);
+      setSearchParams((prevParams) => ({
+        ...prevParams,
+        [name]: checked,
+      }));
+    },
+    [setSearchParams]
+  );
 
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      console.log('Enter key pressed - triggering search');
-      getResultSets();
-    }
-  }, [getResultSets]);
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        console.log('Enter key pressed - triggering search');
+        getResultSets();
+      }
+    },
+    [getResultSets]
+  );
 
   return (
-    <Box sx={{ width: '100%', p: { xs: 1, md: 2 }, boxShadow: 3, bgcolor: 'background.paper', boxSizing: 'border-box' }}>
+    <Box
+      sx={{
+        width: '100%',
+        p: { xs: 1, md: 2 },
+        boxShadow: 3,
+        bgcolor: 'background.paper',
+        boxSizing: 'border-box',
+      }}
+    >
       <Grid container spacing={2} onKeyDown={handleKeyDown}>
         {/* Date Filter Type */}
         <Grid item xs={12} sm={3}>
@@ -162,8 +193,12 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               onChange={handleSelectChange}
               label="Date Filter Type"
             >
-              <MenuItem key="OrderDate" value="OrderDate">Sales Order Date</MenuItem>
-              <MenuItem key="ExpectedDelivery" value="ExpectedDelivery">Expected Delivery Date</MenuItem>
+              <MenuItem key="OrderDate" value="OrderDate">
+                Sales Order Date
+              </MenuItem>
+              <MenuItem key="ExpectedDelivery" value="ExpectedDelivery">
+                Expected Delivery Date
+              </MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -204,8 +239,12 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               onChange={handleSelectChange}
               label="Req Date Status"
             >
-              <MenuItem key="All" value="All">All</MenuItem>
-              <MenuItem key="Late" value="Late">Late</MenuItem>
+              <MenuItem key="All" value="All">
+                All
+              </MenuItem>
+              <MenuItem key="Late" value="Late">
+                Late
+              </MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -220,7 +259,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               onChange={handleSelectChange}
               label="Sales Team"
             >
-              <MenuItem key="All" value="All">All</MenuItem>
+              <MenuItem key="All" value="All">
+                All
+              </MenuItem>
               {salesTeams.map((team) => (
                 <MenuItem key={team.id} value={team.litem}>
                   {team.litem}
@@ -240,7 +281,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               onChange={handleSelectChange}
               label="Sales Rep"
             >
-              <MenuItem key="All" value="All">All</MenuItem>
+              <MenuItem key="All" value="All">
+                All
+              </MenuItem>
               {salesReps.map((rep) => (
                 <MenuItem key={rep.id} value={rep.uname}>
                   {rep.uname}
@@ -280,9 +323,14 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               onChange={handleSelectChange}
               label="Account Number"
             >
-              <MenuItem key="All" value="All">All</MenuItem>
+              <MenuItem key="All" value="All">
+                All
+              </MenuItem>
               {accountNumbers.map((accountNumber) => (
-                <MenuItem key={accountNumber.accountNo} value={accountNumber.accountNo}>
+                <MenuItem
+                  key={accountNumber.accountNo}
+                  value={accountNumber.accountNo}
+                >
                   {accountNumber.accountNo}
                 </MenuItem>
               ))}
@@ -300,7 +348,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               onChange={handleSelectChange}
               label="Category"
             >
-              <MenuItem key="All" value="All">All</MenuItem>
+              <MenuItem key="All" value="All">
+                All
+              </MenuItem>
               {itemCategories.map((category) => (
                 <MenuItem key={category.id} value={category.litem}>
                   {category.litem}
@@ -373,7 +423,13 @@ const SearchBox: React.FC<SearchBoxProps> = ({
           />
         </Grid>
         {/* Buttons */}
-        <Grid item xs={12} display="flex" justifyContent="flex-start" alignItems="center">
+        <Grid
+          item
+          xs={12}
+          display="flex"
+          justifyContent="flex-start"
+          alignItems="center"
+        >
           <Button
             variant="contained"
             color="primary"

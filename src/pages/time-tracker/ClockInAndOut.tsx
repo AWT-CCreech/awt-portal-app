@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import agent from '../../app/api/agent';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
-import {
-  Box,
-  Button,
-  Grid,
-  Typography,
-  IconButton,
-  Chip,
-} from '@mui/material';
+import { Box, Button, Grid, Typography, IconButton, Chip } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import BadgeIcon from '@mui/icons-material/Badge';
@@ -19,7 +12,10 @@ interface IProps {
   setTodayTimeTrack: (tt: TimeTracker) => void;
 }
 
-const ClockInAndOut: React.FC<IProps> = ({ todayTimeTrack, setTodayTimeTrack }) => {
+const ClockInAndOut: React.FC<IProps> = ({
+  todayTimeTrack,
+  setTodayTimeTrack,
+}) => {
   const [secondsCount, setSecondsCount] = useState<number>(0);
 
   useEffect(() => {
@@ -51,14 +47,18 @@ const ClockInAndOut: React.FC<IProps> = ({ todayTimeTrack, setTodayTimeTrack }) 
   };
 
   const handleClockInClockOut = () => {
-    agent.TimeTrackers.get(localStorage.getItem('userid')!.trim()).then(timeTrack => {
-      if (timeTrack.isWorking !== todayTimeTrack?.isWorking) {
-        setTodayTimeTrack(timeTrack);
-        alert('There is an error from user. Please Clock In/Out again!!');
-      } else {
-        agent.TimeTrackers.update(timeTrack).then(response => setTodayTimeTrack(response));
+    agent.TimeTrackers.get(localStorage.getItem('userid')!.trim()).then(
+      (timeTrack) => {
+        if (timeTrack.isWorking !== todayTimeTrack?.isWorking) {
+          setTodayTimeTrack(timeTrack);
+          alert('There is an error from user. Please Clock In/Out again!!');
+        } else {
+          agent.TimeTrackers.update(timeTrack).then((response) =>
+            setTodayTimeTrack(response)
+          );
+        }
       }
-    });
+    );
   };
 
   return (
@@ -97,17 +97,9 @@ const ClockInAndOut: React.FC<IProps> = ({ todayTimeTrack, setTodayTimeTrack }) 
       </Grid>
       <Grid item xs={6}>
         {todayTimeTrack?.isWorking ? (
-          <Chip
-            icon={<CheckCircleIcon />}
-            label="Clocked In"
-            color="success"
-          />
+          <Chip icon={<CheckCircleIcon />} label="Clocked In" color="success" />
         ) : (
-          <Chip
-            icon={<CloseIcon />}
-            label="Clocked Out"
-            color="error"
-          />
+          <Chip icon={<CloseIcon />} label="Clocked Out" color="error" />
         )}
       </Grid>
       <Grid item xs={6} textAlign="right">
@@ -120,7 +112,8 @@ const ClockInAndOut: React.FC<IProps> = ({ todayTimeTrack, setTodayTimeTrack }) 
       </Grid>
       <Grid item xs={6}>
         <Typography variant="body1">
-          {Math.floor(secondsCount! / 3600)} hour(s) and {Math.floor(secondsCount / 60) % 60} minute(s)
+          {Math.floor(secondsCount! / 3600)} hour(s) and{' '}
+          {Math.floor(secondsCount / 60) % 60} minute(s)
         </Typography>
       </Grid>
     </Grid>

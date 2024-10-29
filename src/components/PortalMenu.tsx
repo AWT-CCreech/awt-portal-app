@@ -108,25 +108,27 @@ interface MenuItemType {
 }
 
 const PortalMenu: React.FC = () => {
-  const [openFolders, setOpenFolders] = useState<{ [key: string]: boolean }>(() => {
-    const savedFolders = localStorage.getItem('openFolders');
-    return savedFolders
-      ? JSON.parse(savedFolders)
-      : {
-          accounting: false,
-          cam: false,
-          commissions: false,
-          consignment: false,
-          helpDesk: false,
-          inventory: false,
-          it: false,
-          operations: false,
-          purchasing: false,
-          receiving: false,
-          sales: false,
-          shipping: false,
-        };
-  });
+  const [openFolders, setOpenFolders] = useState<{ [key: string]: boolean }>(
+    () => {
+      const savedFolders = localStorage.getItem('openFolders');
+      return savedFolders
+        ? JSON.parse(savedFolders)
+        : {
+            accounting: false,
+            cam: false,
+            commissions: false,
+            consignment: false,
+            helpDesk: false,
+            inventory: false,
+            it: false,
+            operations: false,
+            purchasing: false,
+            receiving: false,
+            sales: false,
+            shipping: false,
+          };
+    }
+  );
 
   const [favorites, setFavorites] = useState<MenuItemType[]>(() => {
     const savedFavorites = localStorage.getItem('favorites');
@@ -147,7 +149,9 @@ const PortalMenu: React.FC = () => {
   const { setUserName, setPassWord } = userInfo;
 
   useEffect(() => {
-    const favoritesToStore = favorites.map(({ icon, onClick, ...rest }) => rest);
+    const favoritesToStore = favorites.map(
+      ({ icon, onClick, ...rest }) => rest
+    );
     localStorage.setItem('favorites', JSON.stringify(favoritesToStore));
   }, [favorites]);
 
@@ -168,7 +172,9 @@ const PortalMenu: React.FC = () => {
 
   const handleFavoriteToggle = (item: MenuItemType) => {
     setFavorites((prevFavorites) => {
-      const isAlreadyFavorite = prevFavorites.some((fav) => fav.label === item.label);
+      const isAlreadyFavorite = prevFavorites.some(
+        (fav) => fav.label === item.label
+      );
       if (isAlreadyFavorite) {
         return prevFavorites.filter((fav) => fav.label !== item.label);
       } else {
@@ -181,7 +187,8 @@ const PortalMenu: React.FC = () => {
     });
   };
 
-  const isFavorite = (label: string) => favorites.some((fav) => fav.label === label);
+  const isFavorite = (label: string) =>
+    favorites.some((fav) => fav.label === label);
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -218,7 +225,11 @@ const PortalMenu: React.FC = () => {
       // Add more items as needed
     ],
     cam: [
-      { label: 'CAM Dashboard', path: '/cam/dashboard', icon: ContactsOutlined },
+      {
+        label: 'CAM Dashboard',
+        path: '/cam/dashboard',
+        icon: ContactsOutlined,
+      },
       // Add more items as needed
     ],
     commissions: [
@@ -300,7 +311,11 @@ const PortalMenu: React.FC = () => {
     },
   ];
 
-  const menuData: { section: string; items: MenuItemType[]; showFavoriteIcon: boolean }[] = [
+  const menuData: {
+    section: string;
+    items: MenuItemType[];
+    showFavoriteIcon: boolean;
+  }[] = [
     {
       section: 'Favorites',
       items: favorites.map((item) => ({
@@ -343,13 +358,24 @@ const PortalMenu: React.FC = () => {
         return (
           <React.Fragment key={item.label}>
             <ListItem disablePadding>
-              <ListItemButton onClick={item.onClick} sx={{ pl: 2 + paddingLeft, pr: 1 }}>
+              <ListItemButton
+                onClick={item.onClick}
+                sx={{ pl: 2 + paddingLeft, pr: 1 }}
+              >
                 <NavItemIcon>
-                  {item.icon ? React.createElement(item.icon as React.ElementType) : <Folder />}
+                  {item.icon ? (
+                    React.createElement(item.icon as React.ElementType)
+                  ) : (
+                    <Folder />
+                  )}
                 </NavItemIcon>
                 <ListItemText
                   primary={item.label}
-                  sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                  sx={{
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
                 />
                 {item.open ? <ExpandLess /> : <ExpandMore />}
               </ListItemButton>
@@ -369,11 +395,19 @@ const PortalMenu: React.FC = () => {
               sx={{ pl: 2 + paddingLeft, pr: 1 }}
             >
               <NavItemIcon>
-                {item.icon ? React.createElement(item.icon as React.ElementType) : <Folder />}
+                {item.icon ? (
+                  React.createElement(item.icon as React.ElementType)
+                ) : (
+                  <Folder />
+                )}
               </NavItemIcon>
               <ListItemText
                 primary={item.label}
-                sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                sx={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
               />
               {showFavoriteIcon && (
                 <IconButton
@@ -459,7 +493,11 @@ const PortalMenu: React.FC = () => {
                   section.items.length > 0 && (
                     <Box key={section.section}>
                       <SectionTitle>{section.section}</SectionTitle>
-                      {renderMenuItems(section.items, 0, section.showFavoriteIcon)}
+                      {renderMenuItems(
+                        section.items,
+                        0,
+                        section.showFavoriteIcon
+                      )}
                     </Box>
                   )
               )}
@@ -482,7 +520,9 @@ const PortalMenu: React.FC = () => {
               <Tooltip title="Logout">
                 <IconButton
                   sx={{ color: 'text.secondary' }}
-                  onClick={() => handleLogOut(navigate, setUserName, setPassWord)}
+                  onClick={() =>
+                    handleLogOut(navigate, setUserName, setPassWord)
+                  }
                 >
                   <PowerSettingsNew />
                 </IconButton>

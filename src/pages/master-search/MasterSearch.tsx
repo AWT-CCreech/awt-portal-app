@@ -57,12 +57,20 @@ const MasterSearch: React.FC<IProps> = () => {
       !chkCompany &&
       !chkInvNo
     ) {
-      alert('You must select at least one of the options: ID, Part No, Part Desc, Company, SO No, PO No, Mfg, or Inv No.');
+      alert(
+        'You must select at least one of the options: ID, Part No, Part Desc, Company, SO No, PO No, Mfg, or Inv No.'
+      );
       return;
     }
 
     setSearchResult([
-      <Box display="flex" justifyContent="center" alignItems="center" mt={10} key="loading">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        mt={10}
+        key="loading"
+      >
         <CircularProgress size={80} />
         <Typography variant="h6" component="div" sx={{ ml: 2 }}>
           Loading
@@ -87,40 +95,67 @@ const MasterSearch: React.FC<IProps> = () => {
 
     if (viewBy === 'event') {
       if (searchFor === 1 || searchFor === 3) {
-        const response1 = await agent.MasterSearches.getSellOppEvents(searchObject);
-        tempSearchResult = [...tempSearchResult, <SellOppsEvent sellOppEvents={response1} key="sellOppsEvent" />];
-      }
-      if (searchFor === 2 || searchFor === 3) {
-        const response2 = await agent.MasterSearches.getBuyOppEvents(searchObject);
+        const response1 =
+          await agent.MasterSearches.getSellOppEvents(searchObject);
         tempSearchResult = [
           ...tempSearchResult,
-          <BuyOppsEvent buyOppEvents={response2} partJumpTo={chkPartNo ? searchValue : ''} key="buyOppsEvent" />,
+          <SellOppsEvent sellOppEvents={response1} key="sellOppsEvent" />,
+        ];
+      }
+      if (searchFor === 2 || searchFor === 3) {
+        const response2 =
+          await agent.MasterSearches.getBuyOppEvents(searchObject);
+        tempSearchResult = [
+          ...tempSearchResult,
+          <BuyOppsEvent
+            buyOppEvents={response2}
+            partJumpTo={chkPartNo ? searchValue : ''}
+            key="buyOppsEvent"
+          />,
         ];
       }
     } else if (viewBy === 'detail') {
       if (searchFor === 1 || searchFor === 3) {
-        const response3 = await agent.MasterSearches.getSellOppDetails(searchObject);
-        tempSearchResult = [...tempSearchResult, <SellOppsDetail sellOppDetails={response3} key="sellOppsDetail" />];
-      }
-      if (searchFor === 2 || searchFor === 3) {
-        const response4 = await agent.MasterSearches.getBuyOppDetails(searchObject);
+        const response3 =
+          await agent.MasterSearches.getSellOppDetails(searchObject);
         tempSearchResult = [
           ...tempSearchResult,
-          <BuyOppsDetail buyOppDetails={response4} partJumpTo={chkPartNo ? searchValue : ''} key="buyOppsDetail" />,
+          <SellOppsDetail sellOppDetails={response3} key="sellOppsDetail" />,
+        ];
+      }
+      if (searchFor === 2 || searchFor === 3) {
+        const response4 =
+          await agent.MasterSearches.getBuyOppDetails(searchObject);
+        tempSearchResult = [
+          ...tempSearchResult,
+          <BuyOppsDetail
+            buyOppDetails={response4}
+            partJumpTo={chkPartNo ? searchValue : ''}
+            key="buyOppsDetail"
+          />,
         ];
       }
     }
 
     if (searchFor === 4) {
-      const response5 = await agent.MasterSearches.getContacts(searchValue, chkActive);
-      tempSearchResult = [...tempSearchResult, <ContactSearch contacts={response5} key="contactSearch" />];
+      const response5 = await agent.MasterSearches.getContacts(
+        searchValue,
+        chkActive
+      );
+      tempSearchResult = [
+        ...tempSearchResult,
+        <ContactSearch contacts={response5} key="contactSearch" />,
+      ];
     }
     setSearchResult(tempSearchResult);
   };
 
   return (
     <div>
-      <PageHeader pageName="Master Search" pageHref={ROUTE_PATHS.MASTER_SEARCH} />
+      <PageHeader
+        pageName="Master Search"
+        pageHref={ROUTE_PATHS.MASTER_SEARCH}
+      />
       <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
         <Grid container justifyContent="center">
           <Grid item xs={12}>

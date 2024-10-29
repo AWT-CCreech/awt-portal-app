@@ -45,10 +45,16 @@ interface MfgOption {
   text: string;
 }
 
-const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors }) => {
+const EmailRecipient: React.FC<IProps> = ({
+  selectedVendors,
+  setSelectedVendors,
+}) => {
   const [mfgOptions, setMfgOptions] = useState<MfgOption[]>([]);
-  const [vendorsToSelect, setVendorsToSelect] = useState<IMassMailerVendor[]>([]);
-  const [vendorListSelectedPage, setVendorListSelectedPage] = useState<number>(1);
+  const [vendorsToSelect, setVendorsToSelect] = useState<IMassMailerVendor[]>(
+    []
+  );
+  const [vendorListSelectedPage, setVendorListSelectedPage] =
+    useState<number>(1);
   const [mfg, setMfg] = useState<string>('All');
   const [anc, setAnc] = useState<boolean>(false);
   const [fne, setFne] = useState<boolean>(false);
@@ -58,9 +64,11 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
 
   useEffect(() => {
     // Fetch initial vendors and manufacturer options
-    agent.MassMailer.Vendors.vendorList('All', false, false).then((response) => {
-      setVendorsToSelect(response);
-    });
+    agent.MassMailer.Vendors.vendorList('All', false, false).then(
+      (response) => {
+        setVendorsToSelect(response);
+      }
+    );
 
     agent.MassMailer.Manufacturers.manufacturerList().then((response) => {
       const options = response.map((mfg: string) => ({
@@ -82,14 +90,20 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
     });
   };
 
-  const handleAncChange = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+  const handleAncChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
     setAnc(checked);
     agent.MassMailer.Vendors.vendorList(mfg, checked, fne).then((response) => {
       setVendorsToSelect(response);
     });
   };
 
-  const handleFneChange = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+  const handleFneChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
     setFne(checked);
     agent.MassMailer.Vendors.vendorList(mfg, anc, checked).then((response) => {
       setVendorsToSelect(response);
@@ -107,14 +121,20 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
   };
 
   const handleUnselectVendor = (vendorId: number) => {
-    const unselectedItem = selectedVendors.find((vendor) => vendor.id === vendorId);
+    const unselectedItem = selectedVendors.find(
+      (vendor) => vendor.id === vendorId
+    );
     if (unselectedItem !== undefined) {
       setVendorsToSelect([unselectedItem, ...vendorsToSelect]);
     }
-    setSelectedVendors(selectedVendors.filter((vendor) => vendor.id !== vendorId));
+    setSelectedVendors(
+      selectedVendors.filter((vendor) => vendor.id !== vendorId)
+    );
   };
 
-  const getSearchValue = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const getSearchValue = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setCurrentPage(1);
     setSearchValue(event.target.value);
   };
@@ -124,7 +144,10 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
       return vendorsToSelect.filter((vendor) => {
         const name = (vendor.company + ' ' + vendor.contact).toLowerCase();
         const email = vendor.email.toLowerCase();
-        return name.includes(searchValue.toLowerCase()) || email.includes(searchValue.toLowerCase());
+        return (
+          name.includes(searchValue.toLowerCase()) ||
+          email.includes(searchValue.toLowerCase())
+        );
       });
     } else {
       return vendorsToSelect;
@@ -144,7 +167,9 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
       });
       setVendorsToSelect(toSelect);
     } else {
-      alert('The number of recipients exceeds 25. Please try to send to less than 25 recipients!');
+      alert(
+        'The number of recipients exceeds 25. Please try to send to less than 25 recipients!'
+      );
     }
   };
 
@@ -160,13 +185,17 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
   return (
     <Box className="email-recipient-container">
       <Box sx={{ paddingBottom: 2 }}>
-        <Typography variant="h6">Select Who Should Receive This Mailer</Typography>
+        <Typography variant="h6">
+          Select Who Should Receive This Mailer
+        </Typography>
       </Box>
       <Box>
         <Grid container spacing={2}>
           <Grid item xs={4}>
             <FormControl fullWidth>
-              <InputLabel sx={{ textDecoration: 'none' }}>List by Mfg</InputLabel>
+              <InputLabel sx={{ textDecoration: 'none' }}>
+                List by Mfg
+              </InputLabel>
               {loading ? (
                 <Select id="massmailer-mfg" value="" disabled>
                   <MenuItem value="" disabled>
@@ -217,7 +246,10 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
           <Grid item xs={6}>
             <List sx={{ maxHeight: 300, overflow: 'auto' }}>
               {handleSearch().map((vendor, index) => {
-                if ((vendorListSelectedPage - 1) * 100 <= index && index < vendorListSelectedPage * 100) {
+                if (
+                  (vendorListSelectedPage - 1) * 100 <= index &&
+                  index < vendorListSelectedPage * 100
+                ) {
                   return (
                     <VendorListItem
                       key={vendor.id}
@@ -232,7 +264,9 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
                 return null;
               })}
             </List>
-            <Box sx={{ display: 'flex', justifyContent: 'center', paddingTop: 2 }}>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'center', paddingTop: 2 }}
+            >
               <Pagination
                 showFirstButton={true}
                 showLastButton={true}
@@ -240,10 +274,7 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
                 page={currentPage}
                 onChange={handleSelectPage}
                 renderItem={(item) => (
-                  <PaginationItem
-                    component="div"
-                    {...item}
-                  />
+                  <PaginationItem component="div" {...item} />
                 )}
               />
             </Box>
@@ -263,12 +294,20 @@ const EmailRecipient: React.FC<IProps> = ({ selectedVendors, setSelectedVendors 
       <Box sx={{ paddingTop: 2 }}>
         <Grid container spacing={2} justifyContent="center">
           <Grid item>
-            <Button variant="contained" color="primary" onClick={handleSelectAll}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSelectAll}
+            >
               Select All Vendors
             </Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" color="primary" onClick={handleClearAll}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleClearAll}
+            >
               Clear All Selected Vendors
             </Button>
           </Grid>

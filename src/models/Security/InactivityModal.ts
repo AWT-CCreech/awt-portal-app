@@ -1,7 +1,6 @@
 export interface InactivityModalProps {
-    open: boolean;
-    countdown: number;
-    onStayLoggedIn: () => void;
-    onLogout: () => void;
+  open: boolean;
+  countdown: number;
+  onStayLoggedIn: () => void;
+  onLogout: () => void;
 }
-  

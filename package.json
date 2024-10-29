@@ -21,7 +21,6 @@
     "react-router-dom": "^6.27.0",
     "sass": "^1.80.3",
     "styled-components": "^6.1.13",
-    "typescript": "^5.6.3",
     "vite": "^5.4.10",
     "web-vitals": "^4.2.4"
   },
@@ -30,7 +29,8 @@
     "build": "vite build",
     "postbuild": "cpy \"build/**/*\" \"../AirwayAPI/AirwayAPI/wwwroot\" --parents --verbose",
     "preview": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint . --fix"
   },
   "eslintConfig": {
     "extends": [
@@ -52,15 +52,21 @@
     ]
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.13.0",
     "@types/lodash": "^4.17.12",
+    "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^8.11.0",
     "@typescript-eslint/parser": "^8.11.0",
     "cpy-cli": "^5.0.0",
     "eslint": "^9.13.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.37.2",
     "globals": "^15.11.0",
+    "prettier": "^3.3.3",
     "sass-embedded": "^1.80.3",
+    "typescript": "^5.6.3",
     "typescript-eslint": "^8.11.0"
   }
 }

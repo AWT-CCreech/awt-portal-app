@@ -1,5 +1,5 @@
-import { observable, action, makeObservable } from "mobx";
-import { createContext } from "react";
+import { observable, action, makeObservable } from 'mobx';
+import { createContext } from 'react';
 
 class AppState {
   pageLoading: boolean = false;

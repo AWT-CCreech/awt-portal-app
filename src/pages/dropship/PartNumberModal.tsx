@@ -29,7 +29,12 @@ interface IProps {
   soNo?: string;
 }
 
-const PartNumberModal: React.FC<IProps> = ({ selectedParts, setSelectedParts, poNo, soNo }) => {
+const PartNumberModal: React.FC<IProps> = ({
+  selectedParts,
+  setSelectedParts,
+  poNo,
+  soNo,
+}) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [allParts, setAllParts] = useState<DropShipPart[]>([]);
   const [open, setOpen] = useState(false);
@@ -43,7 +48,8 @@ const PartNumberModal: React.FC<IProps> = ({ selectedParts, setSelectedParts, po
         .then((parts) => {
           // Exclude already selected parts
           const filteredParts = parts.filter(
-            (part) => !selectedParts.some((p) => p.serialNumber === part.serialNumber)
+            (part) =>
+              !selectedParts.some((p) => p.serialNumber === part.serialNumber)
           );
           setAllParts(filteredParts);
           if (filteredParts.length === 0) {
@@ -74,7 +80,9 @@ const PartNumberModal: React.FC<IProps> = ({ selectedParts, setSelectedParts, po
 
   const handleRemovePart = (part: DropShipPart) => {
     // Remove the part from selectedParts
-    setSelectedParts(selectedParts.filter((p) => p.serialNumber !== part.serialNumber));
+    setSelectedParts(
+      selectedParts.filter((p) => p.serialNumber !== part.serialNumber)
+    );
     // Add the part back to allParts
     setAllParts([...allParts, part]);
   };
@@ -118,18 +126,37 @@ const PartNumberModal: React.FC<IProps> = ({ selectedParts, setSelectedParts, po
       >
         Add Part
       </Button>
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogTitle>Add Parts</DialogTitle>
         <DialogContent dividers>
           {errorMessage && (
-            <Alert severity="error" onClose={() => setErrorMessage(null)} sx={{ mb: 2 }}>
+            <Alert
+              severity="error"
+              onClose={() => setErrorMessage(null)}
+              sx={{ mb: 2 }}
+            >
               {errorMessage}
             </Alert>
           )}
           <Grid container spacing={2} alignItems="stretch">
             {/* Left Side */}
-            <Grid item xs={12} md={6} sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              sx={{ display: 'flex', flexDirection: 'column' }}
+            >
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mb={1}
+              >
                 <Typography variant="subtitle1">Available Parts</Typography>
                 <Button
                   variant="outlined"
@@ -162,7 +189,12 @@ const PartNumberModal: React.FC<IProps> = ({ selectedParts, setSelectedParts, po
                 />
                 <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
                   {loading ? (
-                    <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                    <Box
+                      display="flex"
+                      justifyContent="center"
+                      alignItems="center"
+                      height="100%"
+                    >
                       <CircularProgress />
                     </Box>
                   ) : (
@@ -189,8 +221,18 @@ const PartNumberModal: React.FC<IProps> = ({ selectedParts, setSelectedParts, po
               </Box>
             </Grid>
             {/* Right Side */}
-            <Grid item xs={12} md={6} sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              sx={{ display: 'flex', flexDirection: 'column' }}
+            >
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mb={1}
+              >
                 <Typography variant="subtitle1">Selected Parts</Typography>
                 <Button
                   variant="outlined"
@@ -236,7 +278,11 @@ const PartNumberModal: React.FC<IProps> = ({ selectedParts, setSelectedParts, po
           <Button variant="outlined" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={() => setOpen(false)}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setOpen(false)}
+          >
             Done
           </Button>
         </DialogActions>

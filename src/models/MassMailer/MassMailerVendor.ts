@@ -1,7 +1,7 @@
 export interface IMassMailerVendor {
-    id: number,
-    contact: string,
-    email: string,
-    company: string,
-    mainVendor: boolean
+  id: number;
+  contact: string;
+  email: string;
+  company: string;
+  mainVendor: boolean;
 }

@@ -32,26 +32,39 @@ interface IProps {
 }
 
 const CcPopUp: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
-  const [searchCC, setSearchCC] = useState<string>("");
+  const [searchCC, setSearchCC] = useState<string>('');
   const [open, setOpen] = useState(false);
 
   const handleSelectCC = (email: string) => {
-    setCC([...CC, ...allUsers.filter(u => u.email === email)]);
+    setCC([...CC, ...allUsers.filter((u) => u.email === email)]);
   };
 
   const handleSearchCC = (): IMassMailerUser[] => {
-    if (searchCC !== "")
-      return allUsers.filter(user => user.fullName.toLowerCase().includes(searchCC) || user.email.toLowerCase().includes(searchCC));
-    else
-      return allUsers;
+    if (searchCC !== '')
+      return allUsers.filter(
+        (user) =>
+          user.fullName.toLowerCase().includes(searchCC) ||
+          user.email.toLowerCase().includes(searchCC)
+      );
+    else return allUsers;
   };
 
   return (
     <>
-      <Button variant="contained" color="primary" size="small" onClick={() => setOpen(true)}>
+      <Button
+        variant="contained"
+        color="primary"
+        size="small"
+        onClick={() => setOpen(true)}
+      >
         Click here for CC
       </Button>
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        fullWidth
+        maxWidth="md"
+      >
         <DialogTitle>Select CC on Email</DialogTitle>
         <DialogContent>
           <Grid container spacing={2}>
@@ -67,7 +80,11 @@ const CcPopUp: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
                   <ListItem key={i}>
                     <ListItemText primary={user.fullName} />
                     <ListItemSecondaryAction>
-                      <IconButton edge="end" color="success" onClick={() => handleSelectCC(user.email)}>
+                      <IconButton
+                        edge="end"
+                        color="success"
+                        onClick={() => handleSelectCC(user.email)}
+                      >
                         <AddCircleIcon />
                       </IconButton>
                     </ListItemSecondaryAction>
@@ -78,13 +95,16 @@ const CcPopUp: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
             <Grid item xs={6}>
               <Box sx={{ maxHeight: 400, overflow: 'auto' }}>
                 {CC.map((selected, index) => {
-                  if (selected.fullName.trim() === "") selected.fullName = selected.email;
+                  if (selected.fullName.trim() === '')
+                    selected.fullName = selected.email;
                   return (
                     <Chip
                       key={index}
                       label={selected.fullName}
                       color="success"
-                      onDelete={() => setCC(CC.filter(c => c.email !== selected.email))}
+                      onDelete={() =>
+                        setCC(CC.filter((c) => c.email !== selected.email))
+                      }
                       deleteIcon={<DeleteIcon />}
                       sx={{ margin: '8px' }}
                     />
@@ -95,7 +115,15 @@ const CcPopUp: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setOpen(false); setSearchCC(""); }} color="primary" variant="contained" startIcon={<CheckIcon />}>
+          <Button
+            onClick={() => {
+              setOpen(false);
+              setSearchCC('');
+            }}
+            color="primary"
+            variant="contained"
+            startIcon={<CheckIcon />}
+          >
             Done
           </Button>
         </DialogActions>

@@ -1,4 +1,4 @@
 export interface DropShipPartsParams {
-    poNo?: string;
-    soNo?: string;
+  poNo?: string;
+  soNo?: string;
 }

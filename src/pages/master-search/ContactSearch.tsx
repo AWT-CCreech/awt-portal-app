@@ -8,13 +8,7 @@ import MasterSearchContact from '../../models/MasterSearch/MasterSearchContact';
 import SortableTable from '../../components/SortableTable';
 
 // MUI Components and Icons
-import {
-  Box,
-  Paper,
-  Divider,
-  TableCell,
-  Typography,
-} from '@mui/material';
+import { Box, Paper, Divider, TableCell, Typography } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
@@ -30,19 +24,35 @@ const ContactSearch: React.FC<IProps> = ({ contacts }) => {
       );
     };
     return [
-      <TableCell key="contact" onClick={openDetail} style={{ cursor: 'pointer' }}>
+      <TableCell
+        key="contact"
+        onClick={openDetail}
+        style={{ cursor: 'pointer' }}
+      >
         {obj.contact}
       </TableCell>,
-      <TableCell key="company" onClick={openDetail} style={{ cursor: 'pointer' }}>
+      <TableCell
+        key="company"
+        onClick={openDetail}
+        style={{ cursor: 'pointer' }}
+      >
         {obj.company}
       </TableCell>,
       <TableCell key="state" onClick={openDetail} style={{ cursor: 'pointer' }}>
         {obj.state}
       </TableCell>,
-      <TableCell key="phoneMain" onClick={openDetail} style={{ cursor: 'pointer' }}>
+      <TableCell
+        key="phoneMain"
+        onClick={openDetail}
+        style={{ cursor: 'pointer' }}
+      >
         {obj.phoneMain}
       </TableCell>,
-      <TableCell key="activeStatus" onClick={openDetail} style={{ cursor: 'pointer' }}>
+      <TableCell
+        key="activeStatus"
+        onClick={openDetail}
+        style={{ cursor: 'pointer' }}
+      >
         {obj.activeStatus === true ? (
           <CheckCircleIcon style={{ color: 'green' }} />
         ) : (
@@ -60,12 +70,31 @@ const ContactSearch: React.FC<IProps> = ({ contacts }) => {
             Contacts
           </Typography>
           <Divider />
-          <Box sx={{ border: 'none', maxHeight: 300, overflow: 'auto', marginTop: 2 }}>
+          <Box
+            sx={{
+              border: 'none',
+              maxHeight: 300,
+              overflow: 'auto',
+              marginTop: 2,
+            }}
+          >
             {contacts.length > 0 ? (
               <SortableTable
                 tableData={contacts}
-                columns={['contact', 'company', 'state', 'phoneMain', 'activeStatus']}
-                columnNames={['Contact', 'Company', 'State', 'PhoneMain', 'Active']}
+                columns={[
+                  'contact',
+                  'company',
+                  'state',
+                  'phoneMain',
+                  'activeStatus',
+                ]}
+                columnNames={[
+                  'Contact',
+                  'Company',
+                  'State',
+                  'PhoneMain',
+                  'Active',
+                ]}
                 headerBackgroundColor="#384959"
                 hoverColor="#f5f5f5"
                 func={func}

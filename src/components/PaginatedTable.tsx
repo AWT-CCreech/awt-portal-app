@@ -31,14 +31,18 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
   const [paginatedData, setPaginatedData] = useState<object[]>([]);
 
   useEffect(() => {
-    setPaginatedData(tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage));
+    setPaginatedData(
+      tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    );
   }, [tableData, page, rowsPerPage]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -62,7 +66,13 @@ const PaginatedTable: React.FC<PaginatedTableProps> = ({
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        rowsPerPageOptions={[5, 10, 25, 50, { label: 'All', value: tableData.length }]}
+        rowsPerPageOptions={[
+          5,
+          10,
+          25,
+          50,
+          { label: 'All', value: tableData.length },
+        ]}
       />
     </Paper>
   );

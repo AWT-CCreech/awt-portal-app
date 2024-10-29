@@ -11,7 +11,11 @@ interface IProps {
   unselect: (vendorId: number) => void;
 }
 
-const SelectedVendor: React.FC<IProps> = ({ vendorName, vendorId, unselect }) => {
+const SelectedVendor: React.FC<IProps> = ({
+  vendorName,
+  vendorId,
+  unselect,
+}) => {
   return (
     <Chip
       label={vendorName}

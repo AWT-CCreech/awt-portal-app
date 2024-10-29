@@ -1,15 +1,26 @@
 import React from 'react';
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import {
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from '@mui/material';
 
 interface IProps {
   previousPeriod: boolean;
   setPreviousPeriod: (value: boolean) => void;
 }
 
-const SelectPayPeriodForm: React.FC<IProps> = ({ previousPeriod, setPreviousPeriod }) => {
+const SelectPayPeriodForm: React.FC<IProps> = ({
+  previousPeriod,
+  setPreviousPeriod,
+}) => {
   return (
     <FormControl component="fieldset">
-      <FormLabel component="legend">Select pay period that you want to view:</FormLabel>
+      <FormLabel component="legend">
+        Select pay period that you want to view:
+      </FormLabel>
       <RadioGroup
         aria-label="pay-period"
         name="pay-period-group"

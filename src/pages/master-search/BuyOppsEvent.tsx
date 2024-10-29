@@ -56,12 +56,35 @@ const BuyOppsEvent: React.FC<IProps> = ({ buyOppEvents, partJumpTo }) => {
             Buy Opp Events
           </Typography>
           <Divider />
-          <Box sx={{ border: 'none', maxHeight: 300, overflow: 'auto', marginTop: 2 }}>
+          <Box
+            sx={{
+              border: 'none',
+              maxHeight: 300,
+              overflow: 'auto',
+              marginTop: 2,
+            }}
+          >
             {buyOppEvents.length > 0 ? (
               <SortableTable
                 tableData={buyOppEvents}
-                columns={['eventId', 'entryDate', 'company', 'manufacturer', 'technology', 'frequency', 'uname']}
-                columnNames={['EID', 'Entry Date', 'Seller', 'Mfg', 'Technology', 'Frequency', 'Purch Rep']}
+                columns={[
+                  'eventId',
+                  'entryDate',
+                  'company',
+                  'manufacturer',
+                  'technology',
+                  'frequency',
+                  'uname',
+                ]}
+                columnNames={[
+                  'EID',
+                  'Entry Date',
+                  'Seller',
+                  'Mfg',
+                  'Technology',
+                  'Frequency',
+                  'Purch Rep',
+                ]}
                 headerBackgroundColor="#384959"
                 hoverColor="#f5f5f5"
                 func={func}

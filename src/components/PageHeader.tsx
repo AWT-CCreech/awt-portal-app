@@ -95,7 +95,9 @@ const PageHeader: React.FC<IProps> = ({ pageName, pageHref }) => {
             sx={{ marginLeft: '15px', color: '#384959' }}
           >
             {/* Home Icon and Name */}
-            <Box sx={{ display: 'flex', alignItems: 'center', color: '#384959' }}>
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', color: '#384959' }}
+            >
               <Home fontSize="small" sx={{ marginRight: '4px' }} />
               <Typography variant="body2">Home</Typography>
             </Box>
@@ -115,12 +117,24 @@ const PageHeader: React.FC<IProps> = ({ pageName, pageHref }) => {
         </Grid>
 
         {/* Right Side: User Information */}
-        <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <Grid
+          item
+          xs={6}
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+          }}
+        >
           <Box display="flex" alignItems="center">
             <Typography
               variant="h6"
               component="div"
-              sx={{ display: 'inline-flex', alignItems: 'center', color: '#384959' }}
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                color: '#384959',
+              }}
             >
               <AccountCircleIcon fontSize="small" sx={{ marginRight: '3px' }} />
               {username}

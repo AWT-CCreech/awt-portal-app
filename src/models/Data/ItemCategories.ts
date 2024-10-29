@@ -1,4 +1,4 @@
 export interface ItemCategories {
-    id: number;
-    litem?: string;
+  id: number;
+  litem?: string;
 }

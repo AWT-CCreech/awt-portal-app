@@ -3,7 +3,7 @@ import {
   Table,
   TableHead,
   TableBody,
-  TableRow,        // Ensure TableRow is imported
+  TableRow, // Ensure TableRow is imported
   TableCell,
   TableSortLabel,
   Paper,
@@ -19,7 +19,8 @@ function reducer(state: any, action: any) {
   switch (action.type) {
     case 'CHANGE_SORT':
       const isSameColumn = state.column === action.column;
-      const direction = isSameColumn && state.direction === 'asc' ? 'desc' : 'asc';
+      const direction =
+        isSameColumn && state.direction === 'asc' ? 'desc' : 'asc';
       const sortedData = _.orderBy(state.data, [action.column], [direction]);
       return {
         ...state,
@@ -63,7 +64,7 @@ const StyledTable = styled(Table)`
 
 const StyledTableRow = styled(TableRow)<{ hovercolor?: string }>`
   &:hover {
-    background-color: ${props => props.hovercolor ?? 'none'} !important;
+    background-color: ${(props) => props.hovercolor ?? 'none'} !important;
   }
 `;
 
@@ -101,7 +102,7 @@ const PaginatedSortableTable: React.FC<IProps> = ({
   tableData,
   func,
   headerBackgroundColor,
-  hoverColor
+  hoverColor,
 }) => {
   const [state, dispatchState] = useReducer(reducer, {
     column: null,
@@ -119,14 +120,18 @@ const PaginatedSortableTable: React.FC<IProps> = ({
   }, [tableData]);
 
   useEffect(() => {
-    setPaginatedData(data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage));
+    setPaginatedData(
+      data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    );
   }, [data, page, rowsPerPage]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -157,7 +162,9 @@ const PaginatedSortableTable: React.FC<IProps> = ({
                       dispatchState({ type: 'CHANGE_SORT', column: col });
                     }}
                   >
-                    {columnNames && columnNames.length === columns?.length ? columnNames[index] : toPascalCase(col)}
+                    {columnNames && columnNames.length === columns?.length
+                      ? columnNames[index]
+                      : toPascalCase(col)}
                   </TableSortLabel>
                 </HeaderTableCell>
               ))}
@@ -167,7 +174,10 @@ const PaginatedSortableTable: React.FC<IProps> = ({
             {paginatedData.map((row: any, id: number) => {
               const renderedRow = func ? func(row) : null;
 
-              if (React.isValidElement(renderedRow) && renderedRow.type === TableRow) {
+              if (
+                React.isValidElement(renderedRow) &&
+                renderedRow.type === TableRow
+              ) {
                 // If func returns a TableRow, render it directly
                 return React.cloneElement(renderedRow, { key: id });
               } else if (Array.isArray(renderedRow)) {
@@ -181,7 +191,7 @@ const PaginatedSortableTable: React.FC<IProps> = ({
                 // Default rendering
                 return (
                   <StyledTableRow key={id} hovercolor={hoverColor}>
-                    {columnNamesInCamelCase.map(col => (
+                    {columnNamesInCamelCase.map((col) => (
                       <StyledTableCell key={col}>
                         {row[toLowerFirstLetter(col)]}
                       </StyledTableCell>
@@ -203,7 +213,14 @@ const PaginatedSortableTable: React.FC<IProps> = ({
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25, 50, 100, { label: 'All', value: data.length }]}
+          rowsPerPageOptions={[
+            5,
+            10,
+            25,
+            50,
+            100,
+            { label: 'All', value: data.length },
+          ]}
         />
       </Box>
     </RoundedPaper>

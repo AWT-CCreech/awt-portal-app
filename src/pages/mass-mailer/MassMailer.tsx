@@ -39,7 +39,9 @@ import {
 const MassMailer: React.FC = () => {
   const [emailBody, setEmailBody] = useState<string>('');
   const [emailSubject, setEmailSubject] = useState<string>('');
-  const [selectedPartItems, setSelectedPartItems] = useState<IMassMailerPartItem[]>([]);
+  const [selectedPartItems, setSelectedPartItems] = useState<
+    IMassMailerPartItem[]
+  >([]);
   const [recipients, setRecipients] = useState<IMassMailerVendor[]>([]);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [attachFiles, setAttachFiles] = useState<string[]>([]);
@@ -73,23 +75,26 @@ const MassMailer: React.FC = () => {
     setPageLoading(true);
 
     let finalBody = '<p>' + emailBody + '</p>';
-    finalBody = finalBody.replace(/(?:\r\n|\r|\n)/g, '<br/>').replace(/ /g, '&nbsp;');
+    finalBody = finalBody
+      .replace(/(?:\r\n|\r|\n)/g, '<br/>')
+      .replace(/ /g, '&nbsp;');
     finalBody += '<table>';
-    finalBody += '<tr><th>Airway Part Number</th><th>Mfg Part Number</th><th>Part Description</th><th>Qty</th><th>Manufacturer</th><th>Rev</th></tr>';
+    finalBody +=
+      '<tr><th>Airway Part Number</th><th>Mfg Part Number</th><th>Part Description</th><th>Qty</th><th>Manufacturer</th><th>Rev</th></tr>';
     finalBody += '%%PARTTABLE%%</table>';
 
     const obj = {
       Subject: emailSubject,
       Body: finalBody,
       SenderUserName: localStorage.getItem('username') ?? '',
-      RecipientIds: recipients.map(recipient => recipient.id),
-      RecipientEmails: recipients.map(recipient => recipient.email),
-      RecipientNames: recipients.map(recipient => recipient.contact),
-      RecipientCompanies: recipients.map(recipient => recipient.company),
+      RecipientIds: recipients.map((recipient) => recipient.id),
+      RecipientEmails: recipients.map((recipient) => recipient.email),
+      RecipientNames: recipients.map((recipient) => recipient.contact),
+      RecipientCompanies: recipients.map((recipient) => recipient.company),
       AttachFiles: attachFiles,
       Password: localStorage.getItem('password') ?? '',
-      CCEmails: CC.map(cc => cc.email),
-      CCNames: CC.map(cc => cc.fullName),
+      CCEmails: CC.map((cc) => cc.email),
+      CCNames: CC.map((cc) => cc.fullName),
       items: selectedPartItems,
     };
 
@@ -118,14 +123,22 @@ const MassMailer: React.FC = () => {
 
   if (pageLoading)
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
         <CircularProgress size={80} />
       </Box>
     );
 
   return (
     <div>
-      <PageHeader pageName="Mass Mailer" pageHref={ROUTE_PATHS.PURCHASING.MASS_MAILER} />
+      <PageHeader
+        pageName="Mass Mailer"
+        pageHref={ROUTE_PATHS.PURCHASING.MASS_MAILER}
+      />
       <Container maxWidth="lg" sx={{ padding: '40px 100px' }}>
         <EmailProperties
           emailBody={emailBody}
@@ -138,10 +151,21 @@ const MassMailer: React.FC = () => {
           setCC={setCC}
           allUsers={allUsers}
         />
-        <PartTable selectedpartItems={selectedPartItems} setSelectedPartItems={setSelectedPartItems} />
-        <EmailRecipient selectedVendors={recipients} setSelectedVendors={setRecipients} />
+        <PartTable
+          selectedpartItems={selectedPartItems}
+          setSelectedPartItems={setSelectedPartItems}
+        />
+        <EmailRecipient
+          selectedVendors={recipients}
+          setSelectedVendors={setRecipients}
+        />
         <Container sx={{ textAlign: 'center', marginTop: 4 }}>
-          <Button variant="contained" color="error" size="large" onClick={handleSendEmailClicked}>
+          <Button
+            variant="contained"
+            color="error"
+            size="large"
+            onClick={handleSendEmailClicked}
+          >
             Send Email
           </Button>
           <Dialog
@@ -153,7 +177,10 @@ const MassMailer: React.FC = () => {
               <DialogContentText>{getConfirmationContent()}</DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setOpenConfirmation(false)} color="primary">
+              <Button
+                onClick={() => setOpenConfirmation(false)}
+                color="primary"
+              >
                 Cancel
               </Button>
               <Button onClick={handleConfirm} color="primary">

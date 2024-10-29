@@ -68,12 +68,35 @@ const SellOppsEvent: React.FC<IProps> = ({ sellOppEvents }) => {
             Sell Opp Events
           </Typography>
           <Divider />
-          <Box sx={{ border: 'none', maxHeight: 300, overflow: 'auto', marginTop: 2 }}>
+          <Box
+            sx={{
+              border: 'none',
+              maxHeight: 300,
+              overflow: 'auto',
+              marginTop: 2,
+            }}
+          >
             {sellOppEvents.length > 0 ? (
               <SortableTable
                 tableData={sellOppEvents}
-                columns={['eventId', 'entryDate', 'company', 'manufacturer', 'soldOrLost', 'uname', 'quoteId']}
-                columnNames={['EID', 'Entry Date', 'Customer', 'Mfg', 'Status', 'Sales Rep', 'Quote']}
+                columns={[
+                  'eventId',
+                  'entryDate',
+                  'company',
+                  'manufacturer',
+                  'soldOrLost',
+                  'uname',
+                  'quoteId',
+                ]}
+                columnNames={[
+                  'EID',
+                  'Entry Date',
+                  'Customer',
+                  'Mfg',
+                  'Status',
+                  'Sales Rep',
+                  'Quote',
+                ]}
                 headerBackgroundColor="#384959"
                 hoverColor="#f5f5f5"
                 func={func}

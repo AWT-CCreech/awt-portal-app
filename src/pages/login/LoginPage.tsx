@@ -1,4 +1,10 @@
-import React, { useContext, FormEvent, useState, useEffect, useCallback } from 'react';
+import React, {
+  useContext,
+  FormEvent,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 import {
   Box,
   Button,
@@ -55,7 +61,10 @@ const LoginPage: React.FC = observer(() => {
       const currentTime = Date.now();
 
       if (expiryTime > currentTime) {
-        const timeout = setTimeout(() => handleAutoLogout(), expiryTime - currentTime);
+        const timeout = setTimeout(
+          () => handleAutoLogout(),
+          expiryTime - currentTime
+        );
         return () => clearTimeout(timeout);
       } else {
         handleAutoLogout();
@@ -138,7 +147,12 @@ const LoginPage: React.FC = observer(() => {
           <Typography component="h1" variant="h4" className="login-title">
             AWT Portal
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate className="login-form">
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            className="login-form"
+          >
             <FormControl>
               <TextField
                 margin="normal"

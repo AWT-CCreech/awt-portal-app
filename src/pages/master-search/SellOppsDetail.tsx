@@ -41,7 +41,9 @@ const SellOppsDetail: React.FC<IProps> = ({ sellOppDetails }) => {
       <TableCell key="entryDate">{entryDateString}</TableCell>,
       <TableCell key="company">{obj.company}</TableCell>,
       <TableCell key="partNum">
-        {obj.partNum !== null && obj.partNum.trim() !== '' ? obj.partNum : obj.altPartNum}
+        {obj.partNum !== null && obj.partNum.trim() !== ''
+          ? obj.partNum
+          : obj.altPartNum}
       </TableCell>,
       <TableCell key="partDesc">{obj.partDesc}</TableCell>,
       <TableCell key="quantity">{obj.quantity}</TableCell>,
@@ -72,7 +74,14 @@ const SellOppsDetail: React.FC<IProps> = ({ sellOppDetails }) => {
             Sell Opp Details
           </Typography>
           <Divider />
-          <Box sx={{ border: 'none', maxHeight: 300, overflow: 'auto', marginTop: 2 }}>
+          <Box
+            sx={{
+              border: 'none',
+              maxHeight: 300,
+              overflow: 'auto',
+              marginTop: 2,
+            }}
+          >
             {sellOppDetails.length > 0 ? (
               <SortableTable
                 tableData={sellOppDetails}
