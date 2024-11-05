@@ -12,7 +12,7 @@ import PaginatedSortableTable from '../../components/PaginatedSortableTable';
 import { formatAmount } from '../../utils/dataManipulation';
 
 // Models
-import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
+import EquipReqSearchResult from '../../models/EventSearchPage/EquipReqSearchResult';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { TrkPoLog } from '../../models/TrkPoLog';
 
@@ -20,73 +20,33 @@ import { TrkPoLog } from '../../models/TrkPoLog';
 import '../../styles/open-so-report/SearchResults.scss';
 
 interface SearchResultsProps {
-    results: (OpenSOReport & { notes: TrkSoNote[]; poLog?: TrkPoLog })[];
-    groupBySo: boolean;
+    results: (EquipReqSearchResult)[];
     containerHeight?: string;
-    onOpenNoteModal: (soNum: string, partNum: string, notes: TrkSoNote[]) => void;
-    onOpenPoLog: (id: number) => void;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = React.memo(
     ({
         results,
-        groupBySo,
         containerHeight = '100%',
-        onOpenNoteModal,
-        onOpenPoLog,
+
     }) => {
         const allColumns = [
             'eventId',
-            'sonum',
-            'accountTeam',
-            'customerName',
-            'custPo',
-            'orderDate',
-            'requiredDate',
-            'itemNum',
-            'mfgNum',
-            'amountLeft',
-            'ponum',
-            'poissueDate',
-            'expectedDelivery',
-            'qtyOrdered',
-            'qtyReceived',
-            'poLog',
-            'notes',
+            'company',
+            'contact',
+            'salesRep',
+            'projectName',
         ];
 
         const allColumnNames = [
-            'EID',
-            'SO #',
-            'Team',
-            'Customer',
-            'Cust PO',
-            'Order Date',
-            'Req. Date',
-            'Missing P/N',
-            'Vendor P/N',
-            'Amount',
-            'PO #',
-            'PO Issue Date',
-            'Exp. Delivery',
-            'Qty Ordered',
-            'Qty Received',
-            'PO Log',
-            'Notes',
+            'Event ID',
+            'Company',
+            'Contact',
+            'Sales Rep',
+            'Project Name',
+
         ];
 
-        const columns = groupBySo
-            ? allColumns.filter(
-                (column) => column !== 'itemNum' && column !== 'mfgNum'
-            )
-            : allColumns;
-
-        const columnNames = groupBySo
-            ? allColumnNames.filter(
-                (columnName) =>
-                    columnName !== 'Missing P/N' && columnName !== 'Vendor P/N'
-            )
-            : allColumnNames;
 
         const isDefaultDate = (date: Date | null) =>
             date?.toLocaleDateString() === '1/1/1900' ||
@@ -94,223 +54,72 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
 
         const renderRow = useCallback(
             (
-                order: OpenSOReport & { notes: TrkSoNote[]; poLog?: TrkPoLog }
+                event: EquipReqSearchResult
             ): React.JSX.Element[] => {
-                const orderDate = order.orderDate ? new Date(order.orderDate) : null;
-                const requiredDate = order.requiredDate
-                    ? new Date(order.requiredDate)
-                    : null;
-                const poIssueDate = order.poissueDate
-                    ? new Date(order.poissueDate)
-                    : null;
-                const expectedDelivery = order.expectedDelivery
-                    ? new Date(order.expectedDelivery)
-                    : null;
-
-                const deliveryAlert =
-                    expectedDelivery &&
-                    requiredDate &&
-                    expectedDelivery > requiredDate &&
-                    (order.leftToShip ?? 0) > 0;
-
-                const openEvent = () => {
+                const eventId = () => {
                     window.open(
-                        `http://10.0.0.8:81/inet/Sales/EditRequest.asp?EventID=${order.eventId}`
+                        `http://10.0.0.8:81/inet/Sales/EditRequest.asp?EventID=${event.eventId}`
                     );
                 };
+                const company = event.company;
+                const contact = event.contact;
+                const salesRep = event.salesRep;
+                const projectName = event.projectName ? event.projectName : null;
 
-                const hasNotes = order.notes && order.notes.length > 0;
-                const hasPoLog = order.poLog !== undefined && order.poLog !== null;
-
-                const mostRecentNoteDate = hasNotes
-                    ? new Date(
-                        Math.max(
-                            ...order.notes.map((note) =>
-                                new Date(note.entryDate!).getTime()
-                            )
-                        )
-                    )
-                    : null;
 
                 const rowCells = [
                     <TableCell
                         key="eventId"
                         align="left"
                         style={{
-                            cursor: order.eventId ? 'pointer' : 'default',
+                            cursor: event.eventId ? 'pointer' : 'default',
                             whiteSpace: 'nowrap',
                             textOverflow: 'ellipsis',
                             overflow: 'hidden',
                         }}
-                        onClick={order.eventId ? openEvent : undefined}
+                        onClick={event.eventId ? eventId : undefined}
                     >
-                        {order.eventId ? (
+                        {event.eventId ? (
                             <Link underline="hover" target="_blank" rel="noopener noreferrer">
-                                {order.eventId}
+                                {event.eventId}
                             </Link>
                         ) : (
                             ''
                         )}
                     </TableCell>,
                     <TableCell
-                        key="sonum"
+                        key="contact"
                         align="left"
                         style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                     >
-                        {order.sonum}
+                        {event.contact}
                     </TableCell>,
                     <TableCell
-                        key="team"
+                        key="company"
                         style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                     >
-                        {order.accountTeam || order.salesRep}
+                        {event.company}
                     </TableCell>,
                     <TableCell
-                        key="customerName"
+                        key="salesRep"
                         style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                     >
-                        {order.customerName}
+                        {event.salesRep}
                     </TableCell>,
                     <TableCell
-                        key="custPo"
+                        key="projectName"
                         align="left"
                         style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                     >
-                        {order.custPo}
+                        {event.projectName || undefined}
                     </TableCell>,
-                    <TableCell
-                        key="orderDate"
-                        align="left"
-                        style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                    >
-                        {orderDate && !isDefaultDate(orderDate)
-                            ? orderDate.toLocaleDateString()
-                            : ''}
-                    </TableCell>,
-                    <TableCell key="requiredDate" align="left" className="text-overflow">
-                        <div className="required-date">
-                            {requiredDate && !isDefaultDate(requiredDate)
-                                ? requiredDate.toLocaleDateString()
-                                : ''}
-                            {deliveryAlert && (
-                                <Warning
-                                    color="error"
-                                    fontSize="small"
-                                    className="alert-icon"
-                                />
-                            )}
-                        </div>
-                    </TableCell>,
-                    <TableCell
-                        key="amountLeft"
-                        align="left"
-                        style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                    >
-                        {formatAmount(order.amountLeft ?? 0)}
-                    </TableCell>,
-                    <TableCell
-                        key="ponum"
-                        align="left"
-                        style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                    >
-                        {order.ponum}
-                    </TableCell>,
-                    <TableCell
-                        key="poissueDate"
-                        align="left"
-                        style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                    >
-                        {poIssueDate && !isDefaultDate(poIssueDate)
-                            ? poIssueDate.toLocaleDateString()
-                            : ''}
-                    </TableCell>,
-                    <TableCell
-                        key="expectedDelivery"
-                        align="left"
-                        style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                    >
-                        {expectedDelivery && !isDefaultDate(expectedDelivery)
-                            ? expectedDelivery.toLocaleDateString()
-                            : ''}
-                    </TableCell>,
-                    <TableCell
-                        key="qtyOrdered"
-                        align="left"
-                        style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                    >
-                        {order.qtyOrdered}
-                    </TableCell>,
-                    <TableCell
-                        key="qtyReceived"
-                        align="left"
-                        style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                    >
-                        {order.qtyReceived}
-                    </TableCell>,
-                    <TableCell
-                        key="poLog"
-                        align="left"
-                        onClick={hasPoLog ? () => onOpenPoLog(order.poLog!.id) : undefined}
-                        style={{
-                            cursor: hasPoLog ? 'pointer' : 'default',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                        }}
-                    >
-                        {hasPoLog
-                            ? `${new Date(order.poLog!.entryDate).toLocaleDateString()} (${order.poLog!.enteredBy})`
-                            : ''}
-                    </TableCell>,
-                    <TableCell
-                        key="notes"
-                        align="left"
-                        className="pointer notes-container"
-                    >
-                        <IconButton
-                            onClick={() =>
-                                onOpenNoteModal(
-                                    order.sonum || '',
-                                    order.itemNum || '',
-                                    order.notes || []
-                                )
-                            }
-                        >
-                            {hasNotes ? <Note color="primary" /> : <Add />}
-                        </IconButton>
-                        {hasNotes && mostRecentNoteDate && (
-                            <div className="notes-edit-date">
-                                {mostRecentNoteDate.toLocaleDateString()}
-                            </div>
-                        )}
-                    </TableCell>,
+
                 ];
 
-                if (!groupBySo) {
-                    rowCells.splice(
-                        7,
-                        0,
-                        <TableCell
-                            key="itemNum"
-                            style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                        >
-                            {order.itemNum} ({order.leftToShip ?? 0})
-                        </TableCell>
-                    );
-                    rowCells.splice(
-                        8,
-                        0,
-                        <TableCell
-                            key="mfgNum"
-                            style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                        >
-                            {order.mfgNum}
-                        </TableCell>
-                    );
-                }
 
                 return rowCells;
             },
-            [onOpenNoteModal, onOpenPoLog, groupBySo]
+            []
         );
 
         return (
@@ -324,8 +133,8 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
             >
                 <PaginatedSortableTable
                     tableData={results}
-                    columns={columns}
-                    columnNames={columnNames}
+                    columns={allColumns}
+                    columnNames={allColumnNames}
                     func={renderRow}
                     headerBackgroundColor="#384959"
                     hoverColor="#f5f5f5"

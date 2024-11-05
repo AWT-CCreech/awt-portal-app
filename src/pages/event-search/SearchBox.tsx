@@ -32,8 +32,6 @@ interface SearchBoxProps {
     setSearchParams: React.Dispatch<React.SetStateAction<EquipReqSearchCriteria>>;
     onSearch: () => void;
     loading: boolean;
-    handleExport: () => void;
-    loadingExport: boolean;
     searchResultLength: number;
 }
 
@@ -42,8 +40,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({
     setSearchParams,
     onSearch,
     loading,
-    handleExport,
-    loadingExport,
     searchResultLength,
 }) => {
     const [salesReps, setSalesReps] = useState<Rep[]>([]);
@@ -218,17 +214,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                         >
                             {loading ? <CircularProgress size={24} /> : 'Search'}
                         </Button>
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            onClick={handleExport}
-                            disabled={loadingExport || searchResultLength === 0}
-                            startIcon={
-                                loadingExport ? <CircularProgress size={20} /> : <GetApp />
-                            }
-                        >
-                            Export to Excel
-                        </Button>
+
                     </Grid>
                 </Grid>
             </Box>
