@@ -12,7 +12,7 @@ import PaginatedSortableTable from '../../components/PaginatedSortableTable';
 import { formatAmount } from '../../utils/dataManipulation';
 
 // Models
-import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
+import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { TrkPoLog } from '../../models/TrkPoLog';
 
