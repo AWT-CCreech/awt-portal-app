@@ -84,7 +84,7 @@ const EventSearch: React.FC = () => {
                             setSearchParams={setSearchParams}
                             onSearch={handleSearch}
                             loading={loading} // Only for search loading
-                            searchResultLength={eventData.length}
+                            searchResultLength={eventData?.length}
                         />
                     </Grid>
                     <Grid item xs={12}>
