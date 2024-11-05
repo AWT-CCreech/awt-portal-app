@@ -25,6 +25,8 @@ import { ItemCategories } from '../../models/Data/ItemCategories';
 import { DropShipPart } from '../../models/DropShip/DropShipPart';
 import { Rep } from '../../models/Data/Rep';
 import { DropShipPartsParams } from '../../models/DropShip/DropShipPartParams';
+import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
+import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
 
 const devURL = 'http://localhost:5001/api'; // Use for development environment
 const prodURL = 'http://10.0.0.8:82/api'; // Use for production environment
@@ -472,6 +474,23 @@ const UserLogins = {
     requests.post('/Token/RefreshToken', tokenRefreshRequest),
 };
 
+const EventSearchPage = {
+  fetchEventPageData: async (
+    params: EquipReqSearchCriteria
+  ): Promise<(EquipReqSearchResult)[]> => {
+    try {
+      const response = await requests.getWithParams(
+        '/EventSearch/EquipmentRequestSearch',
+        params
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching Event Page data', error);
+      throw error;
+    }
+  },
+};
+
 // Export grouped modules
 const Modules = {
   CamSearch,
@@ -485,6 +504,7 @@ const Modules = {
   TimeTrackers,
   UserList,
   UserLogins,
+  EventSearchPage,
 };
 
 export default Modules;
