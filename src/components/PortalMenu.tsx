@@ -15,26 +15,25 @@ import {
   CssBaseline,
   ListItemButton,
 } from '@mui/material';
-import {
-  ExpandLess,
-  ExpandMore,
-  Menu as MenuIcon,
-  Star,
-  StarBorder,
-  Folder,
-  FolderOpen,
-  Settings,
-  AccountCircle,
-  PowerSettingsNew,
-  ArrowBackIos,
-  TravelExploreOutlined,
-  PeopleOutlined,
-  PinDropOutlined,
-  EmailOutlined,
-  ContactsOutlined,
-  SellOutlined,
-  MarkunreadMailboxOutlined,
-} from '@mui/icons-material';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import MenuIcon from '@mui/icons-material/Menu';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import FolderIcon from '@mui/icons-material/Folder';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import SettingsIcon from '@mui/icons-material/Settings';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import TravelExploreOutlinedIcon from '@mui/icons-material/TravelExploreOutlined';
+import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+import PinDropOutlinedIcon from '@mui/icons-material/PinDropOutlined';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import ContactsOutlinedIcon from '@mui/icons-material/ContactsOutlined';
+import SellOutlinedIcon from '@mui/icons-material/SellOutlined';
+import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { handleLogOut } from '../utils/authentication';
@@ -85,15 +84,16 @@ const NavItemIcon = styled(ListItemIcon)(({ theme }) => ({
 }));
 
 const iconMap: { [key: string]: React.ElementType } = {
-  TravelExploreOutlined,
-  PeopleOutlined,
-  PinDropOutlined,
-  EmailOutlined,
-  ContactsOutlined,
-  SellOutlined,
-  MarkunreadMailboxOutlined,
-  Folder,
-  FolderOpen,
+  TravelExploreOutlinedIcon,
+  PeopleOutlinedIcon,
+  PinDropOutlinedIcon,
+  EmailOutlinedIcon,
+  ContactsOutlinedIcon,
+  SellOutlinedIcon,
+  MarkunreadMailboxOutlinedIcon,
+  ManageSearchIcon,
+  FolderIcon,
+  FolderOpenIcon,
   // Add other icons as needed
 };
 
@@ -228,7 +228,7 @@ const PortalMenu: React.FC = () => {
       {
         label: 'CAM Dashboard',
         path: '/cam/dashboard',
-        icon: ContactsOutlined,
+        icon: ContactsOutlinedIcon,
       },
       // Add more items as needed
     ],
@@ -261,19 +261,19 @@ const PortalMenu: React.FC = () => {
         label: 'Drop Ship',
         path: ROUTE_PATHS.PURCHASING.DROPSHIP,
         iconName: 'PinDropOutlined',
-        icon: PinDropOutlined,
+        icon: PinDropOutlinedIcon,
       },
       {
         label: 'Mass Mailer',
         path: ROUTE_PATHS.PURCHASING.MASS_MAILER,
         iconName: 'EmailOutlined',
-        icon: EmailOutlined,
+        icon: EmailOutlinedIcon,
       },
       {
         label: 'PO Delivery Log',
         path: ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG,
         iconName: 'MarkunreadMailboxOutlined',
-        icon: MarkunreadMailboxOutlined,
+        icon: MarkunreadMailboxOutlinedIcon,
       },
       // Add more items as needed
     ],
@@ -283,10 +283,16 @@ const PortalMenu: React.FC = () => {
     ],
     sales: [
       {
+        label: 'Event Search',
+        path: ROUTE_PATHS.SALES.EVENT_SEARCH,
+        iconName: 'ManageSearchIcon',
+        icon: ManageSearchIcon,
+      },
+      {
         label: 'Open SO Report',
         path: ROUTE_PATHS.SALES.OPEN_SO_REPORT,
         iconName: 'SellOutlined',
-        icon: SellOutlined,
+        icon: SellOutlinedIcon,
       },
       // Add more items as needed
     ],
@@ -300,13 +306,13 @@ const PortalMenu: React.FC = () => {
     {
       label: 'Master Search',
       iconName: 'TravelExploreOutlined',
-      icon: TravelExploreOutlined,
+      icon: TravelExploreOutlinedIcon,
       path: ROUTE_PATHS.MASTER_SEARCH,
     },
     {
       label: 'User List',
       iconName: 'PeopleOutlined',
-      icon: PeopleOutlined,
+      icon: PeopleOutlinedIcon,
       path: ROUTE_PATHS.USER_LIST,
     },
   ];
@@ -334,7 +340,7 @@ const PortalMenu: React.FC = () => {
         items: Object.keys(folders).map((folder) => ({
           label: getFolderTitle(folder),
           iconName: openFolders[folder] ? 'FolderOpen' : 'Folder',
-          icon: openFolders[folder] ? FolderOpen : Folder,
+          icon: openFolders[folder] ? FolderOpenIcon : FolderIcon,
           open: openFolders[folder] || false,
           onClick: () => handleFolderToggle(folder),
           children: folders[folder].map((item) => ({
@@ -366,7 +372,7 @@ const PortalMenu: React.FC = () => {
                   {item.icon ? (
                     React.createElement(item.icon as React.ElementType)
                   ) : (
-                    <Folder />
+                    <FolderIcon />
                   )}
                 </NavItemIcon>
                 <ListItemText
@@ -377,7 +383,7 @@ const PortalMenu: React.FC = () => {
                     textOverflow: 'ellipsis',
                   }}
                 />
-                {item.open ? <ExpandLess /> : <ExpandMore />}
+                {item.open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItemButton>
             </ListItem>
             <Collapse in={item.open} timeout="auto" unmountOnExit>
@@ -398,7 +404,7 @@ const PortalMenu: React.FC = () => {
                 {item.icon ? (
                   React.createElement(item.icon as React.ElementType)
                 ) : (
-                  <Folder />
+                  <FolderIcon />
                 )}
               </NavItemIcon>
               <ListItemText
@@ -419,9 +425,9 @@ const PortalMenu: React.FC = () => {
                   }}
                 >
                   {isFavorite(item.label) ? (
-                    <Star sx={{ color: 'primary.main' }} />
+                    <StarIcon sx={{ color: 'primary.main' }} />
                   ) : (
-                    <StarBorder />
+                    <StarBorderIcon />
                   )}
                 </IconButton>
               )}
@@ -467,7 +473,7 @@ const PortalMenu: React.FC = () => {
                 <LogoImage src={fullLogo} alt="AWT" />
               </LogoContainer>
               <IconButton onClick={handleDrawerToggle}>
-                <ArrowBackIos />
+                <ArrowBackIosIcon />
               </IconButton>
             </DrawerHeader>
             <Divider />
@@ -479,7 +485,7 @@ const PortalMenu: React.FC = () => {
                 <Typography variant="subtitle2">Technologies</Typography>
               </WorkspaceInfo>
               <IconButton>
-                <ExpandMore />
+                <ExpandMoreIcon />
               </IconButton>
             </WorkspaceSelector>
             <Divider />
@@ -509,12 +515,12 @@ const PortalMenu: React.FC = () => {
             <Box sx={{ display: 'flex', justifyContent: 'space-around', p: 2 }}>
               <Tooltip title="Settings">
                 <IconButton sx={{ color: 'text.secondary' }}>
-                  <Settings />
+                  <SettingsIcon />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Account">
                 <IconButton sx={{ color: 'text.secondary' }}>
-                  <AccountCircle />
+                  <AccountCircleIcon />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Logout">
@@ -524,7 +530,7 @@ const PortalMenu: React.FC = () => {
                     handleLogOut(navigate, setUserName, setPassWord)
                   }
                 >
-                  <PowerSettingsNew />
+                  <PowerSettingsNewIcon />
                 </IconButton>
               </Tooltip>
             </Box>
