@@ -1,4 +1,4 @@
-interface EquipReqSearchResult {
+export interface EquipReqSearchResult {
     eventId: number;
     entryDate?: Date | null;
     projectName?: string | null;
@@ -8,5 +8,3 @@ interface EquipReqSearchResult {
     status?: string | null;
 
 }
-
-export default EquipReqSearchResult;
