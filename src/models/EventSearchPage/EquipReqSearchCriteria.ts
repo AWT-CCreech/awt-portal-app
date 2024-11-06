@@ -1,10 +1,9 @@
 export interface EquipReqSearchCriteria {
-    company?: string | null;
-    contact?: string | null;
-    projectName?: string | null;
-    salesRep?: string | null;
-    status?: string;
-    fromDate?: Date | null;
-    toDate?: Date | null;
-
+    fromDate: Date | null;
+    toDate: Date | null;
+    projectName: string;
+    company: string;
+    contact: string;
+    salesRep: string;
+    status: string;
 }
