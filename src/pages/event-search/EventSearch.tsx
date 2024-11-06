@@ -6,30 +6,22 @@ import Modules from '../../app/api/agent';
 
 // Models
 import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
-import EquipReqSearchResult from '../../models/EventSearchPage/EquipReqSearchResult';
+import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
 
-// MUI Components
 import {
     Box,
     Container,
     Grid,
     Typography,
-    Modal,
-    CircularProgress,
     Snackbar,
     Alert,
 } from '@mui/material';
 
-// Components
 import PageHeader from '../../components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';
 import SearchBox from './SearchBox';
 import SearchResults from './SearchResults';
 
-// Utilities
-import ExcelJS from 'exceljs';
-
-// Styles
 import '../../styles/user-list/UserListPage.scss';
 
 const EventSearch: React.FC = () => {
@@ -41,24 +33,25 @@ const EventSearch: React.FC = () => {
         contact: '',
         salesRep: 'All',
         status: 'Pending',
-
     });
 
-    const [eventData, seteventData] = useState<EquipReqSearchResult[]>([]);
-    const [loading, setLoading] = useState(false); // Loading state for fetching PO data
+    const [eventData, setEventData] = useState<EquipReqSearchResult[]>([]); // Initialize as an array
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [searched, setSearched] = useState(false); // New state variable
 
     const fetchEventData = useCallback(async () => {
         setLoading(true);
         setError(null);
+        setSuccess(null);
         try {
-            const data =
-                await Modules.EventSearchPage.fetchEventPageData(searchParams);
-            seteventData(data);
+            const data = await Modules.EventSearchPage.getEventPageData(searchParams);
+            setEventData(Array.isArray(data) ? data : []); // Ensure data is an array
+            setSuccess('Search completed successfully.');
         } catch (error) {
             console.error('Error fetching Event data:', error);
-            seteventData([]);
+            setEventData([]);
             setError('Failed to fetch Event data.');
         } finally {
             setLoading(false);
@@ -66,9 +59,9 @@ const EventSearch: React.FC = () => {
     }, [searchParams]);
 
     const handleSearch = () => {
+        setSearched(true); // Mark that a search has been performed
         fetchEventData();
     };
-
 
     return (
         <div>
@@ -83,14 +76,11 @@ const EventSearch: React.FC = () => {
                             searchParams={searchParams}
                             setSearchParams={setSearchParams}
                             onSearch={handleSearch}
-                            loading={loading} // Only for search loading
-                            searchResultLength={eventData?.length}
+                            loading={loading}
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        {loading ? (
-                            <Box display="flex" justifyContent="center" mt={4}></Box>
-                        ) : eventData.length > 0 ? (
+                        {searched && eventData.length > 0 ? (
                             <Box
                                 sx={{
                                     height: '70vh',
@@ -102,11 +92,11 @@ const EventSearch: React.FC = () => {
                             >
                                 <SearchResults results={eventData} />
                             </Box>
-                        ) : (
+                        ) : searched && !loading ? (
                             <Typography variant="h6" align="center" mt={2}>
                                 No results found.
                             </Typography>
-                        )}
+                        ) : null}
                     </Grid>
                 </Grid>
             </Container>
@@ -142,11 +132,6 @@ const EventSearch: React.FC = () => {
                     {error}
                 </Alert>
             </Snackbar>
-
-
-
-
-
         </div>
     );
 };
