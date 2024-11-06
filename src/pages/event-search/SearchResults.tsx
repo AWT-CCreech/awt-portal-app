@@ -2,25 +2,19 @@
 import React, { useCallback } from 'react';
 
 // MUI Components and Icons
-import { Box, TableCell, Link, IconButton } from '@mui/material';
-import { Warning, Add, Note } from '@mui/icons-material';
+import { Box, TableCell, Link } from '@mui/material';
 
 // Components
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
 
-// Utilities
-import { formatAmount } from '../../utils/dataManipulation';
-
 // Models
-import EquipReqSearchResult from '../../models/EventSearchPage/EquipReqSearchResult';
-import { TrkSoNote } from '../../models/TrkSoNote';
-import { TrkPoLog } from '../../models/TrkPoLog';
+import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
 
 // Styles
 import '../../styles/open-so-report/SearchResults.scss';
 
 interface SearchResultsProps {
-    results: (EquipReqSearchResult)[];
+    results: EquipReqSearchResult[];
     containerHeight?: string;
 }
 
@@ -28,7 +22,6 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
     ({
         results,
         containerHeight = '100%',
-
     }) => {
         const allColumns = [
             'eventId',
@@ -44,28 +37,15 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
             'Contact',
             'Sales Rep',
             'Project Name',
-
         ];
 
-
-        const isDefaultDate = (date: Date | null) =>
-            date?.toLocaleDateString() === '1/1/1900' ||
-            date?.toLocaleDateString() === '1/1/1990';
-
         const renderRow = useCallback(
-            (
-                event: EquipReqSearchResult
-            ): React.JSX.Element[] => {
-                const eventId = () => {
+            (event: EquipReqSearchResult): React.JSX.Element[] => {
+                const eventIdClickHandler = () => {
                     window.open(
                         `http://10.0.0.8:81/inet/Sales/EditRequest.asp?EventID=${event.eventId}`
                     );
                 };
-                const company = event.company;
-                const contact = event.contact;
-                const salesRep = event.salesRep;
-                const projectName = event.projectName ? event.projectName : null;
-
 
                 const rowCells = [
                     <TableCell
@@ -77,7 +57,7 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
                             textOverflow: 'ellipsis',
                             overflow: 'hidden',
                         }}
-                        onClick={event.eventId ? eventId : undefined}
+                        onClick={event.eventId ? eventIdClickHandler : undefined}
                     >
                         {event.eventId ? (
                             <Link underline="hover" target="_blank" rel="noopener noreferrer">
@@ -111,11 +91,9 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
                         align="left"
                         style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                     >
-                        {event.projectName || undefined}
+                        {event.projectName || ''}
                     </TableCell>,
-
                 ];
-
 
                 return rowCells;
             },
