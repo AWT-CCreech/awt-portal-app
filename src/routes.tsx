@@ -26,7 +26,7 @@ export const ROUTE_PATHS = {
   },
   SALES: {
     OPEN_SO_REPORT: '/sales/opensalesorderreport',
-    EVENT_SEARCH: 'sales/eventsearch',
+    EVENT_SEARCH: '/sales/eventsearch',
   },
   MASTER_SEARCH: '/mastersearch',
   TIME_TRACKER: '/timetracker',
