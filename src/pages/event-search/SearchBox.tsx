@@ -1,7 +1,14 @@
 // React and Hooks
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useCallback } from 'react';
 
-// MUI Components and Icons
+// API
+import Modules from '../../app/api/agent';
+
+// Models
+import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
+import { Rep } from '../../models/Data/Rep';
+
+// MUI Components
 import {
     Box,
     Button,
@@ -11,192 +18,193 @@ import {
     FormControl,
     InputLabel,
     Select,
-    SelectChangeEvent,
     MenuItem,
-    Autocomplete,
+    SelectChangeEvent,
 } from '@mui/material';
-import { GetApp, Search } from '@mui/icons-material';
+import { Search } from '@mui/icons-material';
 
-// Utilities
-import { debounce } from 'lodash';
+// Define the allowed names for select fields
+type SelectFieldName = 'status' | 'salesRep';
 
-// Models
-import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
-import { Rep } from '../../models/Data/Rep';
+// Define the allowed names for text fields
+type TextFieldName = 'fromDate' | 'toDate' | 'company' | 'contact' | 'projectName';
 
-// API
-import Modules from '../../app/api/agent';
+// Define configuration interfaces
+interface TextFieldConfig {
+    label: string;
+    name: TextFieldName;
+    type: 'date' | 'text';
+}
+
+interface SelectFieldConfig {
+    label: string;
+    name: SelectFieldName;
+    options: string[];
+}
+
+// Configuration for Text Fields
+const textFieldsConfig: TextFieldConfig[] = [
+    { label: 'From Date', name: 'fromDate', type: 'date' },
+    { label: 'To Date', name: 'toDate', type: 'date' },
+    { label: 'Company', name: 'company', type: 'text' },
+    { label: 'Contact', name: 'contact', type: 'text' },
+    { label: 'Project Name', name: 'projectName', type: 'text' },
+];
+
+// Configuration for Select Fields
+const selectFieldsConfig: SelectFieldConfig[] = [
+    {
+        label: 'Status',
+        name: 'status',
+        options: ['All', 'Canceled', 'Sold', 'Lost', 'Pending'],
+    },
+    {
+        label: 'Sales Rep',
+        name: 'salesRep',
+        options: [], // Removed 'All' from options to prevent duplication
+    },
+];
 
 interface SearchBoxProps {
     searchParams: EquipReqSearchCriteria;
     setSearchParams: React.Dispatch<React.SetStateAction<EquipReqSearchCriteria>>;
     onSearch: () => void;
     loading: boolean;
-    searchResultLength: number;
 }
+
+// Custom Hook for Fetching Sales Reps
+const useSalesReps = (): Rep[] => {
+    const [salesReps, setSalesReps] = React.useState<Rep[]>([]);
+
+    useEffect(() => {
+        const fetchReps = async () => {
+            try {
+                const reps = await Modules.DataFetch.fetchActiveSalesReps();
+                setSalesReps(reps);
+            } catch (error) {
+                console.error('Error fetching sales reps:', error);
+            }
+        };
+        fetchReps();
+    }, []);
+
+    return salesReps;
+};
 
 const SearchBox: React.FC<SearchBoxProps> = ({
     searchParams,
     setSearchParams,
     onSearch,
     loading,
-    searchResultLength,
 }) => {
-    const [salesReps, setSalesReps] = useState<Rep[]>([]);
+    const salesReps = useSalesReps();
 
-    // Fetch sales reps and purchasing reps on component mount
+    // Set default dates on mount
     useEffect(() => {
-        const fetchReps = async () => {
-            try {
-                const [salesRepsData] = await Promise.all([
-                    Modules.DataFetch.fetchActiveSalesReps(),
-                ]);
-                setSalesReps(salesRepsData);
-            } catch (error) {
-                console.error('Error fetching reps', error);
-            }
-        };
+        const today = new Date();
+        const pastMonth = new Date();
+        pastMonth.setMonth(today.getMonth() - 1);
 
-        fetchReps();
-    }, []);
-
-    // Fetch vendors whenever relevant search parameters change
-    useEffect(() => {
-        // Prepare parameters for fetching vendors
-        const params: EquipReqSearchCriteria = {
-
-            company: searchParams.company,
-            contact: searchParams.contact,
-            projectName: searchParams.projectName,
-            salesRep: searchParams.salesRep,
-            status: searchParams.status,
-            fromDate: searchParams.fromDate,
-            toDate: searchParams.toDate,
-
-        };
-
-
-    }, [
-        searchParams.company,
-        searchParams.contact,
-        searchParams.projectName,
-        searchParams.salesRep,
-        searchParams.status,
-        searchParams.fromDate,
-        searchParams.toDate,
-
-    ]);
+        setSearchParams((prev) => ({
+            ...prev,
+            fromDate: pastMonth,
+            toDate: today,
+        }));
+    }, [setSearchParams]);
 
     // Handle input changes for text fields
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const handleInputChange = (
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ): void => {
         const { name, value } = e.target;
-        setSearchParams((prevParams: EquipReqSearchCriteria) => ({
-            ...prevParams,
-            [name]: value,
+        setSearchParams((prev) => ({
+            ...prev,
+            [name]:
+                name === 'fromDate' || name === 'toDate' ? new Date(value) : value,
         }));
     };
 
-    // Handle changes for select fields
-    const handleSelectChange = (e: SelectChangeEvent<string>): void => {
-        const { name, value } = e.target;
-        setSearchParams((prevParams: EquipReqSearchCriteria) => ({
-            ...prevParams,
-            [name as string]: value as string,
-        }));
-    };
+    // Handle select changes with explicit type annotations
+    const handleSelectChange = useCallback(
+        (e: SelectChangeEvent<string>, child: React.ReactNode): void => {
+            const { name, value } = e.target;
+            setSearchParams((prev) => ({
+                ...prev,
+                [name as string]: value,
+            }));
+        },
+        [setSearchParams]
+    );
 
     // Handle form submission
-    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    const handleFormSubmit = (e: React.FormEvent): void => {
         e.preventDefault();
         onSearch();
     };
 
     return (
         <form onSubmit={handleFormSubmit}>
-            <Box sx={{ mb: 3, p: 2, border: '1px solid #ddd', borderRadius: 2 }}>
+            <Box
+                sx={{
+                    mb: 3,
+                    p: 2,
+                    border: '1px solid #ddd',
+                    borderRadius: 2,
+                }}
+            >
                 <Grid container spacing={2}>
-                    {/* company */}
-                    <Grid item xs={12} sm={6} md={3}>
-                        <TextField
-                            fullWidth
-                            label="Company"
-                            name="company"
-                            value={searchParams.company}
-                            onChange={handleInputChange}
-                            variant="outlined"
-                        />
-                    </Grid>
+                    {/* Render Text Fields */}
+                    {textFieldsConfig.map((field) => (
+                        <Grid item xs={12} sm={6} md={3} key={field.name}>
+                            <TextField
+                                fullWidth
+                                label={field.label}
+                                name={field.name}
+                                type={field.type}
+                                value={
+                                    field.type === 'date' && searchParams[field.name] instanceof Date
+                                        ? (searchParams[field.name] as Date).toISOString().split('T')[0]
+                                        : (searchParams[field.name] as string) || ''
+                                }
+                                onChange={handleInputChange}
+                                InputLabelProps={{
+                                    shrink: field.type === 'date' ? true : undefined,
+                                }}
+                            />
+                        </Grid>
+                    ))}
 
-                    {/* contact */}
-                    <Grid item xs={12} sm={6} md={3}>
-                        <TextField
-                            fullWidth
-                            label="Contact"
-                            name="contact"
-                            value={searchParams.contact}
-                            onChange={handleInputChange}
-                            variant="outlined"
-                        />
-                    </Grid>
+                    {/* Render Select Fields */}
+                    {selectFieldsConfig.map((field) => (
+                        <Grid item xs={12} sm={6} md={3} key={field.name}>
+                            <FormControl fullWidth>
+                                <InputLabel>{field.label}</InputLabel>
+                                <Select<string>
+                                    name={field.name}
+                                    value={(searchParams[field.name] as string) || 'All'}
+                                    onChange={handleSelectChange}
+                                    label={field.label}
+                                >
+                                    {field.name === 'salesRep' && (
+                                        <MenuItem value="All">All</MenuItem>
+                                    )}
+                                    {field.options.map((option) => (
+                                        <MenuItem key={option} value={option}>
+                                            {option}
+                                        </MenuItem>
+                                    ))}
+                                    {field.name === 'salesRep' &&
+                                        salesReps.map((rep) => (
+                                            <MenuItem key={rep.id} value={rep.uname}>
+                                                {rep.uname}
+                                            </MenuItem>
+                                        ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                    ))}
 
-                    {/* proj name */}
-                    <Grid item xs={12} sm={6} md={3}>
-                        <TextField
-                            fullWidth
-                            label="Project Name"
-                            name="projectName"
-                            value={searchParams.projectName}
-                            onChange={handleInputChange}
-                            variant="outlined"
-                        />
-                    </Grid>
-
-                    {/* Status */}
-                    <Grid item xs={12} sm={6} md={3}>
-                        <FormControl fullWidth>
-                            <InputLabel>Status</InputLabel>
-                            <Select
-                                name="status"
-                                value={searchParams.status}
-                                onChange={handleSelectChange}
-                                label="Status"
-                            >
-                                <MenuItem value="All">All</MenuItem>
-                                <MenuItem value="Pending">Pending</MenuItem>
-                                <MenuItem value="Sold">Sold</MenuItem>
-                                <MenuItem value="Lost">Lost</MenuItem>
-                                <MenuItem value="Canceled">Canceled</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-
-
-                    {/* Sales Rep */}
-                    <Grid item xs={12} sm={6} md={3}>
-                        <FormControl fullWidth>
-                            <InputLabel id="salesRep-label">Sales Rep</InputLabel>
-                            <Select
-                                labelId="salesRep-label"
-                                name="salesRep"
-                                value={searchParams.salesRep || 'All'}
-                                onChange={handleSelectChange}
-                                label="Sales Rep"
-                            >
-                                <MenuItem key="All" value="All">
-                                    All
-                                </MenuItem>
-                                {salesReps.map((rep) => (
-                                    <MenuItem key={rep.id} value={rep.uname}>
-                                        {rep.uname}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-
-
-
-                    {/* Search and Export Buttons */}
+                    {/* Search Button */}
                     <Grid
                         item
                         xs={12}
@@ -209,12 +217,52 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                             color="primary"
                             type="submit"
                             disabled={loading}
-                            startIcon={!loading && <Search />}
-                            sx={{ mr: 2 }} // Add some margin between buttons
+                            sx={{
+                                mr: 2,
+                                position: 'relative',
+                                minWidth: '150px',
+                                height: '40px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                paddingLeft: '40px', // Reserve space for icon/spinner
+                                paddingRight: '12px',
+                            }}
+                            aria-label="Search Events"
                         >
-                            {loading ? <CircularProgress size={24} /> : 'Search'}
-                        </Button>
+                            {/* Absolute Positioned Icon/Spinner */}
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    left: '12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '24px',
+                                    height: '24px',
+                                }}
+                            >
+                                {!loading && <Search />}
+                                {loading && (
+                                    <CircularProgress
+                                        size={20}
+                                        sx={{
+                                            color: 'white',
+                                        }}
+                                    />
+                                )}
+                            </Box>
 
+                            {/* Search Text */}
+                            <Box
+                                sx={{
+                                    flexGrow: 1,
+                                    textAlign: 'center',
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                Search
+                            </Box>
+                        </Button>
                     </Grid>
                 </Grid>
             </Box>
