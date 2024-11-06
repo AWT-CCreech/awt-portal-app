@@ -35,6 +35,19 @@ const Home: React.FC = () => {
               color: 'white',
               '&:hover': { backgroundColor: 'grey' },
             }}
+            onClick={() => navigate(ROUTE_PATHS.SALES.EVENT_SEARCH)}
+          >
+            Event Search
+          </Button>
+        </Grid>
+        <Grid item xs={3} textAlign="center">
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              '&:hover': { backgroundColor: 'grey' },
+            }}
             onClick={() => navigate(ROUTE_PATHS.PURCHASING.MASS_MAILER)}
           >
             Mass Mailer
