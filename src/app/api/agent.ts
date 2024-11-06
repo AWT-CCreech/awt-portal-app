@@ -250,6 +250,30 @@ const DropShip = {
     requests.get(`/DropShipInfo/${poNum}`),
 };
 
+const EventSearchPage = {
+  getEventPageData: async (
+    params: EquipReqSearchCriteria
+  ): Promise<EquipReqSearchResult[]> => {
+    const formattedParams = {
+      ...params,
+      fromDate: params.fromDate ? params.fromDate.toISOString().split("T")[0] : null,
+      toDate: params.toDate ? params.toDate.toISOString().split("T")[0] : null,
+    };
+
+    try {
+      const response = await requests.getWithParams(
+        '/EventSearch/EquipmentRequestSearch',
+        formattedParams
+      );
+      return response;
+    } catch (error) {
+      console.error('Error fetching Event Page data', error);
+      throw error;
+    }
+  },
+};
+
+
 const MassMailer = {
   ClearPartItems: {
     clear: (userid: string): Promise<any> =>
@@ -472,23 +496,6 @@ const UserLogins = {
     token: string;
   }): Promise<{ token: string }> =>
     requests.post('/Token/RefreshToken', tokenRefreshRequest),
-};
-
-const EventSearchPage = {
-  fetchEventPageData: async (
-    params: EquipReqSearchCriteria
-  ): Promise<(EquipReqSearchResult)[]> => {
-    try {
-      const response = await requests.getWithParams(
-        '/EventSearch/EquipmentRequestSearch',
-        params
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching Event Page data', error);
-      throw error;
-    }
-  },
 };
 
 // Export grouped modules
