@@ -13,6 +13,7 @@ import UserListPage from './pages/user-list/UserListPage';
 import NotFound from './pages/exception-pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
 import TimeTrackerPage from './pages/time-tracker/TimeTrackerPage';
+//import SalesOrderWB from './pages/sales-order-workbench/SalesOrderWB';
 
 // Define constants for paths
 export const ROUTE_PATHS = {
@@ -25,6 +26,7 @@ export const ROUTE_PATHS = {
   },
   SALES: {
     OPEN_SO_REPORT: '/sales/opensalesorderreport',
+    SO_WORKBENCH: '/sales/salesorderworkbench',
   },
   MASTER_SEARCH: '/mastersearch',
   TIME_TRACKER: '/timetracker',
@@ -39,7 +41,7 @@ export const routes: RouteObject[] = [
     element: <LoginPage />,
   },
   {
-    element: <PrivateRoute />, // Assuming PrivateRoute handles authentication
+    element: <PrivateRoute />,
     children: [
       {
         path: ROUTE_PATHS.HOME,
@@ -61,6 +63,10 @@ export const routes: RouteObject[] = [
         path: ROUTE_PATHS.SALES.OPEN_SO_REPORT,
         element: <OpenSalesOrderReport />,
       },
+      // {
+      //   path: ROUTE_PATHS.SALES.SO_WORKBENCH,
+      //   element: <SalesOrderWB />,
+      // },
       {
         path: ROUTE_PATHS.MASTER_SEARCH,
         element: <MasterSearch />,
