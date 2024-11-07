@@ -39,7 +39,7 @@ import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { handleLogOut } from '../utils/authentication';
 import UserInfoContext from '../stores/userInfo';
-import logo from '../assets/images/fullLogo.png';
+import fullLogo from '../assets/images/fullLogo.png';
 import { ROUTE_PATHS } from '../routes'; // Import the path constants
 
 const drawerWidth = 280;
@@ -114,19 +114,19 @@ const PortalMenu: React.FC = () => {
       return savedFolders
         ? JSON.parse(savedFolders)
         : {
-            accounting: false,
-            cam: false,
-            commissions: false,
-            consignment: false,
-            helpDesk: false,
-            inventory: false,
-            it: false,
-            operations: false,
-            purchasing: false,
-            receiving: false,
-            sales: false,
-            shipping: false,
-          };
+          accounting: false,
+          cam: false,
+          commissions: false,
+          consignment: false,
+          helpDesk: false,
+          inventory: false,
+          it: false,
+          operations: false,
+          purchasing: false,
+          receiving: false,
+          sales: false,
+          shipping: false,
+        };
     }
   );
 
@@ -316,35 +316,35 @@ const PortalMenu: React.FC = () => {
     items: MenuItemType[];
     showFavoriteIcon: boolean;
   }[] = [
-    {
-      section: 'Favorites',
-      items: favorites.map((item) => ({
-        ...item,
-        icon: item.icon || iconMap[item.iconName || 'Folder'],
-      })),
-      showFavoriteIcon: true,
-    },
-    {
-      section: 'Main',
-      items: mainMenuItems,
-      showFavoriteIcon: false, // Do not show favorite icon for Main section
-    },
-    {
-      section: 'Applications',
-      items: Object.keys(folders).map((folder) => ({
-        label: getFolderTitle(folder),
-        iconName: openFolders[folder] ? 'FolderOpen' : 'Folder',
-        icon: openFolders[folder] ? FolderOpen : Folder,
-        open: openFolders[folder] || false,
-        onClick: () => handleFolderToggle(folder),
-        children: folders[folder].map((item) => ({
+      {
+        section: 'Favorites',
+        items: favorites.map((item) => ({
           ...item,
           icon: item.icon || iconMap[item.iconName || 'Folder'],
         })),
-      })),
-      showFavoriteIcon: true,
-    },
-  ];
+        showFavoriteIcon: true,
+      },
+      {
+        section: 'Main',
+        items: mainMenuItems,
+        showFavoriteIcon: false, // Do not show favorite icon for Main section
+      },
+      {
+        section: 'Applications',
+        items: Object.keys(folders).map((folder) => ({
+          label: getFolderTitle(folder),
+          iconName: openFolders[folder] ? 'FolderOpen' : 'Folder',
+          icon: openFolders[folder] ? FolderOpen : Folder,
+          open: openFolders[folder] || false,
+          onClick: () => handleFolderToggle(folder),
+          children: folders[folder].map((item) => ({
+            ...item,
+            icon: item.icon || iconMap[item.iconName || 'Folder'],
+          })),
+        })),
+        showFavoriteIcon: true,
+      },
+    ];
 
   const renderMenuItems = (
     items: MenuItemType[],
@@ -464,7 +464,7 @@ const PortalMenu: React.FC = () => {
             {/* Logo and Header */}
             <DrawerHeader>
               <LogoContainer href="/">
-                <LogoImage src={logo} alt="AWT" />
+                <LogoImage src={fullLogo} alt="AWT" />
               </LogoContainer>
               <IconButton onClick={handleDrawerToggle}>
                 <ArrowBackIos />
