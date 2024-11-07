@@ -14,7 +14,7 @@ import UserInfoContext from '../../stores/userInfo';
 import InactivityModal from '../../components/InactivityModal';
 import agent from '../../app/api/agent';
 import { isAuthenticated, handleAutoLogout } from '../../utils/authentication';
-import { routes } from '../../routes'; // Import the centralized routes
+import { routes } from '../../routes';
 import setDocumentTitle from '../../utils/setDocumentTitle';
 
 const App: React.FC = () => {
