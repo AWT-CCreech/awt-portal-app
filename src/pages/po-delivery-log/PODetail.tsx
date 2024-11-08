@@ -30,9 +30,10 @@ interface PODetailProps {
   poDetail: PODetailUpdateDto | null;
   onClose: () => void;
   loading: boolean;
+  onUpdate: () => void; // Add onUpdate prop to notify parent component
 }
 
-const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading }) => {
+const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) => {
   const [notes, setNotes] = useState(poDetail?.newNote || '');
   const [expectedDelivery, setExpectedDelivery] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -97,7 +98,8 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading }) => {
         poDetail!.id,
         updateDto
       );
-      onClose();
+      onUpdate(); // Notify parent to refresh data
+      onClose(); // Close the modal
     } catch (err) {
       console.error('Error updating PO:', err);
       setError('Failed to update PO. Please try again.');
@@ -108,7 +110,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading }) => {
   const columns = ['date', 'enteredBy', 'note'];
   const columnNames = ['Date', 'Entered By', 'Note'];
 
-  // Function to render each row in the table, with row structure inferred
+  // Function to render each row in the table
   const renderRow = (row: (typeof previousNotes)[number]) => [
     <TableCell key="date">{row.date}</TableCell>,
     <TableCell key="enteredBy">{row.enteredBy}</TableCell>,
