@@ -72,116 +72,62 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
     // Only check for alerts if PO is not complete
     if (!isPOComplete) {
-      const expectedDelivery = po.expectedDelivery
-        ? new Date(po.expectedDelivery)
-        : null;
-      const poRequiredDate = po.poRequiredDate
-        ? new Date(po.poRequiredDate)
-        : null;
-      const soRequiredDate = po.soRequiredDate
-        ? new Date(po.soRequiredDate)
-        : null;
+      const expectedDelivery = po.expectedDelivery ? new Date(po.expectedDelivery) : null;
+      const poRequiredDate = po.poRequiredDate ? new Date(po.poRequiredDate) : null;
+      const soRequiredDate = po.soRequiredDate ? new Date(po.soRequiredDate) : null;
 
       // Check for ExpDeliveryAlert
-      if (
-        expectedDelivery &&
-        soRequiredDate &&
-        expectedDelivery > soRequiredDate
-      ) {
+      if (expectedDelivery && soRequiredDate && expectedDelivery > soRequiredDate) {
         ExpDeliveryAlert = true;
       }
 
       // Check for DeliveryAlert
-      if (
-        !expectedDelivery &&
-        poRequiredDate &&
-        soRequiredDate &&
-        poRequiredDate > soRequiredDate
-      ) {
+      if (!expectedDelivery && poRequiredDate && soRequiredDate && poRequiredDate > soRequiredDate) {
         DeliveryAlert = true;
       }
     }
 
+    // Check if the note edit date is older than 7 days
+    const isNoteOld = po.noteEditDate ?
+      (new Date().getTime() - new Date(po.noteEditDate).getTime() > 7 * 24 * 60 * 60 * 1000) : false;
+
+
     const rowCells = [
-      <TableCell key="ponum" align="left">
-        {po.ponum}
-      </TableCell>,
-      <TableCell key="vendorName" align="left">
-        {po.vendorName}
-      </TableCell>,
-      <TableCell key="itemNum" align="left">
-        {po.itemNum}
-      </TableCell>,
-      <TableCell key="altPartNum" align="left">
-        {po.altPartNum}
-      </TableCell>,
-      <TableCell key="issueDate" align="left">
-        {po.issueDate ? new Date(po.issueDate).toLocaleDateString() : ''}
-      </TableCell>,
-      <TableCell key="issuedBy" align="left">
-        {po.issuedBy}
-      </TableCell>,
+      <TableCell key="ponum" align="left">{po.ponum}</TableCell>,
+      <TableCell key="vendorName" align="left">{po.vendorName}</TableCell>,
+      <TableCell key="itemNum" align="left">{po.itemNum}</TableCell>,
+      <TableCell key="altPartNum" align="left">{po.altPartNum}</TableCell>,
+      <TableCell key="issueDate" align="left">{po.issueDate ? new Date(po.issueDate).toLocaleDateString() : ''}</TableCell>,
+      <TableCell key="issuedBy" align="left">{po.issuedBy}</TableCell>,
       <TableCell key="expectedDelivery" align="left">
         <Box className="expected-delivery">
-          <span>
-            {po.expectedDelivery
-              ? new Date(po.expectedDelivery).toLocaleDateString()
-              : ''}
-          </span>
-          {ExpDeliveryAlert && (
-            <LocalFireDepartment color="error" className="alert-icon" />
-          )}
+          <span>{po.expectedDelivery ? new Date(po.expectedDelivery).toLocaleDateString() : ''}</span>
+          {ExpDeliveryAlert && <LocalFireDepartment color="error" className="alert-icon" />}
         </Box>
       </TableCell>,
       <TableCell key="poRequiredDate" align="left">
         <Box className="po-required-date">
-          <span>
-            {po.poRequiredDate
-              ? new Date(po.poRequiredDate).toLocaleDateString()
-              : ''}
-          </span>
-          {DeliveryAlert && (
-            <LocalFireDepartment color="error" className="alert-icon" />
-          )}
+          <span>{po.poRequiredDate ? new Date(po.poRequiredDate).toLocaleDateString() : ''}</span>
+          {DeliveryAlert && <LocalFireDepartment color="error" className="alert-icon" />}
         </Box>
       </TableCell>,
-      <TableCell key="qtyOrdered" align="left">
-        {po.qtyOrdered}
-      </TableCell>,
-      <TableCell key="qtyReceived" align="left">
-        {po.qtyReceived}
-      </TableCell>,
-      <TableCell key="receiverNum" align="left">
-        {po.receiverNum}
-      </TableCell>,
-      <TableCell key="dateDelivered" align="left">
-        {po.dateDelivered
-          ? new Date(po.dateDelivered).toLocaleDateString()
-          : ''}
-      </TableCell>,
+      <TableCell key="qtyOrdered" align="left">{po.qtyOrdered}</TableCell>,
+      <TableCell key="qtyReceived" align="left">{po.qtyReceived}</TableCell>,
+      <TableCell key="receiverNum" align="left">{po.receiverNum}</TableCell>,
+      <TableCell key="dateDelivered" align="left">{po.dateDelivered ? new Date(po.dateDelivered).toLocaleDateString() : ''}</TableCell>,
       <TableCell key="sonum" align="left">
         <Box className="po-sonum">
           <span>{po.sonum}</span>
-          {po.isDropShipment && (
-            <LocalShipping color="secondary" className="alert-icon" />
-          )}
+          {po.isDropShipment && <LocalShipping color="secondary" className="alert-icon" />}
         </Box>
       </TableCell>,
-      <TableCell key="customerName" align="left">
-        {po.customerName}
-      </TableCell>,
-      <TableCell key="soRequiredDate" align="left">
-        {po.soRequiredDate
-          ? new Date(po.soRequiredDate).toLocaleDateString()
-          : ''}
-      </TableCell>,
-      <TableCell key="salesRep" align="left">
-        {po.salesRep}
-      </TableCell>,
+      <TableCell key="customerName" align="left">{po.customerName}</TableCell>,
+      <TableCell key="soRequiredDate" align="left">{po.soRequiredDate ? new Date(po.soRequiredDate).toLocaleDateString() : ''}</TableCell>,
+      <TableCell key="salesRep" align="left">{po.salesRep}</TableCell>,
       <TableCell key="notes" align="left" className="note-edit-date">
         {po.notesExist ? (
           <div className="notes-container">
-            <Note color="primary" />
+            <Note color={isNoteOld ? "error" : "primary"} /> {/* Change icon color based on age */}
             {po.noteEditDate && (
               <span className="note-edit-date">
                 {new Date(po.noteEditDate).toLocaleDateString()}
