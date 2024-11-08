@@ -50,6 +50,7 @@ const OpenSalesOrderReport: React.FC = () => {
     date1: null,
     date2: null,
   });
+
   const [searchResult, setSearchResult] = useState<
     (OpenSOReport & { notes: TrkSoNote[]; poLog?: TrkPoLog })[]
   >([]);
@@ -79,18 +80,12 @@ const OpenSalesOrderReport: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      console.log('Sending searchParams:', searchParams);
-      const response =
-        await agent.OpenSalesOrderReport.fetchOpenSalesOrders(searchParams);
-      console.log('Received response:', response);
+      const response = await agent.OpenSalesOrderReport.fetchOpenSalesOrders(searchParams);
       setSearchResult(response);
       setUniqueSalesOrders(new Set(response.map((order) => order.sonum)).size);
       setTotalItems(response.length);
-      setTotalAmount(
-        response.reduce((acc, order) => acc + (order.amountLeft || 0), 0)
-      );
+      setTotalAmount(response.reduce((acc, order) => acc + (order.amountLeft || 0), 0));
     } catch (error: any) {
-      console.error('Error fetching open sales orders', error);
       setError('Failed to fetch sales orders. Please try again.');
       setSearchResult([]);
       setUniqueSalesOrders(0);
@@ -139,35 +134,21 @@ const OpenSalesOrderReport: React.FC = () => {
           accountTeam: order.accountTeam || order.salesRep,
           customerName: order.customerName,
           custPo: order.custPo,
-          orderDate: order.orderDate
-            ? new Date(order.orderDate).toLocaleDateString()
-            : '',
-          requiredDate: order.requiredDate
-            ? new Date(order.requiredDate).toLocaleDateString()
-            : '',
-          itemNum: order.itemNum
-            ? `${order.itemNum} (${order.leftToShip ?? 0})`
-            : '',
+          orderDate: order.orderDate ? new Date(order.orderDate).toLocaleDateString() : '',
+          requiredDate: order.requiredDate ? new Date(order.requiredDate).toLocaleDateString() : '',
+          itemNum: order.itemNum ? `${order.itemNum} (${order.leftToShip ?? 0})` : '',
           mfgNum: order.mfgNum,
           amountLeft: order.amountLeft ?? 0,
           ponum: order.ponum,
-          poissueDate:
-            order.poissueDate &&
-            order.poissueDate.getTime() !==
-              new Date('1900-01-01T00:00:00').getTime()
-              ? order.poissueDate.toLocaleDateString()
-              : '',
-          expectedDelivery:
-            order.expectedDelivery &&
-            order.expectedDelivery.getTime() !==
-              new Date('1900-01-01T00:00:00').getTime()
-              ? order.expectedDelivery.toLocaleDateString()
-              : '',
+          poissueDate: order.poissueDate && order.poissueDate.getTime() !== new Date('1900-01-01T00:00:00').getTime()
+            ? order.poissueDate.toLocaleDateString()
+            : '',
+          expectedDelivery: order.expectedDelivery && order.expectedDelivery.getTime() !== new Date('1900-01-01T00:00:00').getTime()
+            ? order.expectedDelivery.toLocaleDateString()
+            : '',
           qtyOrdered: order.qtyOrdered,
           qtyReceived: order.qtyReceived,
-          poLog: order.poLog
-            ? `${new Date(order.poLog.entryDate).toLocaleDateString()} (${order.poLog.enteredBy})`
-            : '',
+          poLog: order.poLog ? `${new Date(order.poLog.entryDate).toLocaleDateString()} (${order.poLog.enteredBy})` : '',
           notesExist: order.notes.length > 0 ? 'Yes' : 'No',
         });
       });
@@ -203,9 +184,7 @@ const OpenSalesOrderReport: React.FC = () => {
       const url = window.URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = `OpenSOReport_${
-        new Date().toISOString().split('T')[0]
-      }.xlsx`;
+      anchor.download = `OpenSOReport_${new Date().toISOString().split('T')[0]}.xlsx`;
       document.body.appendChild(anchor); // Append to body to ensure it works in Firefox
       anchor.click();
       document.body.removeChild(anchor); // Remove from body after clicking
@@ -228,31 +207,22 @@ const OpenSalesOrderReport: React.FC = () => {
   }, []);
 
   // Function to fetch notes for a line item
-  const fetchNotesForLineItem = useCallback(
-    async (soNum: string, partNum: string) => {
-      try {
-        const response = await agent.OpenSalesOrderNotes.getNotes(
-          soNum,
-          partNum
-        );
-        console.log(
-          `Fetched notes for SO: ${soNum}, Part: ${partNum}`,
-          response
-        );
-        setSearchResult((prevResults) =>
-          prevResults.map((order) => {
-            if (order.sonum === soNum && order.itemNum === partNum) {
-              return { ...order, notes: response };
-            }
-            return order;
-          })
-        );
-      } catch (error) {
-        console.error('Error fetching notes', error);
-      }
-    },
-    []
-  );
+  const fetchNotesForLineItem = useCallback(async (soNum: string, partNum: string) => {
+    try {
+      const response = await agent.OpenSalesOrderNotes.getNotes(soNum, partNum);
+      console.log(`Fetched notes for SO: ${soNum}, Part: ${partNum}`, response);
+      setSearchResult((prevResults) =>
+        prevResults.map((order) => {
+          if (order.sonum === soNum && order.itemNum === partNum) {
+            return { ...order, notes: response };
+          }
+          return order;
+        })
+      );
+    } catch (error) {
+      console.error('Error fetching notes', error);
+    }
+  }, []);
 
   // Function to handle opening the note modal
   const handleOpenNoteModal = useCallback(
@@ -297,6 +267,14 @@ const OpenSalesOrderReport: React.FC = () => {
     }
   }, []);
 
+  // Centralized onUpdate method for the PODetail modal
+  const handlePODetailUpdate = useCallback(() => {
+    // This can include any logic you need after updating the PO Detail
+    // For example, you could refresh the search results
+    fetchNotesForLineItem(selectedSONum, selectedPartNum);
+    setPoDetailModalOpen(false);
+  }, [selectedSONum, selectedPartNum, fetchNotesForLineItem]);
+
   return (
     <div>
       <PageHeader
@@ -316,19 +294,12 @@ const OpenSalesOrderReport: React.FC = () => {
               loadingExport={loadingExport}
             />
           </Grid>
-          <Grid
-            item
-            xs={12}
-            sx={{ paddingTop: { xs: '15px' } }}
-            component="div"
-          >
+          <Grid item xs={12} sx={{ paddingTop: { xs: '15px' } }} component="div">
             {loading ? (
-              <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                mt={10}
-              ></Box>
+              <Box display="flex" justifyContent="center" alignItems="center" mt={10}>
+                {/* Loader or some indication of loading */}
+                <Typography variant="h6">Loading...</Typography>
+              </Box>
             ) : searchResult.length > 0 ? (
               <Box
                 sx={{
@@ -468,9 +439,7 @@ const OpenSalesOrderReport: React.FC = () => {
             partNum={selectedPartNum}
             notes={selectedNotes}
             onClose={handleCloseNoteModal}
-            onNoteAdded={() =>
-              fetchNotesForLineItem(selectedSONum, selectedPartNum)
-            }
+            onNoteAdded={() => fetchNotesForLineItem(selectedSONum, selectedPartNum)}
           />
         </Box>
       </Modal>
@@ -509,6 +478,7 @@ const OpenSalesOrderReport: React.FC = () => {
           <PODetail
             poDetail={selectedPO}
             onClose={() => setPoDetailModalOpen(false)}
+            onUpdate={handlePODetailUpdate} // Centralized update handler
             loading={poDetailLoading}
           />
         </Box>
