@@ -25,6 +25,8 @@ import { ItemCategories } from '../../models/Data/ItemCategories';
 import { DropShipPart } from '../../models/DropShip/DropShipPart';
 import { Rep } from '../../models/Data/Rep';
 import { DropShipPartsParams } from '../../models/DropShip/DropShipPartParams';
+import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
+import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
 
 const devURL = 'http://localhost:5001/api'; // Use for development environment
 const prodURL = 'http://10.0.0.8:82/api'; // Use for production environment
@@ -247,6 +249,30 @@ const DropShip = {
   getDropShipInfo: (poNum: string): Promise<any> =>
     requests.get(`/DropShipInfo/${poNum}`),
 };
+
+const EventSearchPage = {
+  getEventPageData: async (
+    params: EquipReqSearchCriteria
+  ): Promise<EquipReqSearchResult[]> => {
+    const formattedParams = {
+      ...params,
+      fromDate: params.fromDate ? params.fromDate.toISOString().split("T")[0] : null,
+      toDate: params.toDate ? params.toDate.toISOString().split("T")[0] : null,
+    };
+
+    try {
+      const response = await requests.getWithParams(
+        '/EventSearch/EquipmentRequestSearch',
+        formattedParams
+      );
+      return response;
+    } catch (error) {
+      console.error('Error fetching Event Page data', error);
+      throw error;
+    }
+  },
+};
+
 
 const MassMailer = {
   ClearPartItems: {
@@ -485,6 +511,7 @@ const Modules = {
   TimeTrackers,
   UserList,
   UserLogins,
+  EventSearchPage,
 };
 
 export default Modules;
