@@ -77,15 +77,15 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
 
     const columns = groupBySo
       ? allColumns.filter(
-          (column) => column !== 'itemNum' && column !== 'mfgNum'
-        )
+        (column) => column !== 'itemNum' && column !== 'mfgNum'
+      )
       : allColumns;
 
     const columnNames = groupBySo
       ? allColumnNames.filter(
-          (columnName) =>
-            columnName !== 'Missing P/N' && columnName !== 'Vendor P/N'
-        )
+        (columnName) =>
+          columnName !== 'Missing P/N' && columnName !== 'Vendor P/N'
+      )
       : allColumnNames;
 
     const isDefaultDate = (date: Date | null) =>
@@ -124,12 +124,12 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
 
         const mostRecentNoteDate = hasNotes
           ? new Date(
-              Math.max(
-                ...order.notes.map((note) =>
-                  new Date(note.entryDate!).getTime()
-                )
+            Math.max(
+              ...order.notes.map((note) =>
+                new Date(note.entryDate!).getTime()
               )
             )
+          )
           : null;
 
         const rowCells = [
