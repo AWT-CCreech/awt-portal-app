@@ -52,9 +52,9 @@ const PODeliveryLog: React.FC = () => {
   const [poData, setPoData] = useState<PODeliveryLogs[]>([]);
   const [selectedPO, setSelectedPO] = useState<PODetailUpdateDto | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false); // Loading state for fetching PO data
-  const [detailLoading, setDetailLoading] = useState(false); // Loading state for fetching PO detail
-  const [loadingExport, setLoadingExport] = useState<boolean>(false); // Loading state for exporting
+  const [loading, setLoading] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [loadingExport, setLoadingExport] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -64,8 +64,7 @@ const PODeliveryLog: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const data =
-        await Modules.PODeliveryLogService.getPODeliveryLogs(searchParams);
+      const data = await Modules.PODeliveryLogService.getPODeliveryLogs(searchParams);
       setPoData(data);
     } catch (error) {
       console.error('Error fetching PO data:', error);
@@ -80,25 +79,24 @@ const PODeliveryLog: React.FC = () => {
     fetchPOData();
   };
 
-  const handleRowClick = async (
-    event: React.MouseEvent,
-    poLog: PODeliveryLogs
-  ) => {
+  const refreshData = useCallback(async () => {
+    await fetchPOData(); // Re-fetch data from the server
+  }, [fetchPOData]);
+
+  const handleRowClick = async (event: React.MouseEvent, poLog: PODeliveryLogs) => {
     event.stopPropagation();
     setModalOpen(true);
-    setSelectedPO(null); // Reset selected PO
-    setDetailLoading(true); // Set loading to true for fetching PO detail
+    setSelectedPO(null);
+    setDetailLoading(true);
     setError(null);
     try {
-      const poDetail = await Modules.PODeliveryLogService.getPODetailByID(
-        poLog.id
-      );
+      const poDetail = await Modules.PODeliveryLogService.getPODetailByID(poLog.id);
       setSelectedPO(poDetail);
     } catch (error) {
       console.error('Error fetching PO detail:', error);
       setError('Failed to fetch PO detail.');
     } finally {
-      setDetailLoading(false); // Set loading to false after data is fetched
+      setDetailLoading(false);
     }
   };
 
@@ -116,7 +114,6 @@ const PODeliveryLog: React.FC = () => {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('PODeliveryLogs');
 
-      // Define columns with headers and keys matching the data structure
       worksheet.columns = [
         { header: 'PO#', key: 'ponum', width: 15 },
         { header: 'Vendor Name', key: 'vendorName', width: 20 },
@@ -137,46 +134,34 @@ const PODeliveryLog: React.FC = () => {
         { header: 'Notes Exist', key: 'notesExist', width: 15 },
       ];
 
-      // Add rows to the worksheet
       poData.forEach((po) => {
         worksheet.addRow({
           ponum: po.ponum,
           vendorName: po.vendorName,
           itemNum: po.itemNum,
           altPartNum: po.altPartNum,
-          issueDate: po.issueDate
-            ? new Date(po.issueDate).toLocaleDateString()
-            : '',
+          issueDate: po.issueDate ? new Date(po.issueDate).toLocaleDateString() : '',
           issuedBy: po.issuedBy,
-          expectedDelivery: po.expectedDelivery
-            ? new Date(po.expectedDelivery).toLocaleDateString()
-            : '',
-          poRequiredDate: po.poRequiredDate
-            ? new Date(po.poRequiredDate).toLocaleDateString()
-            : '',
+          expectedDelivery: po.expectedDelivery ? new Date(po.expectedDelivery).toLocaleDateString() : '',
+          poRequiredDate: po.poRequiredDate ? new Date(po.poRequiredDate).toLocaleDateString() : '',
           qtyOrdered: po.qtyOrdered,
           qtyReceived: po.qtyReceived,
           receiverNum: po.receiverNum,
-          dateDelivered: po.dateDelivered
-            ? new Date(po.dateDelivered).toLocaleDateString()
-            : '',
+          dateDelivered: po.dateDelivered ? new Date(po.dateDelivered).toLocaleDateString() : '',
           sonum: po.sonum,
           customerName: po.customerName,
-          soRequiredDate: po.soRequiredDate
-            ? new Date(po.soRequiredDate).toLocaleDateString()
-            : '',
+          soRequiredDate: po.soRequiredDate ? new Date(po.soRequiredDate).toLocaleDateString() : '',
           salesRep: po.salesRep,
           notesExist: po.notesExist ? 'Yes' : 'No',
         });
       });
 
-      // Style the header row
       worksheet.getRow(1).eachCell((cell) => {
         cell.font = { bold: true };
         cell.fill = {
           type: 'pattern',
           pattern: 'solid',
-          fgColor: { argb: 'FFB0C4DE' }, // LightSteelBlue background
+          fgColor: { argb: 'FFB0C4DE' },
         };
         cell.border = {
           top: { style: 'thin' },
@@ -186,7 +171,6 @@ const PODeliveryLog: React.FC = () => {
         };
       });
 
-      // Write the workbook to a buffer and trigger download
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -220,9 +204,9 @@ const PODeliveryLog: React.FC = () => {
               searchParams={searchParams}
               setSearchParams={setSearchParams}
               onSearch={handleSearch}
-              loading={loading} // Only for search loading
+              loading={loading}
               handleExport={handleExport}
-              loadingExport={loadingExport} // Pass the export loading state
+              loadingExport={loadingExport}
               searchResultLength={poData.length}
             />
           </Grid>
@@ -336,6 +320,7 @@ const PODeliveryLog: React.FC = () => {
               poDetail={selectedPO}
               onClose={handleCloseModal}
               loading={detailLoading}
+              onUpdate={refreshData} // Pass the refreshData function
             />
           )}
         </Box>
