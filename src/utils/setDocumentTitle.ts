@@ -8,6 +8,7 @@ const DOCUMENT_TITLES: { [key: string]: string } = {
   [ROUTE_PATHS.TIME_TRACKER]: 'AWT Portal | Time Tracker',
   [ROUTE_PATHS.MASTER_SEARCH]: 'AWT Portal | Master Search',
   [ROUTE_PATHS.SALES.OPEN_SO_REPORT]: 'AWT Portal | Open SO Report',
+  [ROUTE_PATHS.SALES.SALES_ORDER_WB]: 'AWT Portal | SO Workbench',
   [ROUTE_PATHS.SALES.EVENT_SEARCH]: 'AWT Portal | Event Search',
   [ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG]: 'AWT Portal | PO Delivery Log',
   [ROUTE_PATHS.PURCHASING.DROPSHIP]: 'AWT Portal | Drop Ship',
