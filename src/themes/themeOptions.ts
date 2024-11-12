@@ -42,7 +42,7 @@ export const themeOptions: ThemeOptions = {
       main: '#4caf50',
       light: '#6fbf73',
       dark: '#357a38',
-      contrastText: 'ffffff',
+      contrastText: '#ffffff',
     },
     divider: 'rgba(0,0,0,0.12)',
   },
