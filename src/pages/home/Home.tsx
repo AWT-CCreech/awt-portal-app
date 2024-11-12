@@ -109,6 +109,19 @@ const Home: React.FC = () => {
               color: 'white',
               '&:hover': { backgroundColor: 'grey' },
             }}
+            onClick={() => navigate(ROUTE_PATHS.SALES.SALES_ORDER_WB)}
+          >
+            SO Workbench
+          </Button>
+        </Grid>
+        <Grid item xs={3} textAlign="center">
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              '&:hover': { backgroundColor: 'grey' },
+            }}
             onClick={() => navigate(ROUTE_PATHS.USER_LIST)}
           >
             User List
