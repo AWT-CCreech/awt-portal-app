@@ -205,10 +205,16 @@ const LoginPage: React.FC = observer(() => {
               variant="contained"
               color="primary"
               disabled={pageLoading}
-              endIcon={!pageLoading && <Login />}
+              endIcon={
+                pageLoading ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : (
+                  <Login />
+                )
+              }
               className="submit-button"
             >
-              {pageLoading ? <CircularProgress size={24} /> : 'Login'}
+              Login
             </Button>
           </Box>
         </MuiCard>
