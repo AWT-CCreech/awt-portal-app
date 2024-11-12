@@ -1,4 +1,5 @@
-// React and Hooks
+// src/pages/event-search/SearchBox.tsx
+
 import React, { ChangeEvent, useEffect, useCallback } from 'react';
 
 // API
@@ -11,8 +12,6 @@ import { Rep } from '../../models/Data/Rep';
 // MUI Components
 import {
     Box,
-    Button,
-    CircularProgress,
     TextField,
     Grid,
     FormControl,
@@ -22,6 +21,9 @@ import {
     SelectChangeEvent,
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
+
+// Shared Components
+import LoadingIconButton from '../../components/LoadingIconButton'; // Update the path accordingly
 
 // Define the allowed names for select fields
 type SelectFieldName = 'status' | 'salesRep';
@@ -167,8 +169,10 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                                         : (searchParams[field.name] as string) || ''
                                 }
                                 onChange={handleInputChange}
-                                InputLabelProps={{
-                                    shrink: field.type === 'date' ? true : undefined,
+                                slotProps={{
+                                    inputLabel: {
+                                        shrink: field.type === 'date' ? true : undefined,
+                                    },
                                 }}
                             />
                         </Grid>
@@ -212,57 +216,20 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                         justifyContent="flex-start"
                         alignItems="center"
                     >
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            disabled={loading}
+                        <LoadingIconButton
+                            text="Search"
+                            icon={Search}
+                            loading={loading}
+                            type="submit" // Ensure the button acts as a submit button
                             sx={{
                                 mr: 2,
-                                position: 'relative',
                                 minWidth: '150px',
-                                height: '40px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                paddingLeft: '40px', // Reserve space for icon/spinner
-                                paddingRight: '12px',
+                                height: '40px', // Override to match original height
                             }}
+                            color="primary"
+                            variant="contained"
                             aria-label="Search Events"
-                        >
-                            {/* Absolute Positioned Icon/Spinner */}
-                            <Box
-                                sx={{
-                                    position: 'absolute',
-                                    left: '12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: '24px',
-                                    height: '24px',
-                                }}
-                            >
-                                {!loading && <Search />}
-                                {loading && (
-                                    <CircularProgress
-                                        size={20}
-                                        sx={{
-                                            color: 'white',
-                                        }}
-                                    />
-                                )}
-                            </Box>
-
-                            {/* Search Text */}
-                            <Box
-                                sx={{
-                                    flexGrow: 1,
-                                    textAlign: 'center',
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                Search
-                            </Box>
-                        </Button>
+                        />
                     </Grid>
                 </Grid>
             </Box>
