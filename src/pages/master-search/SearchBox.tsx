@@ -1,11 +1,9 @@
 // React and Hooks
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // MUI Components and Icons
 import {
   Box,
-  Button,
-  Checkbox,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -18,11 +16,15 @@ import {
   RadioGroup,
   Select,
   SelectChangeEvent,
+  Checkbox,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 // Utilities
 import { isNumber } from 'lodash';
+
+// Import the shared LoadingIconButton
+import LoadingIconButton from '../../components/LoadingIconButton'; // Adjust the path accordingly
 
 interface IProps {
   searchValue: string;
@@ -49,7 +51,7 @@ interface IProps {
   setChkCompany: (value: boolean) => void;
   setChkInvNo: (value: boolean) => void;
   setChkActive: (value: boolean) => void;
-  getResultSets: () => void;
+  getResultSets: () => Promise<void>; // Ensure it returns a Promise
 }
 
 const SearchBox: React.FC<IProps> = ({
@@ -81,6 +83,8 @@ const SearchBox: React.FC<IProps> = ({
 }) => {
   const searchInput1Ref = useRef<HTMLInputElement>(null);
   const searchInput2Ref = useRef<HTMLInputElement>(null);
+
+  const [loading, setLoading] = useState<boolean>(false); // Add loading state
 
   useEffect(() => {
     // Ensure the correct input is always focused
@@ -116,6 +120,20 @@ const SearchBox: React.FC<IProps> = ({
       setChkInvNo(false);
     }
   }, [searchFor, setChkInvNo, setChkMfg, setChkPONo, setChkSONo]);
+
+  // Handle loading state within getResultSets
+  const handleGetResultSets = async () => {
+    setLoading(true); // Start loading
+    try {
+      await getResultSets(); // Await the asynchronous operation
+    } catch (error) {
+      console.error('Error fetching result sets:', error);
+      // Optionally, handle the error (e.g., show a notification)
+      alert('An error occurred while fetching results. Please try again.');
+    } finally {
+      setLoading(false); // End loading
+    }
+  };
 
   return (
     <Box
@@ -165,7 +183,7 @@ const SearchBox: React.FC<IProps> = ({
                       onChange={(e) => setSearchValue(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          getResultSets();
+                          handleGetResultSets();
                         }
                       }}
                     />
@@ -232,51 +250,46 @@ const SearchBox: React.FC<IProps> = ({
                         }
                         label="Company"
                       />
-                      {(() => {
-                        if (searchFor !== 2)
-                          return [
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={chkSONo}
-                                  onChange={() => setChkSONo(!chkSONo)}
-                                />
-                              }
-                              label="SO No"
-                              key="SO No"
-                            />,
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={chkPONo}
-                                  onChange={() => setChkPONo(!chkPONo)}
-                                />
-                              }
-                              label="PO No"
-                              key="PO No"
-                            />,
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={chkMfg}
-                                  onChange={() => setChkMfg(!chkMfg)}
-                                />
-                              }
-                              label="Mfg"
-                              key="Mfg"
-                            />,
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={chkInvNo}
-                                  onChange={() => setChkInvNo(!chkInvNo)}
-                                />
-                              }
-                              label="Inv No"
-                              key="Inv No"
-                            />,
-                          ];
-                      })()}
+                      {searchFor !== 2 && (
+                        <>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={chkSONo}
+                                onChange={() => setChkSONo(!chkSONo)}
+                              />
+                            }
+                            label="SO No"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={chkPONo}
+                                onChange={() => setChkPONo(!chkPONo)}
+                              />
+                            }
+                            label="PO No"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={chkMfg}
+                                onChange={() => setChkMfg(!chkMfg)}
+                              />
+                            }
+                            label="Mfg"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={chkInvNo}
+                                onChange={() => setChkInvNo(!chkInvNo)}
+                              />
+                            }
+                            label="Inv No"
+                          />
+                        </>
+                      )}
                     </FormGroup>
                   </FormControl>
                 </Grid>
@@ -301,7 +314,7 @@ const SearchBox: React.FC<IProps> = ({
                       onChange={(e) => setSearchValue(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          getResultSets();
+                          handleGetResultSets();
                         }
                       }}
                     />
@@ -322,9 +335,16 @@ const SearchBox: React.FC<IProps> = ({
             );
         })()}
         <Grid item xs={12}>
-          <Button variant="contained" color="primary" onClick={getResultSets}>
-            Submit
-          </Button>
+          <LoadingIconButton
+            text="Submit"
+            icon={SearchIcon} // Optionally, use a different icon
+            loading={loading}
+            onClick={handleGetResultSets}
+            sx={{
+              minWidth: '150px',
+              height: '42px',
+            }}
+          />
         </Grid>
       </Grid>
     </Box>
