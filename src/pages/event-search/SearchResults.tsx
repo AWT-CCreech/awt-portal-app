@@ -2,7 +2,7 @@
 import React, { useCallback } from 'react';
 
 // MUI Components and Icons
-import { Box, TableCell, Link } from '@mui/material';
+import { Box, TableCell, TableRow, Link } from '@mui/material';
 
 // Components
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
@@ -40,62 +40,53 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
         ];
 
         const renderRow = useCallback(
-            (event: EquipReqSearchResult): React.JSX.Element[] => {
+            (event: EquipReqSearchResult): React.ReactElement => {
                 const eventIdClickHandler = () => {
                     window.open(
                         `http://10.0.0.8:81/inet/Sales/EditRequest.asp?EventID=${event.eventId}`
                     );
                 };
 
-                const rowCells = [
-                    <TableCell
-                        key="eventId"
-                        align="left"
-                        style={{
-                            cursor: event.eventId ? 'pointer' : 'default',
-                            whiteSpace: 'nowrap',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                        }}
-                        onClick={event.eventId ? eventIdClickHandler : undefined}
-                    >
-                        {event.eventId ? (
-                            <Link underline="hover" target="_blank" rel="noopener noreferrer">
-                                {event.eventId}
-                            </Link>
-                        ) : (
-                            ''
-                        )}
-                    </TableCell>,
-                    <TableCell
-                        key="contact"
-                        align="left"
-                        style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                    >
-                        {event.contact}
-                    </TableCell>,
-                    <TableCell
-                        key="company"
-                        style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                    >
-                        {event.company}
-                    </TableCell>,
-                    <TableCell
-                        key="salesRep"
-                        style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                    >
-                        {event.salesRep}
-                    </TableCell>,
-                    <TableCell
-                        key="projectName"
-                        align="left"
-                        style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                    >
-                        {event.projectName || ''}
-                    </TableCell>,
-                ];
-
-                return rowCells;
+                return (
+                    <TableRow key={event.eventId} hover>
+                        <TableCell
+                            align="left"
+                            style={{
+                                cursor: event.eventId ? 'pointer' : 'default',
+                                whiteSpace: 'nowrap',
+                                textOverflow: 'ellipsis',
+                                overflow: 'hidden',
+                            }}
+                            onClick={event.eventId ? eventIdClickHandler : undefined}
+                        >
+                            {event.eventId ? (
+                                <Link underline="hover" target="_blank" rel="noopener noreferrer">
+                                    {event.eventId}
+                                </Link>
+                            ) : (
+                                ''
+                            )}
+                        </TableCell>
+                        <TableCell
+                            align="left"
+                            style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                        >
+                            {event.contact}
+                        </TableCell>
+                        <TableCell style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                            {event.company}
+                        </TableCell>
+                        <TableCell style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                            {event.salesRep}
+                        </TableCell>
+                        <TableCell
+                            align="left"
+                            style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                        >
+                            {event.projectName || ''}
+                        </TableCell>
+                    </TableRow>
+                );
             },
             []
         );
