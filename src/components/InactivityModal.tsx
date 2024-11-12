@@ -34,7 +34,7 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
       const expiresAt = tokenPayload.exp * 1000;
 
       if (Date.now() >= expiresAt) {
-        handleAutoLogout(navigate, onLogout, () => {});
+        handleAutoLogout(navigate, onLogout, () => { });
         return;
       }
 
@@ -44,7 +44,7 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
             clearInterval(timer!);
 
             if (!hasLoggedOut.current) {
-              handleAutoLogout(navigate, onLogout, () => {});
+              handleAutoLogout(navigate, onLogout, () => { });
               hasLoggedOut.current = true;
             }
 
@@ -70,7 +70,7 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
   return (
     <Dialog
       open={open}
-      onClose={() => {}}
+      onClose={() => { }}
       disableEscapeKeyDown
       PaperProps={{
         sx: {
@@ -133,7 +133,7 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
           Keep Working
         </Button>
         <Button
-          onClick={() => handleAutoLogout(navigate, onLogout, () => {})}
+          onClick={() => handleAutoLogout(navigate, onLogout, () => { })}
           color="error"
           variant="outlined"
           sx={{ borderRadius: 2, paddingX: 3 }}
