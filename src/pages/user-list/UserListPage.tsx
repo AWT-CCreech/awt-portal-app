@@ -22,6 +22,7 @@ import PageHeader from '../../components/PageHeader';
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
 import { User } from '../../models/User';
 import { ROUTE_PATHS } from '../../routes';
+import ExcelJS from 'exceljs';
 
 const UserListPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -141,12 +142,72 @@ const UserListPage: React.FC = () => {
     setModalOpen(true);
   };
 
-  const handleExportExcel = async () => {
-    // Excel export logic
-  };
+  const handleExportExcel = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('UserList');
+
+      worksheet.columns = [
+        { header: 'Last Name', key: 'lname', width: 15 },
+        { header: 'First Name', key: 'fname', width: 15 },
+        { header: 'Username', key: 'uname', width: 20 },
+        { header: 'Extension', key: 'extension', width: 10 },
+        { header: 'Direct Phone', key: 'directPhone', width: 15 },
+        { header: 'Mobile Phone', key: 'mobilePhone', width: 15 },
+      ];
+
+      users.forEach((user) => {
+        worksheet.addRow({
+          lname: user.lname,
+          fname: user.fname,
+          uname: user.uname,
+          extension: user.extension,
+          directPhone: user.directPhone,
+          mobilePhone: user.mobilePhone,
+        });
+      });
+
+      worksheet.getRow(1).eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFB0C4DE' },
+        };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = window.URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `UserList_${new Date().toISOString().split('T')[0]}.xlsx`;
+      anchor.click();
+      window.URL.revokeObjectURL(url);
+
+      setSuccess('Excel file exported successfully!');
+    } catch (error) {
+      console.error('Error exporting Excel file:', error);
+      setError('Failed to export Excel file.');
+    } finally {
+      setLoading(false);
+    }
+  }, [users]);
 
   const handleRowRendering = useCallback(
-    (user: User): React.JSX.Element => (
+    (user: User): React.ReactElement => (
       <TableRow
         key={user.id}
         hover
