@@ -1,11 +1,11 @@
 export interface SalesOrderUpdateDto {
-    saleId: number;
-    rwSalesOrderNum: string;
-    dropShipment: boolean;
-    eventId: number;
-    quoteId: number;
-    username: string;
-    password: string;
-    subject: string;
-    htmlBody: string;
+    SaleId: number;
+    RWSalesOrderNum: string;
+    DropShipment: boolean;
+    EventId: number;
+    QuoteId: number;
+    Username: string;
+    Password: string;
+    Subject: string;
+    HtmlBody: string;
 }
