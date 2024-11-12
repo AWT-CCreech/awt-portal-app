@@ -1,7 +1,4 @@
-// React and Hooks
-import React, { useState, useEffect, useContext, useCallback, FC } from 'react';
-
-// MUI Components
+import React, { useState, useEffect, useContext, useCallback, FC, memo } from 'react';
 import {
   TableCell,
   Typography,
@@ -11,27 +8,35 @@ import {
   Box,
   Checkbox,
   Skeleton,
+  TableRow,
 } from '@mui/material';
-
-// API and Context
 import Modules from '../../app/api/agent';
 import UserInfoContext from '../../stores/userInfo';
-
-// Components
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
-
-// Models
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
-
-// Utilities
 import { formatPhoneNumber } from '../../utils/dataManipulation';
 
 interface PODetailProps {
   poDetail: PODetailUpdateDto | null;
   onClose: () => void;
   loading: boolean;
-  onUpdate: () => void; // Add onUpdate prop to notify parent component
+  onUpdate: () => void; // Notify parent component to refresh data
 }
+
+interface PreviousNote {
+  date: string;
+  enteredBy: string;
+  note: string;
+}
+
+// Memoized Row Component
+const PODetailRow = memo(({ row }: { row: PreviousNote }) => (
+  <TableRow>
+    <TableCell>{row.date}</TableCell>
+    <TableCell>{row.enteredBy}</TableCell>
+    <TableCell>{row.note}</TableCell>
+  </TableRow>
+));
 
 const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) => {
   const [notes, setNotes] = useState(poDetail?.newNote || '');
@@ -39,18 +44,14 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
   const [error, setError] = useState<string | null>(null);
   const [urgentEmail, setUrgentEmail] = useState(false);
   const [updateAllDates, setUpdateAllDates] = useState(false);
-  const [previousNotes, setPreviousNotes] = useState<
-    Array<{ date: string; enteredBy: string; note: string }>
-  >([]);
+  const [previousNotes, setPreviousNotes] = useState<PreviousNote[]>([]);
   const userInfo = useContext(UserInfoContext);
 
   const fetchPreviousNotes = useCallback(async () => {
     if (!poDetail) return;
 
     try {
-      const notesData = await Modules.PODeliveryLogService.getPODetailByID(
-        poDetail.id
-      );
+      const notesData = await Modules.PODeliveryLogService.getPODetailByID(poDetail.id);
       if (notesData?.notesList) {
         setPreviousNotes(
           notesData.notesList.map((note: string) => {
@@ -90,14 +91,11 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
         updateAllDates,
         urgentEmail,
         notesList: previousNotes.map(
-          (note) => `${note.enteredBy}:${note.note}:${note.date}`
+          (note) => `${note.enteredBy}::${note.note}::${note.date}`
         ),
       };
 
-      await Modules.PODeliveryLogService.updatePODetail(
-        poDetail!.id,
-        updateDto
-      );
+      await Modules.PODeliveryLogService.updatePODetail(poDetail!.id, updateDto);
       onUpdate(); // Notify parent to refresh data
       onClose(); // Close the modal
     } catch (err) {
@@ -111,23 +109,19 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
   const columnNames = ['Date', 'Entered By', 'Note'];
 
   // Function to render each row in the table
-  const renderRow = (row: (typeof previousNotes)[number]) => [
-    <TableCell key="date">{row.date}</TableCell>,
-    <TableCell key="enteredBy">{row.enteredBy}</TableCell>,
-    <TableCell key="note">{row.note}</TableCell>,
-  ];
+  const renderRow = useCallback(
+    (row: PreviousNote) => <PODetailRow key={`${row.date}-${row.enteredBy}`} row={row} />,
+    []
+  );
 
   return (
-    <Box
-      sx={{ padding: 3, backgroundColor: 'background.paper', borderRadius: 2 }}
-    >
+    <Box sx={{ padding: 3, backgroundColor: 'background.paper', borderRadius: 2 }}>
       <Typography variant="h5" gutterBottom>
         {loading ? (
           <Skeleton variant="text" width="60%" animation="wave" />
         ) : (
           <span>
-            Update Info for <b>{poDetail?.partNum}</b> on{' '}
-            <b>PO#{poDetail?.poNum}</b>
+            Update Info for <b>{poDetail?.partNum}</b> on <b>PO#{poDetail?.poNum}</b>
           </span>
         )}
       </Typography>
@@ -166,8 +160,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                   <Skeleton variant="text" width="80%" animation="wave" />
                 ) : (
                   <Typography variant="body1" sx={{ textAlign: 'right' }}>
-                    <strong>Phone:</strong>{' '}
-                    {formatPhoneNumber(poDetail?.phone || '')}
+                    <strong>Phone:</strong> {formatPhoneNumber(poDetail?.phone || '')}
                   </Typography>
                 )}
               </Grid>
@@ -189,12 +182,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 {loading ? (
-                  <Skeleton
-                    variant="rectangular"
-                    width="100%"
-                    height={40}
-                    animation="wave"
-                  />
+                  <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
                   <TextField
                     disabled
@@ -207,12 +195,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
               </Grid>
               <Grid item xs={12} sm={6}>
                 {loading ? (
-                  <Skeleton
-                    variant="rectangular"
-                    width="100%"
-                    height={40}
-                    animation="wave"
-                  />
+                  <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
                   <TextField
                     disabled
@@ -225,12 +208,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
               </Grid>
               <Grid item xs={12} sm={6}>
                 {loading ? (
-                  <Skeleton
-                    variant="rectangular"
-                    width="100%"
-                    height={40}
-                    animation="wave"
-                  />
+                  <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
                   <TextField
                     disabled
@@ -243,12 +221,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
               </Grid>
               <Grid item xs={12} sm={6}>
                 {loading ? (
-                  <Skeleton
-                    variant="rectangular"
-                    width="100%"
-                    height={40}
-                    animation="wave"
-                  />
+                  <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
                   <TextField
                     disabled
@@ -261,12 +234,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
               </Grid>
               <Grid item xs={12} sm={6}>
                 {loading ? (
-                  <Skeleton
-                    variant="rectangular"
-                    width="100%"
-                    height={40}
-                    animation="wave"
-                  />
+                  <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
                   <TextField
                     label="Expected Delivery"
@@ -285,20 +253,13 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                     sx={{ marginTop: 1, display: 'block' }}
                   >
                     Edited by <b>{poDetail?.editedBy}</b> on{' '}
-                    <b>
-                      {new Date(poDetail.expDelEditDate).toLocaleDateString()}
-                    </b>
+                    <b>{new Date(poDetail.expDelEditDate).toLocaleDateString()}</b>
                   </Typography>
                 )}
               </Grid>
               <Grid item xs={12} sm={6}>
                 {loading ? (
-                  <Skeleton
-                    variant="rectangular"
-                    width="100%"
-                    height={40}
-                    animation="wave"
-                  />
+                  <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
                   <TextField
                     disabled
@@ -323,12 +284,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
             <Grid item>
               {loading ? (
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Skeleton
-                    variant="circular"
-                    width={24}
-                    height={24}
-                    animation="wave"
-                  />
+                  <Skeleton variant="circular" width={24} height={24} animation="wave" />
                   <Skeleton
                     variant="text"
                     width={150}
@@ -342,21 +298,14 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                     checked={updateAllDates}
                     onChange={(e) => setUpdateAllDates(e.target.checked)}
                   />
-                  <Typography component="span">
-                    Update All Delivery Dates
-                  </Typography>
+                  <Typography component="span">Update All Delivery Dates</Typography>
                 </>
               )}
             </Grid>
             <Grid item>
               {loading ? (
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Skeleton
-                    variant="circular"
-                    width={24}
-                    height={24}
-                    animation="wave"
-                  />
+                  <Skeleton variant="circular" width={24} height={24} animation="wave" />
                   <Skeleton
                     variant="text"
                     width={120}
@@ -377,6 +326,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
           </Grid>
         </Grid>
 
+        {/* Error Message */}
         {error && (
           <Grid item xs={12}>
             <Typography color="error">{error}</Typography>
