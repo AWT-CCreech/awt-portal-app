@@ -1,31 +1,11 @@
-// React and Hooks
-import React, { ChangeEvent, useEffect, useState } from 'react';
-
-// MUI Components and Icons
-import {
-  Box,
-  Button,
-  CircularProgress,
-  TextField,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  SelectChangeEvent,
-  MenuItem,
-  Autocomplete,
-} from '@mui/material';
-import { GetApp, Search } from '@mui/icons-material';
-
-// Utilities
-import { debounce } from 'lodash';
-
-// Models
-import SearchInput from '../../models/PODeliveryLog/SearchInput';
-import { Rep } from '../../models/Data/Rep';
-
-// API
+import React, { useEffect, useState, ChangeEvent } from 'react';
+import { Grid, TextField, MenuItem, Typography, Autocomplete, CircularProgress, Box } from '@mui/material';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import SearchIcon from '@mui/icons-material/Search';
+import debounce from 'lodash/debounce';
 import Modules from '../../app/api/agent';
+import SearchInput from '../../models/PODeliveryLog/SearchInput';
+import LoadingIconButton from '../../components/LoadingIconButton'; // Import the LoadingIconButton
 
 interface SearchBoxProps {
   searchParams: SearchInput;
@@ -46,12 +26,11 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   loadingExport,
   searchResultLength,
 }) => {
-  const [salesReps, setSalesReps] = useState<Rep[]>([]);
-  const [purchasingReps, setPurchasingReps] = useState<Rep[]>([]);
-  const [vendors, setVendors] = useState<string[]>([]); // State for vendor list
-  const [vendorLoading, setVendorLoading] = useState<boolean>(false); // Loading state for vendors
+  const [salesReps, setSalesReps] = useState<{ id: number; uname: string }[]>([]);
+  const [purchasingReps, setPurchasingReps] = useState<{ id: number; uname: string }[]>([]);
+  const [vendors, setVendors] = useState<string[]>([]);
+  const [vendorLoading, setVendorLoading] = useState<boolean>(false);
 
-  // Fetch sales reps and purchasing reps on component mount
   useEffect(() => {
     const fetchReps = async () => {
       try {
@@ -65,89 +44,43 @@ const SearchBox: React.FC<SearchBoxProps> = ({
         console.error('Error fetching reps', error);
       }
     };
-
     fetchReps();
   }, []);
 
-  // Fetch vendors whenever relevant search parameters change
+  const fetchVendors = debounce(async (params: SearchInput) => {
+    setVendorLoading(true);
+    try {
+      const vendorList = await Modules.PODeliveryLogService.getVendors(params);
+      setVendors(vendorList);
+    } catch (error) {
+      console.error('Error fetching vendors:', error);
+      setVendors([]);
+    } finally {
+      setVendorLoading(false);
+    }
+  }, 500);
+
   useEffect(() => {
-    // Prepare parameters for fetching vendors
-    const params: SearchInput = {
-      PONum: searchParams.PONum,
-      Vendor: searchParams.Vendor,
-      PartNum: searchParams.PartNum,
-      IssuedBy: searchParams.IssuedBy,
-      SONum: searchParams.SONum,
-      xSalesRep: searchParams.xSalesRep,
-      HasNotes: searchParams.HasNotes,
-      POStatus: searchParams.POStatus,
-      EquipType: searchParams.EquipType,
-      CompanyID: searchParams.CompanyID,
-      YearRange: searchParams.YearRange,
-    };
+    fetchVendors(searchParams);
+  }, [searchParams.Vendor, searchParams.PONum, searchParams.PartNum, searchParams.IssuedBy, searchParams.SONum, searchParams.xSalesRep]);
 
-    const debouncedFetchVendors = debounce(async () => {
-      setVendorLoading(true);
-      try {
-        const vendorList =
-          await Modules.PODeliveryLogService.getVendors(params);
-        setVendors(vendorList);
-      } catch (error) {
-        console.error('Error fetching vendors:', error);
-        setVendors([]);
-      } finally {
-        setVendorLoading(false);
-      }
-    }, 500); // Debounce delay of 500ms
-
-    debouncedFetchVendors();
-
-    // Cleanup function to cancel debounce if the component unmounts or parameters change
-    return () => {
-      debouncedFetchVendors.cancel();
-    };
-  }, [
-    searchParams.PONum,
-    searchParams.Vendor,
-    searchParams.PartNum,
-    searchParams.IssuedBy,
-    searchParams.SONum,
-    searchParams.xSalesRep,
-    searchParams.HasNotes,
-    searchParams.POStatus,
-    searchParams.EquipType,
-    searchParams.CompanyID,
-    searchParams.YearRange,
-  ]);
-
-  // Handle input changes for text fields
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSearchParams((prevParams: SearchInput) => ({
+    setSearchParams((prevParams) => ({
       ...prevParams,
       [name]: value,
     }));
   };
 
-  // Handle changes for select fields
-  const handleSelectChange = (e: SelectChangeEvent<string>): void => {
+  const handleSelectChange = (e: ChangeEvent<{ name?: string; value: unknown }>) => {
     const { name, value } = e.target;
-    setSearchParams((prevParams: SearchInput) => ({
+    setSearchParams((prevParams) => ({
       ...prevParams,
       [name as string]: value as string,
     }));
   };
 
-  // Handle notes change specifically
-  const handleNotesChange = (e: SelectChangeEvent<string>): void => {
-    setSearchParams((prevParams) => ({
-      ...prevParams,
-      HasNotes: e.target.value,
-    }));
-  };
-
-  // Handle form submission
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch();
   };
@@ -164,31 +97,26 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               name="PONum"
               value={searchParams.PONum}
               onChange={handleInputChange}
-              variant="outlined"
             />
           </Grid>
 
-          {/* Purchasing Rep */}
+          {/* Purchasing Rep (Issued By) */}
           <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel id="issuedBy-label">Purch Rep</InputLabel>
-              <Select
-                labelId="issuedBy-label"
-                name="IssuedBy"
-                value={searchParams.IssuedBy || 'All'}
-                onChange={handleSelectChange}
-                label="Purch Rep"
-              >
-                <MenuItem key="All" value="All">
-                  All
+            <TextField
+              select
+              fullWidth
+              label="Purch Rep"
+              name="IssuedBy"
+              value={searchParams.IssuedBy || 'All'}
+              onChange={handleSelectChange}
+            >
+              <MenuItem value="All">All</MenuItem>
+              {purchasingReps.map((rep) => (
+                <MenuItem key={rep.id} value={rep.uname}>
+                  {rep.uname}
                 </MenuItem>
-                {purchasingReps.map((rep) => (
-                  <MenuItem key={rep.id} value={rep.uname}>
-                    {rep.uname}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+              ))}
+            </TextField>
           </Grid>
 
           {/* Part Number */}
@@ -199,27 +127,22 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               name="PartNum"
               value={searchParams.PartNum}
               onChange={handleInputChange}
-              variant="outlined"
             />
           </Grid>
 
           {/* PO Status */}
           <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel>PO Status</InputLabel>
-              <Select
-                name="POStatus"
-                value={searchParams.POStatus}
-                onChange={handleSelectChange}
-                label="PO Status"
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Complete">Complete</MenuItem>
-                <MenuItem value="Not Complete">Not Complete</MenuItem>
-                <MenuItem value="Late">Late</MenuItem>
-                <MenuItem value="Due w/n 2 Days">Due w/n 2 Days</MenuItem>
-              </Select>
-            </FormControl>
+            <TextField
+              select
+              fullWidth
+              label="PO Status"
+              name="POStatus"
+              value={searchParams.POStatus}
+              onChange={handleSelectChange}
+            >
+              <MenuItem value="Not Complete">Not Complete</MenuItem>
+              <MenuItem value="Complete">Complete</MenuItem>
+            </TextField>
           </Grid>
 
           {/* SO Number */}
@@ -230,31 +153,26 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               name="SONum"
               value={searchParams.SONum}
               onChange={handleInputChange}
-              variant="outlined"
             />
           </Grid>
 
           {/* Sales Rep */}
           <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel id="salesRep-label">Sales Rep</InputLabel>
-              <Select
-                labelId="salesRep-label"
-                name="xSalesRep"
-                value={searchParams.xSalesRep || 'All'}
-                onChange={handleSelectChange}
-                label="Sales Rep"
-              >
-                <MenuItem key="All" value="All">
-                  All
+            <TextField
+              select
+              fullWidth
+              label="Sales Rep"
+              name="xSalesRep"
+              value={searchParams.xSalesRep || 'All'}
+              onChange={handleSelectChange}
+            >
+              <MenuItem value="All">All</MenuItem>
+              {salesReps.map((rep) => (
+                <MenuItem key={rep.id} value={rep.uname}>
+                  {rep.uname}
                 </MenuItem>
-                {salesReps.map((rep) => (
-                  <MenuItem key={rep.id} value={rep.uname}>
-                    {rep.uname}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+              ))}
+            </TextField>
           </Grid>
 
           {/* Vendor Picker */}
@@ -265,19 +183,13 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               options={vendors}
               getOptionLabel={(option: string) => option}
               value={searchParams.Vendor || ''}
-              onChange={(
-                event: React.SyntheticEvent,
-                newValue: string | null
-              ) => {
+              onChange={(event, newValue) => {
                 setSearchParams((prevParams) => ({
                   ...prevParams,
                   Vendor: newValue || '',
                 }));
               }}
-              onInputChange={(
-                event: React.SyntheticEvent,
-                newInputValue: string
-              ) => {
+              onInputChange={(event, newInputValue) => {
                 setSearchParams((prevParams) => ({
                   ...prevParams,
                   Vendor: newInputValue || '',
@@ -288,7 +200,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                 <TextField
                   {...params}
                   label="Vendor"
-                  variant="outlined"
                   InputProps={{
                     ...params.InputProps,
                     endAdornment: (
@@ -307,97 +218,73 @@ const SearchBox: React.FC<SearchBoxProps> = ({
 
           {/* Equipment Type */}
           <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel>Equipment Type</InputLabel>
-              <Select
-                name="EquipType"
-                value={searchParams.EquipType}
-                onChange={handleSelectChange}
-                label="Equipment Type"
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="ANC">ANC</MenuItem>
-                <MenuItem value="FNE">FNE</MenuItem>
-              </Select>
-            </FormControl>
+            <TextField
+              select
+              fullWidth
+              label="Equipment Type"
+              name="EquipType"
+              value={searchParams.EquipType}
+              onChange={handleSelectChange}
+            >
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="ANC">ANC</MenuItem>
+              <MenuItem value="FNE">FNE</MenuItem>
+            </TextField>
           </Grid>
 
-          {/* Company */}
+          {/* Company ID */}
           <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel>Company</InputLabel>
-              <Select
-                name="CompanyID"
-                value={searchParams.CompanyID}
-                onChange={handleSelectChange}
-                label="Company"
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="AIR">AIR</MenuItem>
-                <MenuItem value="SOL">SOL</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          {/* Notes */}
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel>Notes</InputLabel>
-              <Select
-                name="HasNotes"
-                value={searchParams.HasNotes}
-                onChange={handleNotesChange}
-                label="Notes"
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
-              </Select>
-            </FormControl>
+            <TextField
+              select
+              fullWidth
+              label="Company ID"
+              name="CompanyID"
+              value={searchParams.CompanyID}
+              onChange={handleSelectChange}
+            >
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="AIR">AIR</MenuItem>
+              <MenuItem value="SOL">SOL</MenuItem>
+            </TextField>
           </Grid>
 
           {/* Year Range */}
           <Grid item xs={12} sm={6} md={3}>
             <TextField
               fullWidth
-              label="Year"
+              label="Year Range"
               name="YearRange"
               type="number"
               value={searchParams.YearRange}
               onChange={handleInputChange}
-              variant="outlined"
             />
           </Grid>
 
-          {/* Search and Export Buttons */}
-          <Grid
-            item
-            xs={12}
-            display="flex"
-            justifyContent="flex-start"
-            alignItems="center"
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              disabled={loading}
-              startIcon={!loading && <Search />}
-              sx={{ mr: 2 }} // Add some margin between buttons
-            >
-              {loading ? <CircularProgress size={24} /> : 'Search'}
-            </Button>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleExport}
-              disabled={loadingExport || searchResultLength === 0}
-              startIcon={
-                loadingExport ? <CircularProgress size={20} /> : <GetApp />
-              }
-            >
-              Export to Excel
-            </Button>
+          {/* Action Buttons */}
+          <Grid item xs={12} sm={6} md={6} container spacing={1} alignItems="center">
+            <Grid item>
+              <LoadingIconButton
+                text={loading ? 'Searching' : 'Search'}
+                icon={SearchIcon}
+                loading={loading}
+                onClick={onSearch}
+                variant="contained"
+                color="primary"
+                disabled={loading}
+                type="submit" // Ensures form submission
+              />
+            </Grid>
+            <Grid item>
+              <LoadingIconButton
+                text={loadingExport ? 'Exporting' : 'Export'}
+                icon={GetAppIcon}
+                loading={loadingExport}
+                onClick={handleExport}
+                variant="outlined"
+                color="secondary"
+                disabled={loadingExport || loading || searchResultLength === 0}
+              />
+            </Grid>
           </Grid>
         </Grid>
       </Box>
