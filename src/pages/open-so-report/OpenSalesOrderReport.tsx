@@ -1,4 +1,3 @@
-// React and Hooks
 import React, { useState, useCallback } from 'react';
 
 // Components
@@ -76,7 +75,7 @@ const OpenSalesOrderReport: React.FC = () => {
   const [poDetailModalOpen, setPoDetailModalOpen] = useState(false);
   const [poDetailLoading, setPoDetailLoading] = useState(false);
 
-  const getResultSets = useCallback(async () => {
+  const fetchOpenSalesOrders = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -86,6 +85,7 @@ const OpenSalesOrderReport: React.FC = () => {
       setTotalItems(response.length);
       setTotalAmount(response.reduce((acc, order) => acc + (order.amountLeft || 0), 0));
     } catch (error: any) {
+      console.error('Error fetching sales orders:', error);
       setError('Failed to fetch sales orders. Please try again.');
       setSearchResult([]);
       setUniqueSalesOrders(0);
@@ -140,12 +140,14 @@ const OpenSalesOrderReport: React.FC = () => {
           mfgNum: order.mfgNum,
           amountLeft: order.amountLeft ?? 0,
           ponum: order.ponum,
-          poissueDate: order.poissueDate && order.poissueDate.getTime() !== new Date('1900-01-01T00:00:00').getTime()
-            ? order.poissueDate.toLocaleDateString()
-            : '',
-          expectedDelivery: order.expectedDelivery && order.expectedDelivery.getTime() !== new Date('1900-01-01T00:00:00').getTime()
-            ? order.expectedDelivery.toLocaleDateString()
-            : '',
+          poissueDate:
+            order.poissueDate && order.poissueDate instanceof Date && !isNaN(order.poissueDate.getTime())
+              ? order.poissueDate.toLocaleDateString()
+              : '',
+          expectedDelivery:
+            order.expectedDelivery && order.expectedDelivery instanceof Date && !isNaN(order.expectedDelivery.getTime())
+              ? order.expectedDelivery.toLocaleDateString()
+              : '',
           qtyOrdered: order.qtyOrdered,
           qtyReceived: order.qtyReceived,
           poLog: order.poLog ? `${new Date(order.poLog.entryDate).toLocaleDateString()} (${order.poLog.enteredBy})` : '',
@@ -269,8 +271,6 @@ const OpenSalesOrderReport: React.FC = () => {
 
   // Centralized onUpdate method for the PODetail modal
   const handlePODetailUpdate = useCallback(() => {
-    // This can include any logic you need after updating the PO Detail
-    // For example, you could refresh the search results
     fetchNotesForLineItem(selectedSONum, selectedPartNum);
     setPoDetailModalOpen(false);
   }, [selectedSONum, selectedPartNum, fetchNotesForLineItem]);
@@ -287,7 +287,7 @@ const OpenSalesOrderReport: React.FC = () => {
             <SearchBox
               searchParams={searchParams}
               setSearchParams={setSearchParams}
-              getResultSets={getResultSets}
+              getResultSets={fetchOpenSalesOrders}
               handleExport={handleExport}
               searchResultLength={searchResult.length}
               loading={loading}
@@ -295,12 +295,7 @@ const OpenSalesOrderReport: React.FC = () => {
             />
           </Grid>
           <Grid item xs={12} sx={{ paddingTop: { xs: '15px' } }} component="div">
-            {loading ? (
-              <Box display="flex" justifyContent="center" alignItems="center" mt={10}>
-                {/* Loader or some indication of loading */}
-                <Typography variant="h6">Loading...</Typography>
-              </Box>
-            ) : searchResult.length > 0 ? (
+            {searchResult.length > 0 ? (
               <Box
                 sx={{
                   height: '80vh',
@@ -320,7 +315,7 @@ const OpenSalesOrderReport: React.FC = () => {
               </Box>
             ) : (
               <Typography variant="h6" align="center" mt={2}>
-                No results found.
+                {loading ? '' : 'No results found.'}
               </Typography>
             )}
           </Grid>
@@ -485,6 +480,7 @@ const OpenSalesOrderReport: React.FC = () => {
       </Modal>
     </div>
   );
+
 };
 
 export default OpenSalesOrderReport;
