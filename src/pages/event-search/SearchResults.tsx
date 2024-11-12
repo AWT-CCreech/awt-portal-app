@@ -71,10 +71,10 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
                             align="left"
                             style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                         >
-                            {event.contact}
+                            {event.company}
                         </TableCell>
                         <TableCell style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                            {event.company}
+                            {event.contact}
                         </TableCell>
                         <TableCell style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>
                             {event.salesRep}
