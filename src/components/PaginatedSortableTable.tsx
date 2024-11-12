@@ -1,9 +1,11 @@
+// src/components/PaginatedSortableTable.tsx
+
 import React, { useReducer, useEffect, useState } from 'react';
 import {
   Table,
   TableHead,
   TableBody,
-  TableRow, // Ensure TableRow is imported
+  TableRow,
   TableCell,
   TableSortLabel,
   Paper,
@@ -13,7 +15,6 @@ import {
 } from '@mui/material';
 import _ from 'lodash';
 import styled from 'styled-components';
-import { toPascalCase, toLowerFirstLetter } from '../utils/dataManipulation';
 
 function reducer(state: any, action: any) {
   switch (action.type) {
@@ -42,58 +43,46 @@ interface IProps {
   tableData: object[];
   columns?: string[];
   columnNames?: string[];
-  func?: (row: any) => React.JSX.Element | React.JSX.Element[]; // Updated type here
+  func?: (row: any) => React.ReactElement; // Changed to return ReactElement (TableRow)
   headerBackgroundColor?: string;
   hoverColor?: string;
 }
 
 const RoundedPaper = styled(Paper)`
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 `;
 
 const StyledTable = styled(Table)`
-  border-collapse: separate;
-  overflow: hidden;
-  border-radius: 8px;
-  min-height: 100px;
+    border-collapse: separate;
+    overflow: hidden;
+    border-radius: 8px;
+    min-height: 100px;
 `;
 
-const StyledTableRow = styled(TableRow)<{ hovercolor?: string }>`
-  &:hover {
-    background-color: ${(props) => props.hovercolor ?? 'none'} !important;
-  }
+const StyledTableRow = styled(TableRow) <{ hovercolor?: string }>`
+    &:hover {
+        background-color: ${(props) => props.hovercolor ?? 'none'} !important;
+    }
 `;
 
-const StyledTableCell = styled(TableCell)`
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  min-width: 100px;
-`;
+const HeaderTableCell = styled(TableCell)`
+    color: white !important;
 
-const HeaderTableCell = styled(StyledTableCell)`
-  color: white !important;
+    & .MuiTableSortLabel-root:hover {
+        color: lightgray;
+    }
 
-  & .MuiTableSortLabel-root:hover {
-    color: lightgray;
-  }
+    & .MuiTableSortLabel-root.Mui-active {
+        color: white;
+    }
 
-  & .MuiTableSortLabel-root.Mui-active {
-    color: white;
-  }
-
-  & .MuiTableSortLabel-icon {
-    color: inherit !important;
-  }
-`;
-
-const ScrollableTableBody = styled(TableBody)`
-  max-height: 100vh;
-  overflow-y: auto;
+    & .MuiTableSortLabel-icon {
+        color: inherit !important;
+    }
 `;
 
 const PaginatedSortableTable: React.FC<IProps> = ({
@@ -138,7 +127,7 @@ const PaginatedSortableTable: React.FC<IProps> = ({
 
   let columnNamesInCamelCase: string[];
   if (!columns || columns.length === 0) {
-    columnNamesInCamelCase = Object.keys(tableData[0]);
+    columnNamesInCamelCase = Object.keys(tableData[0] || {});
   } else {
     columnNamesInCamelCase = columns;
   }
@@ -164,49 +153,26 @@ const PaginatedSortableTable: React.FC<IProps> = ({
                   >
                     {columnNames && columnNames.length === columns?.length
                       ? columnNames[index]
-                      : toPascalCase(col)}
+                      : col.charAt(0).toUpperCase() + col.slice(1)}
                   </TableSortLabel>
                 </HeaderTableCell>
               ))}
             </TableRow>
           </TableHead>
-          <ScrollableTableBody>
-            {paginatedData.map((row: any, id: number) => {
-              const renderedRow = func ? func(row) : null;
-
-              if (
-                React.isValidElement(renderedRow) &&
-                renderedRow.type === TableRow
-              ) {
-                // If func returns a TableRow, render it directly
-                return React.cloneElement(renderedRow, { key: id });
-              } else if (Array.isArray(renderedRow)) {
-                // If func returns an array of TableCell elements
-                return (
-                  <StyledTableRow key={id} hovercolor={hoverColor}>
-                    {renderedRow}
-                  </StyledTableRow>
-                );
-              } else {
-                // Default rendering
-                return (
-                  <StyledTableRow key={id} hovercolor={hoverColor}>
-                    {columnNamesInCamelCase.map((col) => (
-                      <StyledTableCell key={col}>
-                        {row[toLowerFirstLetter(col)]}
-                      </StyledTableCell>
-                    ))}
-                  </StyledTableRow>
-                );
+          <TableBody>
+            {paginatedData.map((row, idx) => {
+              if (func) {
+                return func(row);
               }
+              return null;
             })}
-          </ScrollableTableBody>
+          </TableBody>
         </StyledTable>
       </TableContainer>
       <Box sx={{ flexShrink: 0 }}>
         <TablePagination
-          showFirstButton={true}
-          showLastButton={true}
+          showFirstButton
+          showLastButton
           component="div"
           count={data.length}
           page={page}
