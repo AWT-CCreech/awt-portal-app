@@ -34,6 +34,7 @@ import ContactsOutlinedIcon from '@mui/icons-material/ContactsOutlined';
 import SellOutlinedIcon from '@mui/icons-material/SellOutlined';
 import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import HandymanOutlinedIcon from '@mui/icons-material/HandymanOutlined';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { handleLogOut } from '../utils/authentication';
@@ -293,6 +294,12 @@ const PortalMenu: React.FC = () => {
         path: ROUTE_PATHS.SALES.OPEN_SO_REPORT,
         iconName: 'SellOutlined',
         icon: SellOutlinedIcon,
+      },
+      {
+        label: 'SO Workbench',
+        path: ROUTE_PATHS.SALES.SALES_ORDER_WB,
+        iconName: 'SellOutlined',
+        icon: HandymanOutlinedIcon,
       },
       // Add more items as needed
     ],
