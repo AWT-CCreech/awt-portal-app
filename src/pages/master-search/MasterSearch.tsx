@@ -18,12 +18,11 @@ import agent from '../../app/api/agent';
 import {
   Box,
   Container,
-  CircularProgress,
   Grid,
   Typography,
 } from '@mui/material';
 
-interface IProps {}
+interface IProps { }
 
 const MasterSearch: React.FC<IProps> = () => {
   const [searchValue, setSearchValue] = useState<string>('');
@@ -41,7 +40,7 @@ const MasterSearch: React.FC<IProps> = () => {
 
   const [searchResult, setSearchResult] = useState<JSX.Element[]>([]);
 
-  const getResultSets = async () => {
+  const getResultSets = async (): Promise<void> => {
     if (searchValue.trim() === '') {
       alert('You cannot leave Search box blank. Please try again.');
       return;
@@ -63,20 +62,7 @@ const MasterSearch: React.FC<IProps> = () => {
       return;
     }
 
-    setSearchResult([
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        mt={10}
-        key="loading"
-      >
-        <CircularProgress size={80} />
-        <Typography variant="h6" component="div" sx={{ ml: 2 }}>
-          Loading
-        </Typography>
-      </Box>,
-    ]);
+    // Removed manual loading indicator
 
     const searchObject = {
       Search: searchValue,
