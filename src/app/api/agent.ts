@@ -27,6 +27,9 @@ import { Rep } from '../../models/Data/Rep';
 import { DropShipPartsParams } from '../../models/DropShip/DropShipPartParams';
 import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
 import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
+import { EquipmentRequestUpdateDto } from '../../models/SOWorkbench/EquipmentRequestUpdateDto';
+import { SalesOrderEmailDto } from '../../models/SOWorkbench/SalesOrderEmailDto';
+import { SalesOrderUpdateDto } from '../../models/SOWorkbench/SalesOrderUpdateDto';
 
 const devURL = 'http://localhost:5001/api'; // Use for development environment
 const prodURL = 'http://10.0.0.8:82/api'; // Use for production environment
@@ -273,7 +276,6 @@ const EventSearchPage = {
   },
 };
 
-
 const MassMailer = {
   ClearPartItems: {
     clear: (userid: string): Promise<any> =>
@@ -426,6 +428,37 @@ const PODeliveryLogService = {
   },
 };
 
+const SalesOrderWorkbench = {
+  getEventLevelData: async (params: {
+    salesRepId?: number;
+    billToCompany?: string;
+    eventId?: number;
+  }): Promise<any> => {
+    return requests.getWithParams('/SalesOrderWorkbench/EventLevelData', params);
+  },
+
+  getDetailLevelData: async (params: {
+    salesRepId?: number;
+    billToCompany?: string;
+    eventId?: number;
+  }): Promise<any> => {
+    return requests.getWithParams('/SalesOrderWorkbench/DetailLevelData', params);
+  },
+
+  updateSalesOrder: async (updateData: SalesOrderUpdateDto): Promise<void> => {
+    return requests.post('/SalesOrderWorkbench/UpdateSalesOrder', updateData);
+  },
+
+  updateEquipmentRequest: async (
+    updateData: EquipmentRequestUpdateDto
+  ): Promise<void> => {
+    return requests.post(
+      '/SalesOrderWorkbench/UpdateEquipmentRequest',
+      updateData
+    );
+  },
+};
+
 const TimeTrackers = {
   approve: (approvals: object) =>
     requests.post('/TimeTrackerApprovals', approvals),
@@ -512,6 +545,7 @@ const Modules = {
   UserList,
   UserLogins,
   EventSearchPage,
+  SalesOrderWorkbench,
 };
 
 export default Modules;
