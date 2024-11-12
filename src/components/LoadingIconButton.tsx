@@ -1,3 +1,5 @@
+// src/components/LoadingIconButton.tsx
+
 import React from 'react';
 import {
     Button,
@@ -5,42 +7,70 @@ import {
     Box,
     SxProps,
     Theme,
+    ButtonProps,
 } from '@mui/material';
 import { SvgIconComponent } from '@mui/icons-material';
 
-interface LoadingIconButtonProps {
+interface LoadingIconButtonProps extends Omit<ButtonProps, 'onClick'> {
+    /**
+     * The text to display within the button.
+     */
     text: string;
-    icon?: SvgIconComponent; // Optional icon
-    loading: boolean; // Controls the loading state
-    onClick: () => void; // Click handler for the button
-    sx?: SxProps<Theme>; // Optional custom styles
+
+    /**
+     * An optional icon component to display alongside the text.
+     */
+    icon?: SvgIconComponent;
+
+    /**
+     * Indicates whether the button is in a loading state.
+     */
+    loading: boolean;
+
+    /**
+     * Click handler for the button. Optional to accommodate form submissions.
+     */
+    onClick?: () => void;
 }
 
+/**
+ * A reusable button component that displays a loading spinner when in a loading state.
+ * It can optionally display an icon and supports various button types and styles.
+ */
 const LoadingIconButton: React.FC<LoadingIconButtonProps> = ({
     text,
     icon: Icon,
     loading,
     onClick,
     sx,
+    color = 'primary',
+    variant = 'contained',
+    type = 'button',
+    disabled = false,
+    ...rest
 }) => {
     return (
         <Button
-            variant="contained"
-            color="primary"
+            variant={variant}
+            color={color}
             onClick={onClick}
-            disabled={loading}
+            disabled={loading || disabled} // Disable the button when loading or explicitly disabled
+            aria-busy={loading} // Indicates loading state for accessibility
+            aria-label={text} // Provides an accessible label
+            type={type} // Supports 'button', 'submit', 'reset'
             sx={{
                 position: 'relative',
                 minWidth: '150px',
-                height: '56px', // Adjusted to match other components
+                height: '56px',
                 display: 'flex',
                 alignItems: 'center',
-                paddingLeft: '40px', // Reserve space for icon/spinner
+                paddingLeft: '40px', // Space reserved for icon/spinner
                 paddingRight: '12px',
-                ...sx, // Apply custom styles passed in via sx
+                ...sx, // Allow custom styles via the sx prop
             }}
+            {...rest} // Forward any additional props to the Button component
         >
-            {/* Absolute Positioned Icon/Spinner */}
+            {/* Positioned Icon or Spinner */}
             <Box
                 sx={{
                     position: 'absolute',
@@ -52,18 +82,21 @@ const LoadingIconButton: React.FC<LoadingIconButtonProps> = ({
                     height: '24px',
                 }}
             >
+                {/* Display the icon if not loading */}
                 {!loading && Icon && <Icon />}
+
+                {/* Display the loading spinner when loading */}
                 {loading && (
                     <CircularProgress
                         size={20}
                         sx={{
-                            color: 'white',
+                            color: variant === 'outlined' ? 'primary.main' : 'white',
                         }}
                     />
                 )}
             </Box>
 
-            {/* Button Text */}
+            {/* Centered Button Text */}
             <Box
                 sx={{
                     flexGrow: 1,
@@ -77,4 +110,5 @@ const LoadingIconButton: React.FC<LoadingIconButtonProps> = ({
     );
 };
 
-export default LoadingIconButton;
+// Optimize performance by preventing unnecessary re-renders
+export default React.memo(LoadingIconButton);
