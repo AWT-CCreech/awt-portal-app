@@ -1,39 +1,28 @@
-// React and Hooks
-import React, {
-  ChangeEvent,
-  KeyboardEvent,
-  useEffect,
-  useCallback,
-  useState,
-} from 'react';
+// src/pages/open-so-report/SearchBox.tsx
 
-// MUI Components and Icons
+import React, { useState, useEffect, ChangeEvent, KeyboardEvent, useCallback } from 'react';
 import {
   Box,
-  Button,
-  TextField,
   Grid,
+  TextField,
   Checkbox,
   FormControlLabel,
   Select,
-  SelectChangeEvent,
   MenuItem,
   InputLabel,
   FormControl,
-  IconButton,
   Tooltip,
   CircularProgress,
+  SelectChangeEvent, // Import SelectChangeEvent
 } from '@mui/material';
-import { GetApp, Search } from '@mui/icons-material';
-
-// Models
+import LoadingIconButton from '../../components/LoadingIconButton'; // Adjust the path as necessary
+import SearchIcon from '@mui/icons-material/Search';
+import GetAppIcon from '@mui/icons-material/GetApp';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
 import { AccountNumbers } from '../../models/Data/AccountNumbers';
 import { Rep } from '../../models/Data/Rep';
 import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
 import { ItemCategories } from '../../models/Data/ItemCategories';
-
-// API
 import Modules from '../../app/api/agent';
 
 interface SearchBoxProps {
@@ -138,7 +127,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   );
 
   const handleSelectChange = useCallback(
-    (event: SelectChangeEvent<string>) => {
+    (event: SelectChangeEvent<string>) => { // Updated type
       const { name, value } = event.target;
       console.log(`Select Change - ${name}:`, value);
       setSearchParams((prevParams) => ({
@@ -190,7 +179,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               labelId="dateFilterType-label"
               name="dateFilterType"
               value={searchParams.dateFilterType || 'OrderDate'}
-              onChange={handleSelectChange}
+              onChange={handleSelectChange} // Correct handler
               label="Date Filter Type"
             >
               <MenuItem key="OrderDate" value="OrderDate">
@@ -236,7 +225,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               labelId="reqDateStatus-label"
               name="reqDateStatus"
               value={searchParams.reqDateStatus || 'All'}
-              onChange={handleSelectChange}
+              onChange={handleSelectChange} // Correct handler
               label="Req Date Status"
             >
               <MenuItem key="All" value="All">
@@ -256,7 +245,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               labelId="salesTeam-label"
               name="salesTeam"
               value={searchParams.salesTeam || 'All'}
-              onChange={handleSelectChange}
+              onChange={handleSelectChange} // Correct handler
               label="Sales Team"
             >
               <MenuItem key="All" value="All">
@@ -278,7 +267,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               labelId="salesRep-label"
               name="salesRep"
               value={searchParams.salesRep || 'All'}
-              onChange={handleSelectChange}
+              onChange={handleSelectChange} // Correct handler
               label="Sales Rep"
             >
               <MenuItem key="All" value="All">
@@ -320,7 +309,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               labelId="accountNumber-label"
               name="accountNo"
               value={searchParams.accountNo || 'All'}
-              onChange={handleSelectChange}
+              onChange={handleSelectChange} // Correct handler
               label="Account Number"
             >
               <MenuItem key="All" value="All">
@@ -345,7 +334,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               labelId="category-label"
               name="category"
               value={searchParams.category || 'All'}
-              onChange={handleSelectChange}
+              onChange={handleSelectChange} // Correct handler
               label="Category"
             >
               <MenuItem key="All" value="All">
@@ -389,40 +378,36 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             onChange={handleInputChange}
           />
         </Grid>
-        {/* Checkboxes */}
-        <Grid item xs={12} sm={3}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={searchParams.chkExcludeCo || false}
-                onChange={handleCheckboxChange}
-                name="chkExcludeCo"
-              />
-            }
-            label="Exclude Customer"
+        {/* Buttons */}
+        <Grid
+          item
+          xs={3}
+          display="flex"
+          justifyContent="flex-start"
+          alignItems="center"
+        >
+          <LoadingIconButton
+            text="Search"
+            icon={SearchIcon}
+            loading={loading}
+            onClick={getResultSets}
+            color="primary"
+            variant="contained"
+            sx={{ width: '150px', height: '42px', mr: 2 }}
           />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={searchParams.chkAllHere || false}
-                onChange={handleCheckboxChange}
-                name="chkAllHere"
-              />
-            }
-            label="All Here"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={searchParams.chkGroupBySo || false}
-                onChange={handleCheckboxChange}
-                name="chkGroupBySo"
-              />
-            }
-            label="Group by SO"
+          <LoadingIconButton
+            text="Export"
+            icon={GetAppIcon}
+            loading={loadingExport}
+            onClick={handleExport}
+            color="secondary"
+            variant="outlined"
+            sx={{ width: '150px', height: '42px' }}
+            disabled={searchResultLength === 0 || loadingExport || loading} // Now valid
           />
         </Grid>
-        {/* Buttons */}
+
+        {/* Checkboxes */}
         <Grid
           item
           xs={12}
@@ -430,28 +415,39 @@ const SearchBox: React.FC<SearchBoxProps> = ({
           justifyContent="flex-start"
           alignItems="center"
         >
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={getResultSets}
-            fullWidth
-            disabled={loading}
-            startIcon={!loading && <Search />}
-          >
-            {loading ? <CircularProgress size={24} /> : 'Search'}
-          </Button>
-          <Tooltip title="Export to Excel">
-            <span>
-              <IconButton
-                color="success"
-                onClick={handleExport}
-                sx={{ ml: 2 }}
-                disabled={loading || searchResultLength === 0 || loadingExport}
-              >
-                <GetApp />
-              </IconButton>
-            </span>
-          </Tooltip>
+          {/* Checkboxes */}
+          <Grid item xs={12} sm={3}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={searchParams.chkAllHere || false}
+                  onChange={handleCheckboxChange}
+                  name="chkAllHere"
+                />
+              }
+              label="All Here"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={searchParams.chkExcludeCo || false}
+                  onChange={handleCheckboxChange}
+                  name="chkExcludeCo"
+                />
+              }
+              label="Exclude Customer"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={searchParams.chkGroupBySo || false}
+                  onChange={handleCheckboxChange}
+                  name="chkGroupBySo"
+                />
+              }
+              label="Group by SO"
+            />
+          </Grid>
         </Grid>
       </Grid>
     </Box>
