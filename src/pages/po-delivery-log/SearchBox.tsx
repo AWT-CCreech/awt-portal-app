@@ -5,7 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import debounce from 'lodash/debounce';
 import Modules from '../../app/api/agent';
 import SearchInput from '../../models/PODeliveryLog/SearchInput';
-import LoadingIconButton from '../../components/LoadingIconButton'; // Import the LoadingIconButton
+import LoadingIconButton from '../../components/LoadingIconButton';
 
 interface SearchBoxProps {
   searchParams: SearchInput;

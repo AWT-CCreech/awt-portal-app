@@ -1,5 +1,3 @@
-// src/pages/open-so-report/SearchBox.tsx
-
 import React, { useState, useEffect, ChangeEvent, KeyboardEvent, useCallback } from 'react';
 import {
   Box,
@@ -11,11 +9,9 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  Tooltip,
-  CircularProgress,
   SelectChangeEvent, // Import SelectChangeEvent
 } from '@mui/material';
-import LoadingIconButton from '../../components/LoadingIconButton'; // Adjust the path as necessary
+import LoadingIconButton from '../../components/LoadingIconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';

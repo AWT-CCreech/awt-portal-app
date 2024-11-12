@@ -24,7 +24,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { isNumber } from 'lodash';
 
 // Import the shared LoadingIconButton
-import LoadingIconButton from '../../components/LoadingIconButton'; // Adjust the path accordingly
+import LoadingIconButton from '../../components/LoadingIconButton';
 
 interface IProps {
   searchValue: string;
