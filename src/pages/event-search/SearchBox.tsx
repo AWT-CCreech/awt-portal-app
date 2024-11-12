@@ -1,5 +1,3 @@
-// src/pages/event-search/SearchBox.tsx
-
 import React, { ChangeEvent, useEffect, useCallback } from 'react';
 
 // API
@@ -23,7 +21,7 @@ import {
 import { Search } from '@mui/icons-material';
 
 // Shared Components
-import LoadingIconButton from '../../components/LoadingIconButton'; // Update the path accordingly
+import LoadingIconButton from '../../components/LoadingIconButton';
 
 // Define the allowed names for select fields
 type SelectFieldName = 'status' | 'salesRep';
