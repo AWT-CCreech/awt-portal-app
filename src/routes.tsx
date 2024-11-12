@@ -14,6 +14,7 @@ import NotFound from './pages/exception-pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
 import TimeTrackerPage from './pages/time-tracker/TimeTrackerPage';
 import EventSearch from './pages/event-search/EventSearch';
+import SalesOrderWB from './pages/sales-order-workbench/SalesOrderWB';
 
 // Define constants for paths
 export const ROUTE_PATHS = {
@@ -25,8 +26,9 @@ export const ROUTE_PATHS = {
     PO_DELIVERY_LOG: '/purchasing/podeliverylog',
   },
   SALES: {
-    OPEN_SO_REPORT: '/sales/opensalesorderreport',
     EVENT_SEARCH: '/sales/eventsearch',
+    OPEN_SO_REPORT: '/sales/opensalesorderreport',
+    SALES_ORDER_WB: '/sales/salesorderworkbench',
   },
   MASTER_SEARCH: '/mastersearch',
   TIME_TRACKER: '/timetracker',
@@ -60,12 +62,16 @@ export const routes: RouteObject[] = [
         element: <PODeliveryLog />,
       },
       {
+        path: ROUTE_PATHS.SALES.EVENT_SEARCH,
+        element: <EventSearch />,
+      },
+      {
         path: ROUTE_PATHS.SALES.OPEN_SO_REPORT,
         element: <OpenSalesOrderReport />,
       },
       {
-        path: ROUTE_PATHS.SALES.EVENT_SEARCH,
-        element: <EventSearch />,
+        path: ROUTE_PATHS.SALES.SALES_ORDER_WB,
+        element: <SalesOrderWB />,
       },
       {
         path: ROUTE_PATHS.MASTER_SEARCH,
