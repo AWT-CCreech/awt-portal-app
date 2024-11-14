@@ -219,7 +219,7 @@ const DataFetch = {
   fetchPurchasingReps: async (): Promise<Rep[]> => {
     try {
       const response = await requests.get('/Purchasing/GetPurchasingReps');
-      return response;
+      return response as Rep[];
     } catch (error) {
       console.error('Error fetching purchasing reps', error);
       throw error;
