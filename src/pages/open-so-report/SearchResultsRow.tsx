@@ -1,4 +1,5 @@
-// Import necessary modules
+// src/pages/open-so-report/SearchResultsRow.tsx
+
 import React from 'react';
 import { TableRow, TableCell, IconButton, Link } from '@mui/material';
 import { Warning, Add, Note } from '@mui/icons-material';
@@ -55,7 +56,7 @@ const SearchResultsRow: React.FC<SearchResultsRowProps> = React.memo(
             : null;
 
         return (
-            <TableRow key={order.eventId}>
+            <TableRow>
                 <TableCell
                     align="left"
                     style={{
@@ -71,7 +72,7 @@ const SearchResultsRow: React.FC<SearchResultsRowProps> = React.memo(
                             {order.eventId}
                         </Link>
                     ) : (
-                        ''
+                        'N/A'
                     )}
                 </TableCell>
                 <TableCell
