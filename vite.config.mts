@@ -16,4 +16,13 @@ export default defineConfig({
     open: true, // Automatically opens the app in the browser when dev server starts
     port: 3000,
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // Additional global SCSS configurations can be added here
+        // For example, you can automatically include shared variables/mixins
+        // using `additionalData` if needed.
+      },
+    },
+  },
 });
