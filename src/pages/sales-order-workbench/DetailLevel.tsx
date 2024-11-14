@@ -20,6 +20,7 @@ const DetailLevel: React.FC<DetailLevelProps> = ({ data, onUpdate }) => {
         'partDesc',
         'unitPrice',
         'salesRep',
+        'dropShipment'
     ];
 
     const columnNames = [
@@ -30,6 +31,7 @@ const DetailLevel: React.FC<DetailLevelProps> = ({ data, onUpdate }) => {
         'Part Desc',
         'Unit Price',
         'Sales Rep',
+        'Drop Ship'
     ];
 
     const renderRow = (row: any) => {
