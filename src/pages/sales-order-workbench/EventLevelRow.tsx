@@ -14,7 +14,7 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
     const handleRwsalesOrderNumBlur = () => {
         if (rwsalesOrderNum !== row.rwsalesOrderNum) {
             onUpdate({
-                id: row.saleId, // Ensure 'id' is part of the flatRow
+                id: row.eventId,
                 field: 'rwsalesOrderNum',
                 value: rwsalesOrderNum,
             });
@@ -26,7 +26,7 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
             e.preventDefault();
             if (rwsalesOrderNum !== row.rwsalesOrderNum) {
                 onUpdate({
-                    id: row.saleId, // Ensure 'id' is part of the flatRow
+                    id: row.eventId,
                     field: 'rwsalesOrderNum',
                     value: rwsalesOrderNum,
                 });
@@ -38,7 +38,7 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
         const newValue = e.target.checked;
         setDropShipment(newValue);
         onUpdate({
-            id: row.saleId, // Ensure 'id' is part of the flatRow
+            id: row.eventId,
             field: 'dropShipment',
             value: newValue,
         });
@@ -46,7 +46,16 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
 
     return (
         <>
-            <TableCell>
+            <TableCell align="left">
+                SO-{row.eventId}-{row.version}
+            </TableCell>
+            <TableCell align="left">
+                {row.billToCompanyName}
+            </TableCell>
+            <TableCell align="left">
+                {formatAmount(row.saleTotal)}
+            </TableCell>
+            <TableCell align="left">
                 <TextField
                     size="small"
                     value={rwsalesOrderNum}
@@ -56,27 +65,9 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
                 />
             </TableCell>
             <TableCell align="left">
-                {row.qtySold}
+                {row.saleDate}
             </TableCell>
             <TableCell align="left">
-                {row.unitMeasure}
-            </TableCell>
-            <TableCell>
-                {row.partNum}
-            </TableCell>
-            <TableCell>
-                {row.partDesc}
-            </TableCell>
-            <TableCell
-                align="left"
-                sx={{ fontWeight: 'bold', color: '#1E88E5' }}
-            >
-                {formatAmount(row.unitPrice)}
-            </TableCell>
-            <TableCell align="left">
-                {row.salesRep}
-            </TableCell>
-            <TableCell align="center">
                 <Checkbox
                     checked={dropShipment}
                     onChange={handleDropShipmentChange}
