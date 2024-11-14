@@ -1,5 +1,5 @@
 // React and Hooks
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 
 // MUI Components and Icons
 import {
@@ -46,6 +46,8 @@ interface IProps {
   CC: IMassMailerUser[];
   setCC: (users: IMassMailerUser[]) => void;
   allUsers: IMassMailerUser[];
+  selectedTemplate: string;
+  setSelectedTemplate: (template: string) => void;
 }
 
 const EmailProperties: React.FC<IProps> = ({
@@ -58,6 +60,8 @@ const EmailProperties: React.FC<IProps> = ({
   CC,
   setCC,
   allUsers,
+  selectedTemplate,
+  setSelectedTemplate,
 }) => {
   const noneTemplate = useMemo(
     () => ({
@@ -76,7 +80,6 @@ const EmailProperties: React.FC<IProps> = ({
     []
   );
 
-  const [selectedTemplate, setSelectedTemplate] = useState('None');
   const [templatesForUser, setTemplatesForUser] = useState<
     IMassMailerEmailTemplate[]
   >([]);
@@ -170,6 +173,11 @@ const EmailProperties: React.FC<IProps> = ({
 
   return (
     <Box className="email-properties-container">
+      <Box sx={{ paddingBottom: 2 }}>
+        <Typography variant="h6">
+          Email Properties
+        </Typography>
+      </Box>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Box className="email-properties-item">
