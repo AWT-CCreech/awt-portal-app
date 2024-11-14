@@ -1,0 +1,21 @@
+@use './shared' as *;
+
+// Part Table Container
+.part-table-container {
+    @include padding($padding-large);
+    @include border-style(1px, solid, $border-color);
+    @include border-radius($border-radius);
+
+    // Additional styles specific to PartTable can be added here
+}
+
+// Example: Styling table cells for better readability
+.part-table-container .MuiTableCell-root {
+    padding: $padding-small;
+}
+
+// Styling the "Unmark Mailers" button for consistency
+.part-table-container .MuiButton-containedError {
+    margin-top: $margin-top-medium;
+    @include margin-left($margin-left-small);
+}
