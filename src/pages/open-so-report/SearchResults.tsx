@@ -82,7 +82,7 @@ const SearchResults: React.FC<SearchResultsProps> = memo(
     const renderRow = useCallback(
       (order: OpenSOReport & { notes: TrkSoNote[]; poLog?: TrkPoLog }) => (
         <SearchResultsRow
-          key={`${order.eventId}-${order.sonum}`}
+          key={`${order.sonum}-${order.itemNum}`}
           order={order}
           groupBySo={groupBySo}
           onOpenNoteModal={onOpenNoteModal}
