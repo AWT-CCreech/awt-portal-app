@@ -10,13 +10,12 @@ interface EventLevelProps {
 
 const EventLevel: React.FC<EventLevelProps> = ({ data, onUpdate }) => {
     const columns = [
-        'saleId',
+        'eventId',
         'billToCompanyName',
         'saleTotal',
-        'rwsalesOrderNum', // Correct casing to match backend
-        'dropShipment',   // Correct casing to match backend
+        'rwsalesOrderNum',
         'saleDate',
-        'salesRep',
+        'dropShipment',
     ];
 
     const columnNames = [
@@ -24,24 +23,24 @@ const EventLevel: React.FC<EventLevelProps> = ({ data, onUpdate }) => {
         'Bill To',
         'Sales Total',
         'MAS SO#(s)',
-        'Drop Shipment',
         'Sale Date',
-        'Sales Rep',
+        'Drop Shipment',
     ];
 
     const renderRow = (row: any) => {
         const flatRow = {
-            saleId: row.salesOrder.saleId,
+            eventId: row.salesOrder.eventId,
             billToCompanyName: row.salesOrder.billToCompanyName || '',
             saleTotal: row.salesOrder.saleTotal,
             rwsalesOrderNum: row.salesOrder.rwsalesOrderNum || '',
             dropShipment: row.salesOrder.dropShipment || false,
             saleDate: row.salesOrder.saleDate,
             salesRep: row.salesOrder.salesRep || '',
+            version: row.salesOrder.version,
         };
 
         return (
-            <TableRow key={row.salesOrder.saleId}>
+            <TableRow key={row.salesOrder.eventId}>
                 <EventLevelRow row={flatRow} onUpdate={onUpdate} />
             </TableRow>
         );
