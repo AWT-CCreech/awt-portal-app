@@ -1,0 +1,42 @@
+// Variables
+$border-color: #ccc;
+$background-color-label: #f0f0f0;
+$border-radius: 8px;
+$padding-large: 24px;
+$padding-medium: 16px;
+$padding-small: 8px;
+$margin-top-large: 24px;
+$margin-top-medium: 16px;
+$margin-top-small: 8px;
+$margin-left-large: 16px;
+$margin-left-small: 8px;
+$chip-margin: 8px;
+$tooltip-margin-left: 8px;
+$popup-width: 280px;
+$textarea-padding: 10px;
+
+// Mixins
+@mixin flex-center($margin-top: null) {
+    display: flex;
+    align-items: center;
+
+    @if $margin-top !=null {
+        margin-top: $margin-top;
+    }
+}
+
+@mixin margin-left($value) {
+    margin-left: $value;
+}
+
+@mixin padding($value) {
+    padding: $value;
+}
+
+@mixin border-style($border-width, $border-style, $border-color) {
+    border: $border-width $border-style $border-color;
+}
+
+@mixin border-radius($radius) {
+    border-radius: $radius;
+}
