@@ -9,8 +9,12 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  SelectChangeEvent, // Import SelectChangeEvent
+  SelectChangeEvent,
+  Card,
+  CardContent,
+  Typography,
 } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import LoadingIconButton from '../../components/LoadingIconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import GetAppIcon from '@mui/icons-material/GetApp';
@@ -20,6 +24,7 @@ import { Rep } from '../../models/Data/Rep';
 import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
 import { ItemCategories } from '../../models/Data/ItemCategories';
 import Modules from '../../app/api/agent';
+import { formatAmount } from '../../utils/dataManipulation';
 
 interface SearchBoxProps {
   searchParams: OpenSalesOrderSearchInput;
@@ -31,6 +36,11 @@ interface SearchBoxProps {
   searchResultLength: number;
   loading: boolean;
   loadingExport: boolean;
+  summary?: {
+    totalAmount: number;
+    uniqueSalesOrders: number;
+    totalItems: number;
+  };
 }
 
 const SearchBox: React.FC<SearchBoxProps> = ({
@@ -41,6 +51,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   searchResultLength,
   loading,
   loadingExport,
+  summary,
 }) => {
   const [salesReps, setSalesReps] = useState<Rep[]>([]);
   const [salesTeams, setSalesTeams] = useState<ActiveSalesTeams[]>([]);
@@ -123,7 +134,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   );
 
   const handleSelectChange = useCallback(
-    (event: SelectChangeEvent<string>) => { // Updated type
+    (event: SelectChangeEvent<string>) => {
       const { name, value } = event.target;
       console.log(`Select Change - ${name}:`, value);
       setSearchParams((prevParams) => ({
@@ -164,8 +175,72 @@ const SearchBox: React.FC<SearchBoxProps> = ({
         boxShadow: 3,
         bgcolor: 'background.paper',
         boxSizing: 'border-box',
+        borderRadius: 2,
       }}
     >
+      {/* Summary Display */}
+      {summary && (
+        <Box sx={{ mb: 2 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <Card
+                variant="outlined"
+                sx={{
+                  backgroundColor: grey[100],
+                  height: '100%',
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Total Amount
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    {formatAmount(summary.totalAmount)}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Card
+                variant="outlined"
+                sx={{
+                  backgroundColor: grey[100],
+                  height: '100%',
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Sales Orders
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    {summary.uniqueSalesOrders}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Card
+                variant="outlined"
+                sx={{
+                  backgroundColor: grey[100],
+                  height: '100%',
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Total Items
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    {summary.totalItems}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Box>
+      )}
+
+      {/* Existing Search Fields */}
       <Grid container spacing={2} onKeyDown={handleKeyDown}>
         {/* Date Filter Type */}
         <Grid item xs={12} sm={3}>
@@ -175,7 +250,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               labelId="dateFilterType-label"
               name="dateFilterType"
               value={searchParams.dateFilterType || 'OrderDate'}
-              onChange={handleSelectChange} // Correct handler
+              onChange={handleSelectChange}
               label="Date Filter Type"
             >
               <MenuItem key="OrderDate" value="OrderDate">
@@ -221,7 +296,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               labelId="reqDateStatus-label"
               name="reqDateStatus"
               value={searchParams.reqDateStatus || 'All'}
-              onChange={handleSelectChange} // Correct handler
+              onChange={handleSelectChange}
               label="Req Date Status"
             >
               <MenuItem key="All" value="All">
@@ -241,7 +316,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               labelId="salesTeam-label"
               name="salesTeam"
               value={searchParams.salesTeam || 'All'}
-              onChange={handleSelectChange} // Correct handler
+              onChange={handleSelectChange}
               label="Sales Team"
             >
               <MenuItem key="All" value="All">
@@ -263,7 +338,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               labelId="salesRep-label"
               name="salesRep"
               value={searchParams.salesRep || 'All'}
-              onChange={handleSelectChange} // Correct handler
+              onChange={handleSelectChange}
               label="Sales Rep"
             >
               <MenuItem key="All" value="All">
@@ -305,7 +380,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               labelId="accountNumber-label"
               name="accountNo"
               value={searchParams.accountNo || 'All'}
-              onChange={handleSelectChange} // Correct handler
+              onChange={handleSelectChange}
               label="Account Number"
             >
               <MenuItem key="All" value="All">
@@ -330,7 +405,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               labelId="category-label"
               name="category"
               value={searchParams.category || 'All'}
-              onChange={handleSelectChange} // Correct handler
+              onChange={handleSelectChange}
               label="Category"
             >
               <MenuItem key="All" value="All">
@@ -377,7 +452,8 @@ const SearchBox: React.FC<SearchBoxProps> = ({
         {/* Buttons */}
         <Grid
           item
-          xs={3}
+          xs={12}
+          sm={3}
           display="flex"
           justifyContent="flex-start"
           alignItems="center"
