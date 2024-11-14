@@ -1,15 +1,4 @@
-// React and Hooks
-import React, { useState, useCallback } from 'react';
-
-// API
-import Modules from '../../app/api/agent';
-
-// Models
-import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs';
-import SearchInput from '../../models/PODeliveryLog/SearchInput';
-import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
-
-// MUI Components
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   Box,
   Container,
@@ -20,19 +9,23 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
-
-// Components
 import PageHeader from '../../components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';
 import SearchBox from './SearchBox';
 import SearchResults from './SearchResults';
 import PODetail from './PODetail';
-
-// Utilities
+import Modules from '../../app/api/agent';
+import SearchInput from '../../models/PODeliveryLog/SearchInput';
+import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs';
+import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
 import ExcelJS from 'exceljs';
-
-// Styles
 import '../../styles/user-list/UserListPage.scss';
+
+interface Statistics {
+  uniquePOs: number;
+  dropShipments: number;
+  expDeliveryAlerts: number;
+}
 
 const PODeliveryLog: React.FC = () => {
   const [searchParams, setSearchParams] = useState<SearchInput>({
@@ -59,6 +52,33 @@ const PODeliveryLog: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
   const [exportSuccess, setExportSuccess] = useState<string | null>(null);
+
+  // Compute statistics using useMemo for performance optimization
+  const statistics = useMemo<Statistics>(() => {
+    const uniquePOs = new Set(poData.map((po) => po.ponum)).size;
+    const dropShipments = poData.filter((po) => po.isDropShipment).length;
+    const expDeliveryAlerts = poData.filter((po) => {
+      let ExpDeliveryAlert = false;
+      const isPOComplete = po.qtyOrdered <= po.qtyReceived;
+
+      if (!isPOComplete) {
+        const expectedDelivery = po.expectedDelivery ? new Date(po.expectedDelivery) : null;
+        const soRequiredDate = po.soRequiredDate ? new Date(po.soRequiredDate) : null;
+
+        if (expectedDelivery && soRequiredDate && expectedDelivery > soRequiredDate) {
+          ExpDeliveryAlert = true;
+        }
+      }
+
+      return ExpDeliveryAlert;
+    }).length;
+
+    return {
+      uniquePOs,
+      dropShipments,
+      expDeliveryAlerts,
+    };
+  }, [poData]);
 
   const fetchPOData = useCallback(async () => {
     setLoading(true);
@@ -208,11 +228,13 @@ const PODeliveryLog: React.FC = () => {
               handleExport={handleExport}
               loadingExport={loadingExport}
               searchResultLength={poData.length}
+              statistics={statistics} // Passing updated statistics
             />
           </Grid>
           <Grid item xs={12}>
             {loading ? (
-              <Box display="flex" justifyContent="center" mt={4}></Box>
+              <Box display="flex" justifyContent="center" mt={4}>
+              </Box>
             ) : poData.length > 0 ? (
               <Box
                 sx={{
