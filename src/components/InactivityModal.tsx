@@ -19,6 +19,7 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
   onLogout,
 }) => {
   const [secondsLeft, setSecondsLeft] = useState(countdown);
+  const [shouldLogout, setShouldLogout] = useState(false);
   const hasLoggedOut = useRef(false);
   const navigate = useNavigate();
 
@@ -34,7 +35,7 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
       const expiresAt = tokenPayload.exp * 1000;
 
       if (Date.now() >= expiresAt) {
-        handleAutoLogout(navigate, onLogout, () => { });
+        setShouldLogout(true);
         return;
       }
 
@@ -44,8 +45,7 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
             clearInterval(timer!);
 
             if (!hasLoggedOut.current) {
-              handleAutoLogout(navigate, onLogout, () => { });
-              hasLoggedOut.current = true;
+              setShouldLogout(true);
             }
 
             return 0;
@@ -58,7 +58,14 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [open, countdown, navigate, onLogout]);
+  }, [open, countdown]);
+
+  useEffect(() => {
+    if (shouldLogout && !hasLoggedOut.current) {
+      handleAutoLogout(navigate, onLogout, () => { });
+      hasLoggedOut.current = true;
+    }
+  }, [shouldLogout, navigate, onLogout]);
 
   const handleStayLoggedIn = () => {
     if (!hasLoggedOut.current) {
@@ -133,7 +140,7 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
           Keep Working
         </Button>
         <Button
-          onClick={() => handleAutoLogout(navigate, onLogout, () => { })}
+          onClick={() => setShouldLogout(true)}
           color="error"
           variant="outlined"
           sx={{ borderRadius: 2, paddingX: 3 }}
