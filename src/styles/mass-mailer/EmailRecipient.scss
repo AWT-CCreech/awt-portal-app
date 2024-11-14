@@ -1,23 +1,28 @@
-// Variables
-$border-color: #ccc;
-$padding-large: 24px;
-$margin-top-large: 24px;
-$border-radius-medium: 8px;
-
-// Mixins
-@mixin box-style($padding, $border, $border-radius, $margin-top) {
-  padding: $padding;
-  border: $border;
-  border-radius: $border-radius;
-  margin-top: $margin-top;
-}
+@use './shared' as *;
+@use "sass:color";
 
 // Email Recipient Container Styles
 .email-recipient-container {
-  @include box-style(
-    $padding-large,         // padding: 24px;
-    1px solid $border-color, // border: 1px solid #ccc;
-    $border-radius-medium,   // border-radius: 8px;
-    $margin-top-large        // margin-top: 24px;
-  );
+  @include padding($padding-large);
+  @include border-style(1px, solid, $border-color);
+  @include border-radius($border-radius);
+
+  // Additional styles specific to EmailRecipient can be added here
+}
+
+// Example: Styling recipient list items
+.email-recipient-container .recipient-item {
+  @include flex-center($margin-top-small);
+  padding: $padding-small;
+  border-bottom: 1px solid $border-color;
+
+  &:hover {
+    background-color: color.adjust($background-color-label, $lightness: 10%);
+  }
+}
+
+// Example: Styling buttons within EmailRecipient
+.email-recipient-container .MuiButton-contained {
+  margin-top: $margin-top-medium;
+  @include margin-left($margin-left-small);
 }
