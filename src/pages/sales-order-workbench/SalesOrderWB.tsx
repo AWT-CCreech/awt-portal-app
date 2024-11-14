@@ -1,5 +1,3 @@
-// src/pages/sales-order-workbench/SalesOrderWB.tsx
-
 import React, { useState, useContext } from 'react';
 import { Container, Typography, Snackbar, Alert } from '@mui/material';
 import PageHeader from '../../components/PageHeader';
@@ -53,7 +51,7 @@ const SalesOrderWB: React.FC = () => {
 
     const handleUpdate = async (updateData: any) => {
         try {
-            const { id, field, value } = updateData;
+            const { id, field, value, dropShipment } = updateData;
 
             // Prepare email details
             const subject = 'Sales Order Updated';
@@ -73,7 +71,7 @@ const SalesOrderWB: React.FC = () => {
                             : eventRow.salesOrder.RWSalesOrderNum,
                     DropShipment:
                         field === 'DropShipment'
-                            ? value
+                            ? dropShipment
                             : eventRow.salesOrder.DropShipment,
                     EventId: eventRow.salesOrder.EventId,
                     QuoteId: eventRow.salesOrder.QuoteId,
@@ -95,6 +93,7 @@ const SalesOrderWB: React.FC = () => {
                                 salesOrder: {
                                     ...row.salesOrder,
                                     [field]: value,
+                                    DropShipment: dropShipment,
                                 },
                             }
                             : row
@@ -111,7 +110,7 @@ const SalesOrderWB: React.FC = () => {
 
             // Check if the update is for DetailLevel
             const detailRow = detailLevelData.find(
-                (row) => row.salesOrderDetail.id === id
+                (row) => row.salesOrder.id === id
             );
             if (detailRow) {
                 // Construct EquipmentRequestUpdateDto
@@ -121,6 +120,7 @@ const SalesOrderWB: React.FC = () => {
                         field === 'RWSalesOrderNum'
                             ? value
                             : detailRow.salesOrder.RWSalesOrderNum,
+                    DropShipment: dropShipment !== undefined ? dropShipment : detailRow.salesOrder.DropShipment,
                     Username: userInfo?.username || '',
                     Password: userInfo?.password || '',
                     Subject: subject,
@@ -139,6 +139,7 @@ const SalesOrderWB: React.FC = () => {
                                 salesOrder: {
                                     ...row.salesOrder,
                                     [field]: value,
+                                    DropShipment: dropShipment,
                                 },
                             }
                             : row
@@ -189,9 +190,6 @@ const SalesOrderWB: React.FC = () => {
                 maxWidth={false}
                 sx={{ padding: { xs: '20px', md: '20px' } }}
             >
-                <Typography variant="h4" gutterBottom>
-                    Sales Order Workbench
-                </Typography>
                 <SearchBox onSearch={handleSearch} />
                 <SearchResults
                     eventLevelData={eventLevelData}
