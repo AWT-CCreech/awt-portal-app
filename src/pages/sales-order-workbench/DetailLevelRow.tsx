@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TableCell, TextField } from '@mui/material';
+import { TableCell, TextField, Checkbox, FormControlLabel } from '@mui/material';
 import { formatAmount } from '../../utils/dataManipulation';
 
 interface DetailLevelRowProps {
@@ -9,6 +9,7 @@ interface DetailLevelRowProps {
 
 const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
     const [rwsalesOrderNum, setRwsalesOrderNum] = useState<string>(row.rwsalesOrderNum || '');
+    const [dropShipment, setDropShipment] = useState<boolean>(row.dropShipment || false);
 
     const handleBlur = () => {
         if (rwsalesOrderNum !== row.rwsalesOrderNum) {
@@ -16,6 +17,7 @@ const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
                 id: row.id, // Ensure 'id' is part of the flatRow
                 field: 'rwsalesOrderNum',
                 value: rwsalesOrderNum,
+                dropShipment, // Pass current dropShipment state
             });
         }
     };
@@ -28,14 +30,26 @@ const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
                     id: row.id, // Ensure 'id' is part of the flatRow
                     field: 'rwsalesOrderNum',
                     value: rwsalesOrderNum,
+                    dropShipment, // Pass current dropShipment state
                 });
             }
         }
     };
 
+    const handleDropShipmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        setDropShipment(isChecked);
+        onUpdate({
+            id: row.id,
+            field: 'DropShipment',
+            value: isChecked,
+            dropShipment: isChecked,
+        });
+    };
+
     return (
         <>
-            <TableCell>
+            <TableCell align="left">
                 <TextField
                     size="small"
                     value={rwsalesOrderNum}
@@ -50,10 +64,10 @@ const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
             <TableCell align="left">
                 {row.unitMeasure}
             </TableCell>
-            <TableCell>
+            <TableCell align="left">
                 {row.partNum}
             </TableCell>
-            <TableCell>
+            <TableCell align="left">
                 {row.partDesc}
             </TableCell>
             <TableCell
@@ -64,6 +78,18 @@ const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
             </TableCell>
             <TableCell align="left">
                 {row.salesRep}
+            </TableCell>
+            <TableCell align="left">
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={dropShipment}
+                            onChange={handleDropShipmentChange}
+                            color="primary"
+                        />
+                    }
+                    label=""
+                />
             </TableCell>
         </>
     );
