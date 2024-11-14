@@ -1,11 +1,29 @@
 import React, { useEffect, useState, ChangeEvent } from 'react';
-import { Grid, TextField, MenuItem, Typography, Autocomplete, CircularProgress, Box } from '@mui/material';
+import {
+  Grid,
+  TextField,
+  MenuItem,
+  Typography,
+  Autocomplete,
+  CircularProgress,
+  Box,
+  Divider,
+  Card,
+  CardContent,
+} from '@mui/material';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import SearchIcon from '@mui/icons-material/Search';
 import debounce from 'lodash/debounce';
 import Modules from '../../app/api/agent';
 import SearchInput from '../../models/PODeliveryLog/SearchInput';
 import LoadingIconButton from '../../components/LoadingIconButton';
+import { grey } from '@mui/material/colors';
+
+interface Statistics {
+  uniquePOs: number;
+  dropShipments: number;
+  expDeliveryAlerts: number;
+}
 
 interface SearchBoxProps {
   searchParams: SearchInput;
@@ -15,6 +33,7 @@ interface SearchBoxProps {
   handleExport: () => void;
   loadingExport: boolean;
   searchResultLength: number;
+  statistics: Statistics; // Updated prop for statistics
 }
 
 const SearchBox: React.FC<SearchBoxProps> = ({
@@ -25,6 +44,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   handleExport,
   loadingExport,
   searchResultLength,
+  statistics,
 }) => {
   const [salesReps, setSalesReps] = useState<{ id: number; uname: string }[]>([]);
   const [purchasingReps, setPurchasingReps] = useState<{ id: number; uname: string }[]>([]);
@@ -47,7 +67,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
     fetchReps();
   }, []);
 
-  const fetchVendors = debounce(async (params: SearchInput) => {
+  const fetchVendors = debounce(async (params: Partial<SearchInput>) => {
     setVendorLoading(true);
     try {
       const vendorList = await Modules.PODeliveryLogService.getVendors(params);
@@ -61,8 +81,18 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   }, 500);
 
   useEffect(() => {
-    fetchVendors(searchParams);
-  }, [searchParams.Vendor, searchParams.PONum, searchParams.PartNum, searchParams.IssuedBy, searchParams.SONum, searchParams.xSalesRep]);
+    // Destructure to exclude Vendor from params
+    const { Vendor, ...paramsWithoutVendor } = searchParams;
+    fetchVendors(paramsWithoutVendor);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    searchParams.PONum,
+    searchParams.PartNum,
+    searchParams.IssuedBy,
+    searchParams.SONum,
+    searchParams.xSalesRep,
+    // Removed searchParams.Vendor from dependencies
+  ]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -88,6 +118,67 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   return (
     <form onSubmit={handleFormSubmit}>
       <Box sx={{ mb: 3, p: 2, border: '1px solid #ddd', borderRadius: 2 }}>
+        {/* Styled Summary Section */}
+        <Box sx={{ mb: 2 }}>
+          <Grid container spacing={2}>
+            {/* Unique PO Numbers */}
+            <Grid item xs={12} sm={4}>
+              <Card
+                variant="outlined"
+                sx={{
+                  backgroundColor: grey[100],
+                  height: '100%',
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Purchase Orders
+                  </Typography>
+                  <Typography variant="subtitle1">{statistics.uniquePOs}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Drop Shipments */}
+            <Grid item xs={12} sm={4}>
+              <Card
+                variant="outlined"
+                sx={{
+                  backgroundColor: grey[100],
+                  height: '100%',
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Drop Shipments
+                  </Typography>
+                  <Typography variant="subtitle1">{statistics.dropShipments}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* ExpDeliveryAlerts */}
+            <Grid item xs={12} sm={4}>
+              <Card
+                variant="outlined"
+                sx={{
+                  backgroundColor: grey[100],
+                  height: '100%',
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Hot Orders
+                  </Typography>
+                  <Typography variant="subtitle1">{statistics.expDeliveryAlerts}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Divider sx={{ mb: 2 }} />
+
         <Grid container spacing={2}>
           {/* PO Number */}
           <Grid item xs={12} sm={6} md={3}>
