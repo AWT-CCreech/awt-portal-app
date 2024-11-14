@@ -53,11 +53,11 @@ const CcPopUp: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
     <>
       <Button
         variant="contained"
-        color="primary"
+        color="secondary"
         size="small"
         onClick={() => setOpen(true)}
       >
-        Click here for CC
+        Add CC (internal)
       </Button>
       <Dialog
         open={open}
