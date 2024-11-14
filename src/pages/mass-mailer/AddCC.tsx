@@ -37,11 +37,11 @@ const AddCC: React.FC<IProps> = ({ CC, setCC }) => {
     <>
       <Button
         variant="contained"
-        color="primary"
+        color="secondary"
         size="small"
         onClick={() => setOpen(true)}
       >
-        Add CC
+        Add CC (external)
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Copy email to people outside of Airway</DialogTitle>
