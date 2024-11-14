@@ -21,7 +21,7 @@ import Typography from '@mui/material/Typography';
 import Snackbar from '@mui/material/Snackbar';
 import Modal from '@mui/material/Modal';
 import { grey } from '@mui/material/colors';
-import { Alert } from '@mui/material';
+import { Alert, Card, CardContent, useTheme, useMediaQuery } from '@mui/material';
 
 // Models
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
@@ -74,6 +74,9 @@ const OpenSalesOrderReport: React.FC = () => {
   const [selectedPO, setSelectedPO] = useState<PODetailUpdateDto | null>(null);
   const [poDetailModalOpen, setPoDetailModalOpen] = useState(false);
   const [poDetailLoading, setPoDetailLoading] = useState(false);
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const fetchOpenSalesOrders = useCallback(async () => {
     setLoading(true);
@@ -282,8 +285,8 @@ const OpenSalesOrderReport: React.FC = () => {
         pageHref={ROUTE_PATHS.SALES.OPEN_SO_REPORT}
       />
       <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
-        <Grid container justifyContent="center" spacing={2}>
-          <Grid item xs={12} component="div">
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
             <SearchBox
               searchParams={searchParams}
               setSearchParams={setSearchParams}
@@ -292,13 +295,19 @@ const OpenSalesOrderReport: React.FC = () => {
               searchResultLength={searchResult.length}
               loading={loading}
               loadingExport={loadingExport}
+              summary={{
+                totalAmount,
+                uniqueSalesOrders,
+                totalItems,
+              }}
             />
           </Grid>
-          <Grid item xs={12} sx={{ paddingTop: { xs: '15px' } }} component="div">
+
+          <Grid item xs={12}>
             {searchResult.length > 0 ? (
               <Box
                 sx={{
-                  height: '80vh',
+                  height: isSmallScreen ? 'auto' : '80vh',
                   display: 'flex',
                   flexDirection: 'column',
                   boxShadow: 3,
@@ -315,87 +324,57 @@ const OpenSalesOrderReport: React.FC = () => {
               </Box>
             ) : (
               <Typography variant="h6" align="center" mt={2}>
-                {loading ? '' : 'No results found.'}
+                {loading ? 'Loading...' : 'No results found.'}
               </Typography>
             )}
           </Grid>
         </Grid>
       </Container>
-      {searchResult.length > 0 && (
-        <Box
-          sx={{
-            position: 'fixed',
-            left: '10px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            backgroundColor: grey[100],
-            opacity: '75%',
-            padding: '10px',
-            boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-            borderRadius: 5,
-            zIndex: 1000,
-          }}
-        >
-          <Typography variant="body1">
-            <strong>Total Amount:</strong> {formatAmount(totalAmount)}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Sales Orders:</strong> {uniqueSalesOrders}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Total Items:</strong> {totalItems}
-          </Typography>
-        </Box>
-      )}
+
       {/* Snackbars for Export Success and Error */}
-      {exportSuccess && (
-        <Snackbar
-          open={Boolean(exportSuccess)}
-          autoHideDuration={6000}
+      <Snackbar
+        open={Boolean(exportSuccess)}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
           onClose={handleCloseSnackbar}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          severity="success"
+          sx={{ width: '100%' }}
         >
-          <Alert
-            onClose={handleCloseSnackbar}
-            severity="success"
-            sx={{ width: '100%' }}
-          >
-            {exportSuccess}
-          </Alert>
-        </Snackbar>
-      )}
-      {exportError && (
-        <Snackbar
-          open={Boolean(exportError)}
-          autoHideDuration={6000}
+          {exportSuccess}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={Boolean(exportError)}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
           onClose={handleCloseSnackbar}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          severity="error"
+          sx={{ width: '100%' }}
         >
-          <Alert
-            onClose={handleCloseSnackbar}
-            severity="error"
-            sx={{ width: '100%' }}
-          >
-            {exportError}
-          </Alert>
-        </Snackbar>
-      )}
-      {error && (
-        <Snackbar
-          open={Boolean(error)}
-          autoHideDuration={6000}
+          {exportError}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={Boolean(error)}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
           onClose={handleCloseSnackbar}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          severity="error"
+          sx={{ width: '100%' }}
         >
-          <Alert
-            onClose={handleCloseSnackbar}
-            severity="error"
-            sx={{ width: '100%' }}
-          >
-            {error}
-          </Alert>
-        </Snackbar>
-      )}
+          {error}
+        </Alert>
+      </Snackbar>
+
       {/* Modals */}
       {/* Note Modal */}
       <Modal
@@ -480,7 +459,6 @@ const OpenSalesOrderReport: React.FC = () => {
       </Modal>
     </div>
   );
-
 };
 
 export default OpenSalesOrderReport;
