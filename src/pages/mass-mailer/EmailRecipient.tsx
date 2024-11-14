@@ -1,25 +1,38 @@
 // React and Hooks
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useEffect, useState, ChangeEvent, useMemo } from 'react';
 
 // MUI Components
 import {
   Box,
   Button,
   Checkbox,
-  Container,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
   FormControl,
   FormControlLabel,
   Grid,
   InputLabel,
   List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   MenuItem,
   Pagination,
-  PaginationItem,
+  Paper,
   Select,
   SelectChangeEvent,
   TextField,
   Typography,
+  Avatar,
+  Tooltip,
+  IconButton,
+  CircularProgress,
 } from '@mui/material';
+import { Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
+import { debounce } from 'lodash';
 
 // API
 import agent from '../../app/api/agent';
@@ -27,16 +40,13 @@ import agent from '../../app/api/agent';
 // Models
 import { IMassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
 
-// Components
-import VendorListItem from './components/VendorListItem';
-import SelectedVendor from './components/SelectedVendor';
-
 // Styles
 import '../../styles/mass-mailer/EmailRecipient.scss';
 
 interface IProps {
   selectedVendors: IMassMailerVendor[];
   setSelectedVendors: (vendor: IMassMailerVendor[]) => void;
+  resetRecipients: boolean; // New prop to trigger reset
 }
 
 interface MfgOption {
@@ -48,271 +58,387 @@ interface MfgOption {
 const EmailRecipient: React.FC<IProps> = ({
   selectedVendors,
   setSelectedVendors,
+  resetRecipients,
 }) => {
-  const [mfgOptions, setMfgOptions] = useState<MfgOption[]>([]);
-  const [vendorsToSelect, setVendorsToSelect] = useState<IMassMailerVendor[]>(
-    []
-  );
-  const [vendorListSelectedPage, setVendorListSelectedPage] =
-    useState<number>(1);
+  // Initialize mfgOptions with 'All' to prevent initial render issues
+  const [mfgOptions, setMfgOptions] = useState<MfgOption[]>([
+    { key: 'All', value: 'All', text: 'All' },
+  ]);
+  const [vendorsToSelect, setVendorsToSelect] = useState<IMassMailerVendor[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [mfg, setMfg] = useState<string>('All');
   const [anc, setAnc] = useState<boolean>(false);
   const [fne, setFne] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchValue, setSearchValue] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const vendorsPerPage = 4; // Reduced items per page for better performance
 
+  // Fetch vendors and manufacturers when component mounts or when resetRecipients changes
   useEffect(() => {
-    // Fetch initial vendors and manufacturer options
-    agent.MassMailer.Vendors.vendorList('All', false, false).then(
-      (response) => {
-        setVendorsToSelect(response);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [vendorsResponse, manufacturersResponse] = await Promise.all([
+          agent.MassMailer.Vendors.vendorList('All', false, false),
+          agent.MassMailer.Manufacturers.manufacturerList(),
+        ]);
+
+        setVendorsToSelect(vendorsResponse);
+
+        const options: MfgOption[] = manufacturersResponse.map((mfg: string) => ({
+          key: mfg,
+          value: mfg,
+          text: mfg,
+        }));
+        setMfgOptions([{ key: 'All', value: 'All', text: 'All' }, ...options]);
+
+        // Reset filters and search input after options are set
+        setMfg('All');
+        setAnc(false);
+        setFne(false);
+        setSearchValue('');
+        setCurrentPage(1);
+
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load vendors. Please try again later.');
+        setLoading(false);
       }
-    );
+    };
 
-    agent.MassMailer.Manufacturers.manufacturerList().then((response) => {
-      const options = response.map((mfg: string) => ({
-        key: mfg,
-        value: mfg,
-        text: mfg,
-      }));
-      setMfgOptions([{ key: 'All', value: 'All', text: 'All' }, ...options]);
-      setLoading(false);
-    });
-  }, []);
+    fetchData();
+  }, [resetRecipients]); // Dependency on resetRecipients
 
-  const handleMfgChange = (event: SelectChangeEvent<string>) => {
+  const handleMfgChange = async (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
     setCurrentPage(1);
     setMfg(value);
-    agent.MassMailer.Vendors.vendorList(value, anc, fne).then((response) => {
+    setLoading(true);
+    try {
+      const response = await agent.MassMailer.Vendors.vendorList(value, anc, fne);
       setVendorsToSelect(response);
-    });
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to fetch vendors. Please try again.');
+      setLoading(false);
+    }
   };
 
-  const handleAncChange = (
+  const handleAncChange = async (
     event: ChangeEvent<HTMLInputElement>,
     checked: boolean
   ) => {
     setAnc(checked);
-    agent.MassMailer.Vendors.vendorList(mfg, checked, fne).then((response) => {
+    setCurrentPage(1);
+    setLoading(true);
+    try {
+      const response = await agent.MassMailer.Vendors.vendorList(mfg, checked, fne);
       setVendorsToSelect(response);
-    });
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to fetch vendors. Please try again.');
+      setLoading(false);
+    }
   };
 
-  const handleFneChange = (
+  const handleFneChange = async (
     event: ChangeEvent<HTMLInputElement>,
     checked: boolean
   ) => {
     setFne(checked);
-    agent.MassMailer.Vendors.vendorList(mfg, anc, checked).then((response) => {
+    setCurrentPage(1);
+    setLoading(true);
+    try {
+      const response = await agent.MassMailer.Vendors.vendorList(mfg, anc, checked);
       setVendorsToSelect(response);
-    });
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to fetch vendors. Please try again.');
+      setLoading(false);
+    }
   };
 
-  const handleSelectPage = (event: any, value: number) => {
+  const handleSelectPage = (event: React.ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value);
   };
 
   const handleSelectItem = (vendorId: number) => {
-    const index = vendorsToSelect.findIndex((vendor) => vendor.id === vendorId);
-    setSelectedVendors([...selectedVendors, vendorsToSelect[index]]);
-    vendorsToSelect.splice(index, 1);
+    const vendor = vendorsToSelect.find((v) => v.id === vendorId);
+    if (vendor && selectedVendors.length < 25) {
+      setSelectedVendors([...selectedVendors, vendor]);
+      setVendorsToSelect(vendorsToSelect.filter((v) => v.id !== vendorId));
+    } else if (selectedVendors.length >= 25) {
+      alert('The number of recipients exceeds 25. Please select less than 25 recipients!');
+    }
   };
 
   const handleUnselectVendor = (vendorId: number) => {
-    const unselectedItem = selectedVendors.find(
-      (vendor) => vendor.id === vendorId
-    );
-    if (unselectedItem !== undefined) {
+    const unselectedItem = selectedVendors.find((vendor) => vendor.id === vendorId);
+    if (unselectedItem) {
       setVendorsToSelect([unselectedItem, ...vendorsToSelect]);
-    }
-    setSelectedVendors(
-      selectedVendors.filter((vendor) => vendor.id !== vendorId)
-    );
-  };
-
-  const getSearchValue = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setCurrentPage(1);
-    setSearchValue(event.target.value);
-  };
-
-  const handleSearch = (): IMassMailerVendor[] => {
-    if (searchValue !== '') {
-      return vendorsToSelect.filter((vendor) => {
-        const name = (vendor.company + ' ' + vendor.contact).toLowerCase();
-        const email = vendor.email.toLowerCase();
-        return (
-          name.includes(searchValue.toLowerCase()) ||
-          email.includes(searchValue.toLowerCase())
-        );
-      });
-    } else {
-      return vendorsToSelect;
+      setSelectedVendors(selectedVendors.filter((vendor) => vendor.id !== vendorId));
     }
   };
 
-  const handleSelectAll = () => {
-    if (searchValue === '' && vendorsToSelect.length <= 25) {
-      setSelectedVendors([...selectedVendors, ...vendorsToSelect]);
-      setVendorsToSelect([]);
-    } else if (handleSearch().length <= 25) {
-      const selected = [...selectedVendors, ...handleSearch()];
-      setSelectedVendors(selected);
-      let toSelect = vendorsToSelect;
-      selected.forEach((s) => {
-        toSelect = toSelect.filter((v) => v.id !== s.id);
-      });
-      setVendorsToSelect(toSelect);
-    } else {
-      alert(
-        'The number of recipients exceeds 25. Please try to send to less than 25 recipients!'
-      );
-    }
-  };
+  // Debounce the search input to optimize performance
+  const debouncedSetSearchValue = useMemo(
+    () =>
+      debounce((value: string) => {
+        setCurrentPage(1);
+        setSearchValue(value);
+      }, 300),
+    []
+  );
 
-  const handleClearAll = () => {
-    setVendorsToSelect([...selectedVendors, ...vendorsToSelect]);
-    setSelectedVendors([]);
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    debouncedSetSearchValue(event.target.value);
   };
 
   useEffect(() => {
-    setVendorListSelectedPage(currentPage);
-  }, [currentPage]);
+    return () => {
+      debouncedSetSearchValue.cancel();
+    };
+  }, [debouncedSetSearchValue]);
+
+  const filteredVendors = vendorsToSelect.filter((vendor) => {
+    const searchLower = searchValue.toLowerCase();
+    const name = `${vendor.company} ${vendor.contact}`.toLowerCase();
+    const email = vendor.email.toLowerCase();
+    return name.includes(searchLower) || email.includes(searchLower);
+  });
+
+  const handleSelectAll = () => {
+    const vendorsToAdd = filteredVendors.slice(0, 25 - selectedVendors.length);
+    if (vendorsToAdd.length + selectedVendors.length > 25) {
+      alert('The number of recipients exceeds 25. Please select less than 25 recipients!');
+      return;
+    }
+    setSelectedVendors([...selectedVendors, ...vendorsToAdd]);
+    setVendorsToSelect(vendorsToSelect.filter((v) => !vendorsToAdd.includes(v)));
+  };
+
+  const handleClearAll = () => {
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
+
+  const confirmClearAll = () => {
+    setVendorsToSelect([...selectedVendors, ...vendorsToSelect]);
+    setSelectedVendors([]);
+    setDialogOpen(false);
+  };
 
   return (
-    <Box className="email-recipient-container">
-      <Box sx={{ paddingBottom: 2 }}>
-        <Typography variant="h6">
-          Select Who Should Receive This Mailer
-        </Typography>
-      </Box>
-      <Box>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
+    <Box className="email-recipient-container" sx={{ width: '100%' }}>
+      <Typography variant="h5" gutterBottom>
+        Recipients
+      </Typography>
+
+      {/* Filters Section */}
+      <Paper elevation={3} sx={{ padding: 2, marginBottom: 3 }}>
+        <Grid container spacing={2} alignItems="center">
+          {/* Manufacturer Filter */}
+          <Grid item xs={12} md={3}>
             <FormControl fullWidth>
-              <InputLabel sx={{ textDecoration: 'none' }}>
-                List by Mfg
-              </InputLabel>
-              {loading ? (
-                <Select id="massmailer-mfg" value="" disabled>
-                  <MenuItem value="" disabled>
-                    Loading...
+              <InputLabel id="mfg-select-label">Manufacturer</InputLabel>
+              <Select
+                labelId="mfg-select-label"
+                id="mfg-select"
+                value={mfg}
+                label="Manufacturer"
+                onChange={handleMfgChange}
+              >
+                {mfgOptions.map((option) => (
+                  <MenuItem key={option.key} value={option.value}>
+                    {option.text}
                   </MenuItem>
-                </Select>
-              ) : (
-                <Select
-                  id="massmailer-mfg"
-                  value={mfg}
-                  onChange={handleMfgChange}
-                >
-                  {mfgOptions.map((option) => (
-                    <MenuItem key={option.key} value={option.value}>
-                      {option.text}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
+                ))}
+              </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={2}>
-            <Box>
-              <FormControlLabel
-                control={<Checkbox checked={anc} onChange={handleAncChange} />}
-                label="Ancillary"
-              />
-              <FormControlLabel
-                control={<Checkbox checked={fne} onChange={handleFneChange} />}
-                label="FNE"
-              />
-            </Box>
+
+          {/* Ancillary & FNE Filters */}
+          <Grid item xs={12} md={3}>
+            <FormControlLabel
+              control={<Checkbox checked={anc} onChange={handleAncChange} color="primary" />}
+              label="Ancillary"
+            />
+            <FormControlLabel
+              control={<Checkbox checked={fne} onChange={handleFneChange} color="primary" />}
+              label="FNE"
+            />
           </Grid>
-          <Grid item xs={6}>
-            <Container>
-              <TextField
-                fullWidth
-                placeholder="Search..."
-                value={searchValue}
-                onChange={getSearchValue}
-              />
-            </Container>
+
+          {/* Search Bar */}
+          <Grid item xs={12} md={6}>
+            <TextField
+              label="Search Vendors"
+              variant="outlined"
+              fullWidth
+              value={searchValue}
+              onChange={handleSearchChange}
+            />
           </Grid>
         </Grid>
-      </Box>
-      <Box sx={{ paddingY: 2 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <List sx={{ maxHeight: 300, overflow: 'auto' }}>
-              {handleSearch().map((vendor, index) => {
-                if (
-                  (vendorListSelectedPage - 1) * 100 <= index &&
-                  index < vendorListSelectedPage * 100
-                ) {
-                  return (
-                    <VendorListItem
+      </Paper>
+
+      {/* Vendors List and Selected Vendors */}
+      <Grid container spacing={2}>
+        {/* Available Vendors */}
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{ padding: 2, height: '500px', overflowY: 'auto' }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Typography variant="h6">Available Vendors</Typography>
+              <Tooltip title="Select All Filtered Vendors">
+                <span>
+                  <IconButton
+                    color="primary"
+                    onClick={handleSelectAll}
+                    disabled={selectedVendors.length >= 25 || filteredVendors.length === 0}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Box>
+            {loading ? (
+              <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                <CircularProgress />
+              </Box>
+            ) : error ? (
+              <Typography color="error">{error}</Typography>
+            ) : filteredVendors.length === 0 ? (
+              <Typography>No vendors found.</Typography>
+            ) : (
+              <List>
+                {filteredVendors
+                  .slice((currentPage - 1) * vendorsPerPage, currentPage * vendorsPerPage)
+                  .map((vendor) => (
+                    <ListItem
                       key={vendor.id}
-                      keyValue={vendor.id}
-                      vendorId={vendor.id}
-                      name={`${vendor.company} ( ${vendor.contact} )`}
-                      isMainVendor={vendor.mainVendor}
-                      handleSelect={handleSelectItem}
-                    />
-                  );
-                }
-                return null;
-              })}
-            </List>
-            <Box
-              sx={{ display: 'flex', justifyContent: 'center', paddingTop: 2 }}
-            >
-              <Pagination
-                showFirstButton={true}
-                showLastButton={true}
-                count={Math.ceil(vendorsToSelect.length / 100)}
-                page={currentPage}
-                onChange={handleSelectPage}
-                renderItem={(item) => (
-                  <PaginationItem component="div" {...item} />
-                )}
-              />
+                      secondaryAction={
+                        <Tooltip title="Select Vendor">
+                          <span>
+                            <IconButton
+                              edge="end"
+                              color="primary"
+                              onClick={() => handleSelectItem(vendor.id)}
+                              disabled={selectedVendors.length >= 25}
+                            >
+                              <AddIcon />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
+                      }
+                    >
+                      <ListItemAvatar>
+                        <Avatar>{vendor.company.charAt(0)}</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={`${vendor.company} (${vendor.contact})`}
+                        secondary={vendor.email}
+                      />
+                    </ListItem>
+                  ))}
+              </List>
+            )}
+
+            {/* Pagination */}
+            {filteredVendors.length > vendorsPerPage && (
+              <Box display="flex" justifyContent="center" mt={2}>
+                <Pagination
+                  count={Math.ceil(filteredVendors.length / vendorsPerPage)}
+                  page={currentPage}
+                  onChange={handleSelectPage}
+                  color="primary"
+                />
+              </Box>
+            )}
+          </Paper>
+        </Grid>
+
+        {/* Selected Vendors */}
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{ padding: 2, height: '500px', overflowY: 'auto' }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Typography variant="h6">Selected Vendors</Typography>
+              <Tooltip title="Clear All Selected Vendors">
+                <span>
+                  <IconButton
+                    color="error"
+                    onClick={handleClearAll}
+                    disabled={selectedVendors.length === 0}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
             </Box>
-          </Grid>
-          <Grid item xs={6} sx={{ maxHeight: 314, overflow: 'auto' }}>
-            {selectedVendors.map((vendor) => (
-              <SelectedVendor
-                key={vendor.id}
-                vendorName={`${vendor.company} (${vendor.contact})`}
-                vendorId={vendor.id}
-                unselect={handleUnselectVendor}
-              />
-            ))}
-          </Grid>
+            {selectedVendors.length === 0 ? (
+              <Typography>No vendors selected.</Typography>
+            ) : (
+              <List>
+                {selectedVendors.map((vendor) => (
+                  <ListItem
+                    key={vendor.id}
+                    secondaryAction={
+                      <Tooltip title="Unselect Vendor">
+                        <IconButton
+                          edge="end"
+                          color="error"
+                          onClick={() => handleUnselectVendor(vendor.id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
+                    }
+                  >
+                    <ListItemAvatar>
+                      <Avatar>{vendor.company.charAt(0)}</Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={`${vendor.company} (${vendor.contact})`}
+                      secondary={vendor.email}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            )}
+          </Paper>
         </Grid>
-      </Box>
-      <Box sx={{ paddingTop: 2 }}>
-        <Grid container spacing={2} justifyContent="center">
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSelectAll}
-            >
-              Select All Vendors
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleClearAll}
-            >
-              Clear All Selected Vendors
-            </Button>
-          </Grid>
-        </Grid>
-      </Box>
+      </Grid>
+
+      {/* Confirmation Dialog for Clearing All */}
+      <Dialog
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        aria-labelledby="confirm-clear-all-title"
+        aria-describedby="confirm-clear-all-description"
+      >
+        <DialogTitle id="confirm-clear-all-title">Confirm Clear All</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="confirm-clear-all-description">
+            Are you sure you want to clear all selected vendors? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmClearAll} color="error" autoFocus>
+            Clear All
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
