@@ -1,5 +1,5 @@
 // React and Hooks
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Components
 import EmailProperties from './EmailProperties';
@@ -18,7 +18,6 @@ import agent from '../../app/api/agent';
 
 // State Management
 import { observer } from 'mobx-react-lite';
-import AppState from '../../stores/app';
 
 // Utilities
 import { trim } from 'lodash';
@@ -26,55 +25,87 @@ import { trim } from 'lodash';
 // MUI Components
 import {
   Box,
-  Button,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
+  ClickAwayListener,
+  Grid,
+  Fab,
   CircularProgress,
 } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 
 const MassMailer: React.FC = () => {
+  // Form State Variables
   const [emailBody, setEmailBody] = useState<string>('');
   const [emailSubject, setEmailSubject] = useState<string>('');
-  const [selectedPartItems, setSelectedPartItems] = useState<
-    IMassMailerPartItem[]
-  >([]);
+  const [selectedPartItems, setSelectedPartItems] = useState<IMassMailerPartItem[]>([]);
   const [recipients, setRecipients] = useState<IMassMailerVendor[]>([]);
-  const [openConfirmation, setOpenConfirmation] = useState(false);
   const [attachFiles, setAttachFiles] = useState<string[]>([]);
   const [CC, setCC] = useState<IMassMailerUser[]>([]);
   const [allUsers, setAllUsers] = useState<IMassMailerUser[]>([]);
-  const { pageLoading, setPageLoading } = useContext(AppState);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('None');
+
+  // UI State Variables
+  const [buttonState, setButtonState] = useState<'default' | 'confirm' | 'loading' | 'success' | 'error'>('default');
+
+  // New State Variable to Reset Recipients
+  const [resetRecipients, setResetRecipients] = useState<boolean>(false);
 
   useEffect(() => {
+    // Fetch all users on component mount
     agent.MassMailer.Users.getAll().then(setAllUsers);
+
+    // Clear any existing file uploads for the current user
     const username = localStorage.getItem('username') ?? '';
     agent.MassMailer.FileUpload.clear(username);
   }, []);
 
-  const handleSendEmailClicked = () => {
-    if (!trim(emailBody)) {
-      alert('Please fill in email message!');
-    } else if (!trim(emailSubject)) {
-      alert('Please fill in email subject!');
-    } else if (recipients.length === 0) {
-      alert('Please select recipients for your email!');
-    } else if (recipients.length > 25) {
-      alert('Please select less than 25 recipients!');
-    } else if (selectedPartItems.length === 0) {
-      alert('Please select at least one part item to send email!');
-    } else {
-      setOpenConfirmation(true);
+  /**
+   * Handles the primary button click.
+   * - If buttonState is 'default', validates the form and enters confirmation mode.
+   * - If buttonState is 'confirm', proceeds to send the email.
+   */
+  const handleButtonClick = () => {
+    if (buttonState === 'default') {
+      // Validate form fields
+      if (!trim(emailBody)) {
+        alert('Please fill in the email message!');
+        return;
+      }
+      if (!trim(emailSubject)) {
+        alert('Please fill in the email subject!');
+        return;
+      }
+      if (recipients.length === 0) {
+        alert('Please select recipients for your email!');
+        return;
+      }
+      if (recipients.length > 25) {
+        alert('Please select less than 25 recipients!');
+        return;
+      }
+      if (selectedPartItems.length === 0) {
+        alert('Please select at least one part item to send email!');
+        return;
+      }
+
+      // Enter confirmation mode
+      setButtonState('confirm');
+    } else if (buttonState === 'confirm') {
+      // Proceed to send the email
+      handleConfirm();
     }
   };
 
+  /**
+   * Sends the email using the API and handles success/error responses.
+   */
   const handleConfirm = () => {
-    setPageLoading(true);
+    setButtonState('loading');
 
-    let finalBody = '<p>' + emailBody + '</p>';
+    // Prepare the email body with HTML formatting
+    let finalBody = `<p>${emailBody}</p>`;
     finalBody = finalBody
       .replace(/(?:\r\n|\r|\n)/g, '<br/>')
       .replace(/ /g, '&nbsp;');
@@ -83,6 +114,7 @@ const MassMailer: React.FC = () => {
       '<tr><th>Airway Part Number</th><th>Mfg Part Number</th><th>Part Description</th><th>Qty</th><th>Manufacturer</th><th>Rev</th></tr>';
     finalBody += '%%PARTTABLE%%</table>';
 
+    // Construct the payload object
     const obj = {
       Subject: emailSubject,
       Body: finalBody,
@@ -98,98 +130,140 @@ const MassMailer: React.FC = () => {
       items: selectedPartItems,
     };
 
-    agent.MassMailer.EmailOuts.sendEmail(obj).then(() => {
-      window.location.reload();
-    });
-  };
+    // Send the email via API
+    agent.MassMailer.EmailOuts.sendEmail(obj)
+      .then(() => {
+        // On success, update button state and reset form
+        setButtonState('success');
+        resetForm();
 
-  const getConfirmationContent = (): string => {
-    let confirmation = 'Are you sending email to: ';
-    recipients.forEach((r, index) => {
-      confirmation += r.email;
-      if (index < recipients.length - 1) confirmation += '; ';
-      else confirmation += '. ';
-    });
-    if (CC.length > 0) {
-      confirmation += 'And CC to: ';
-      CC.forEach((c, index) => {
-        confirmation += c.email;
-        if (index < CC.length - 1) confirmation += '; ';
-        else confirmation += '.';
+        // Revert button to default after 3 seconds
+        setTimeout(() => {
+          setButtonState('default');
+        }, 3000);
+      })
+      .catch((error) => {
+        // On failure, update button state
+        console.error(error);
+        setButtonState('error');
+
+        // Revert button to default after 3 seconds
+        setTimeout(() => {
+          setButtonState('default');
+        }, 3000);
       });
-    }
-    return confirmation;
   };
 
-  if (pageLoading)
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
-        <CircularProgress size={80} />
-      </Box>
-    );
+  /**
+   * Resets all form fields to their initial states, including the email template.
+   */
+  const resetForm = () => {
+    setEmailBody('');
+    setEmailSubject('');
+    setSelectedPartItems([]);
+    setRecipients([]);
+    setAttachFiles([]);
+    setCC([]);
+    setSelectedTemplate('None'); // Reset the template to 'None'
+
+    // Trigger Reset of Recipients in EmailRecipient Component
+    setResetRecipients((prev) => !prev);
+  };
+
+  /**
+   * Resets the button state to default when clicking away during confirmation.
+   */
+  const handleClickAway = () => {
+    if (buttonState === 'confirm') {
+      setButtonState('default');
+    }
+  };
 
   return (
     <div>
+      {/* Page Header */}
       <PageHeader
         pageName="Mass Mailer"
         pageHref={ROUTE_PATHS.PURCHASING.MASS_MAILER}
       />
-      <Container maxWidth="lg" sx={{ padding: '40px 100px' }}>
-        <EmailProperties
-          emailBody={emailBody}
-          setEmailBody={setEmailBody}
-          emailSubject={emailSubject}
-          setEmailSubject={setEmailSubject}
-          attachFiles={attachFiles}
-          setAttachFiles={setAttachFiles}
-          CC={CC}
-          setCC={setCC}
-          allUsers={allUsers}
-        />
-        <PartTable
-          selectedpartItems={selectedPartItems}
-          setSelectedPartItems={setSelectedPartItems}
-        />
-        <EmailRecipient
-          selectedVendors={recipients}
-          setSelectedVendors={setRecipients}
-        />
-        <Container sx={{ textAlign: 'center', marginTop: 4 }}>
-          <Button
-            variant="contained"
-            color="error"
-            size="large"
-            onClick={handleSendEmailClicked}
+
+      {/* Main Content */}
+      <Box sx={{ padding: '20px' }}>
+        <Grid container spacing={3}>
+          {/* Left Column: Email Properties and Part Table */}
+          <Grid item xs={12} md={6}>
+            <EmailProperties
+              emailBody={emailBody}
+              setEmailBody={setEmailBody}
+              emailSubject={emailSubject}
+              setEmailSubject={setEmailSubject}
+              attachFiles={attachFiles}
+              setAttachFiles={setAttachFiles}
+              CC={CC}
+              setCC={setCC}
+              allUsers={allUsers}
+              selectedTemplate={selectedTemplate}
+              setSelectedTemplate={setSelectedTemplate}
+            />
+            <Box sx={{ marginTop: 3 }}>
+              <PartTable
+                selectedpartItems={selectedPartItems}
+                setSelectedPartItems={setSelectedPartItems}
+              />
+            </Box>
+          </Grid>
+
+          {/* Right Column: Email Recipient */}
+          <Grid item xs={12} md={6}>
+            <EmailRecipient
+              selectedVendors={recipients}
+              setSelectedVendors={setRecipients}
+              resetRecipients={resetRecipients}
+            />
+          </Grid>
+        </Grid>
+
+        {/* Send Email Button with ClickAwayListener */}
+        <ClickAwayListener onClickAway={handleClickAway}>
+          {/* Floating Action Button */}
+          <Fab
+            onClick={handleButtonClick}
+            sx={{
+              position: 'fixed',
+              color: 'white',
+              bottom: 16,
+              right: 16,
+              zIndex: 1000, // Ensure the button floats above other content
+              backgroundColor:
+                buttonState === 'success'
+                  ? 'success.main'
+                  : buttonState === 'error'
+                    ? 'error.main'
+                    : 'primary.main',
+              '&:hover': {
+                backgroundColor:
+                  buttonState === 'success'
+                    ? 'success.dark'
+                    : buttonState === 'error'
+                      ? 'error.dark'
+                      : 'primary.dark',
+              },
+            }}
           >
-            Send Email
-          </Button>
-          <Dialog
-            open={openConfirmation}
-            onClose={() => setOpenConfirmation(false)}
-          >
-            <DialogTitle>Confirm Email</DialogTitle>
-            <DialogContent>
-              <DialogContentText>{getConfirmationContent()}</DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button
-                onClick={() => setOpenConfirmation(false)}
-                color="primary"
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleConfirm} color="primary">
-                Confirm
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Container>
-      </Container>
+            {buttonState === 'loading' ? (
+              <CircularProgress color="inherit" />
+            ) : buttonState === 'confirm' ? (
+              <ThumbUpAltIcon />
+            ) : buttonState === 'success' ? (
+              <CheckIcon />
+            ) : buttonState === 'error' ? (
+              <CloseIcon />
+            ) : (
+              <SendIcon />
+            )}
+          </Fab>
+        </ClickAwayListener>
+      </Box>
     </div>
   );
 };
