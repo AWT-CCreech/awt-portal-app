@@ -1,5 +1,3 @@
-// src/components/LoadingIconButton.tsx
-
 import React from 'react';
 import {
     Button,
@@ -47,8 +45,21 @@ const LoadingIconButton: React.FC<LoadingIconButtonProps> = ({
     variant = 'contained',
     type = 'button',
     disabled = false,
+    size = 'medium',
     ...rest
 }) => {
+    // Define icon and spinner sizes based on the button size
+    const iconSize = React.useMemo(() => {
+        switch (size) {
+            case 'small':
+                return 18;
+            case 'large':
+                return 24;
+            default:
+                return 20;
+        }
+    }, [size]);
+
     return (
         <Button
             variant={variant}
@@ -58,43 +69,49 @@ const LoadingIconButton: React.FC<LoadingIconButtonProps> = ({
             aria-busy={loading} // Indicates loading state for accessibility
             aria-label={text} // Provides an accessible label
             type={type} // Supports 'button', 'submit', 'reset'
+            size={size} // Utilize MUI's size prop
             sx={{
                 position: 'relative',
-                minWidth: '150px',
-                height: '56px',
                 display: 'flex',
                 alignItems: 'center',
-                paddingLeft: '40px', // Space reserved for icon/spinner
+                paddingLeft: Icon || loading ? `${iconSize + 16}px` : undefined, // Adjust padding if icon/spinner is present
                 paddingRight: '12px',
+                minWidth: 'auto', // Remove fixed minWidth
+                // Optional: Add responsive styles if needed
                 ...sx, // Allow custom styles via the sx prop
             }}
             {...rest} // Forward any additional props to the Button component
         >
             {/* Positioned Icon or Spinner */}
-            <Box
-                sx={{
-                    position: 'absolute',
-                    left: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '24px',
-                    height: '24px',
-                }}
-            >
-                {/* Display the icon if not loading */}
-                {!loading && Icon && <Icon />}
+            {(Icon || loading) && (
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        left: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: `${iconSize}px`,
+                        height: `${iconSize}px`,
+                    }}
+                >
+                    {/* Display the icon if not loading */}
+                    {!loading && Icon && <Icon fontSize="inherit" />}
 
-                {/* Display the loading spinner when loading */}
-                {loading && (
-                    <CircularProgress
-                        size={20}
-                        sx={{
-                            color: variant === 'outlined' ? 'primary.main' : 'white',
-                        }}
-                    />
-                )}
-            </Box>
+                    {/* Display the loading spinner when loading */}
+                    {loading && (
+                        <CircularProgress
+                            size={iconSize}
+                            sx={{
+                                color:
+                                    variant === 'outlined'
+                                        ? 'primary.main'
+                                        : 'white',
+                            }}
+                        />
+                    )}
+                </Box>
+            )}
 
             {/* Centered Button Text */}
             <Box
