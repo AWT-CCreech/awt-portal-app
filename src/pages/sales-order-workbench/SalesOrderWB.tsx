@@ -1,17 +1,19 @@
 import React, { useState, useContext } from 'react';
-import { Container, Typography, Snackbar, Alert } from '@mui/material';
+import { Container, Snackbar, Alert } from '@mui/material';
 import PageHeader from '../../components/PageHeader';
 import SearchBox from './SearchBox';
 import SearchResults from './SearchResults';
 import Modules from '../../app/api/agent';
 import { ROUTE_PATHS } from '../../routes';
+import UserInfoContext from '../../stores/userInfo';
+import { EventLevelRowData } from '../../models/SOWorkbench/EventLevelRowData';
+import { DetailLevelRowData } from '../../models/SOWorkbench/DetailLevelRowData';
 import { SalesOrderUpdateDto } from '../../models/SOWorkbench/SalesOrderUpdateDto';
 import { EquipmentRequestUpdateDto } from '../../models/SOWorkbench/EquipmentRequestUpdateDto';
-import UserInfoContext from '../../stores/userInfo';
 
 const SalesOrderWB: React.FC = () => {
-    const [eventLevelData, setEventLevelData] = useState<any[]>([]);
-    const [detailLevelData, setDetailLevelData] = useState<any[]>([]);
+    const [eventLevelData, setEventLevelData] = useState<EventLevelRowData[]>([]);
+    const [detailLevelData, setDetailLevelData] = useState<DetailLevelRowData[]>([]);
     const [snackbar, setSnackbar] = useState<{
         open: boolean;
         message: string;
@@ -31,12 +33,14 @@ const SalesOrderWB: React.FC = () => {
                 billToCompany,
                 eventId: eventId !== '' ? eventId : undefined,
             };
-            const eventLevelResponse = await Modules.SalesOrderWorkbench.getEventLevelData(
+            const eventLevelResponse: EventLevelRowData[] = await Modules.SalesOrderWorkbench.getEventLevelData(
                 params
             );
-            const detailLevelResponse = await Modules.SalesOrderWorkbench.getDetailLevelData(
+            const detailLevelResponse: DetailLevelRowData[] = await Modules.SalesOrderWorkbench.getDetailLevelData(
                 params
             );
+            console.log('Event Level Response:', eventLevelResponse);
+            console.log('Detail Level Response:', detailLevelResponse);
             setEventLevelData(eventLevelResponse);
             setDetailLevelData(detailLevelResponse);
         } catch (error) {
@@ -51,107 +55,110 @@ const SalesOrderWB: React.FC = () => {
 
     const handleUpdate = async (updateData: any) => {
         try {
-            const { id, field, value, dropShipment } = updateData;
+            const { type, id, field, value, dropShipment } = updateData;
 
             // Prepare email details
             const subject = 'Sales Order Updated';
             const htmlBody = 'The sales order has been updated successfully.';
 
-            // Check if the update is for EventLevel
-            const eventRow = eventLevelData.find(
-                (row) => row.salesOrder.saleId === id
-            );
-            if (eventRow) {
-                // Construct SalesOrderUpdateDto
-                const updateDto: SalesOrderUpdateDto = {
-                    SaleId: eventRow.salesOrder.saleId,
-                    RWSalesOrderNum:
-                        field === 'RWSalesOrderNum'
-                            ? value
-                            : eventRow.salesOrder.RWSalesOrderNum,
-                    DropShipment:
-                        field === 'DropShipment'
-                            ? dropShipment
-                            : eventRow.salesOrder.DropShipment,
-                    EventId: eventRow.salesOrder.EventId,
-                    QuoteId: eventRow.salesOrder.QuoteId,
-                    Username: userInfo?.username || '',
-                    Password: userInfo?.password || '',
-                    Subject: subject,
-                    HtmlBody: htmlBody,
-                };
-
-                // Call API to update sales order
-                await Modules.SalesOrderWorkbench.updateSalesOrder(updateDto);
-
-                // Update local state
-                setEventLevelData((prevData) =>
-                    prevData.map((row) =>
-                        row.salesOrder.saleId === id
-                            ? {
-                                ...row,
-                                salesOrder: {
-                                    ...row.salesOrder,
-                                    [field]: value,
-                                    DropShipment: dropShipment,
-                                },
-                            }
-                            : row
-                    )
+            if (type === 'event') {
+                // Find the event row by saleId
+                const eventRow = eventLevelData.find(
+                    (row) => row.saleId === id
                 );
+                if (eventRow) {
+                    // Construct SalesOrderUpdateDto
+                    const updateDto: SalesOrderUpdateDto = {
+                        SaleId: eventRow.saleId,
+                        EventId: eventRow.eventId,
+                        QuoteId: eventRow.quoteId,
+                        RWSalesOrderNum:
+                            field === 'RWSalesOrderNum'
+                                ? value
+                                : eventRow.rwsalesOrderNum || '',
+                        DropShipment:
+                            field === 'DropShipment'
+                                ? dropShipment
+                                : eventRow.dropShipment || false,
+                        Username: userInfo?.username || '',
+                        Password: userInfo?.password || '',
+                        Subject: subject,         // Add this line
+                        HtmlBody: htmlBody,       // Add this line
+                    };
 
-                setSnackbar({
-                    open: true,
-                    message: 'Sales Order updated successfully.',
-                    severity: 'success',
-                });
-                return; // Exit after handling EventLevel update
-            }
+                    // Call API to update sales order
+                    await Modules.SalesOrderWorkbench.updateSalesOrder(updateDto);
 
-            // Check if the update is for DetailLevel
-            const detailRow = detailLevelData.find(
-                (row) => row.salesOrder.id === id
-            );
-            if (detailRow) {
-                // Construct EquipmentRequestUpdateDto
-                const updateDto: EquipmentRequestUpdateDto = {
-                    Id: detailRow.salesOrderDetail.id,
-                    RWSalesOrderNum:
-                        field === 'RWSalesOrderNum'
-                            ? value
-                            : detailRow.salesOrder.RWSalesOrderNum,
-                    DropShipment: dropShipment !== undefined ? dropShipment : detailRow.salesOrder.DropShipment,
-                    Username: userInfo?.username || '',
-                    Password: userInfo?.password || '',
-                    Subject: subject,
-                    HtmlBody: htmlBody,
-                };
+                    // Update local state
+                    setEventLevelData((prevData) =>
+                        prevData.map((row) =>
+                            row.saleId === id
+                                ? {
+                                    ...row,
+                                    rwsalesOrderNum:
+                                        field === 'RWSalesOrderNum' ? value : row.rwsalesOrderNum,
+                                    dropShipment:
+                                        field === 'DropShipment' ? dropShipment : row.dropShipment,
+                                }
+                                : row
+                        )
+                    );
 
-                // Call API to update equipment request
-                await Modules.SalesOrderWorkbench.updateEquipmentRequest(updateDto);
-
-                // Update local state
-                setDetailLevelData((prevData) =>
-                    prevData.map((row) =>
-                        row.salesOrderDetail.id === id
-                            ? {
-                                ...row,
-                                salesOrder: {
-                                    ...row.salesOrder,
-                                    [field]: value,
-                                    DropShipment: dropShipment,
-                                },
-                            }
-                            : row
-                    )
+                    setSnackbar({
+                        open: true,
+                        message: 'Sales Order updated successfully.',
+                        severity: 'success',
+                    });
+                    return; // Exit after handling EventLevel update
+                }
+            } else if (type === 'detail') {
+                // Find the detail row by id
+                const detailRow = detailLevelData.find(
+                    (row) => row.id === id
                 );
+                if (detailRow) {
+                    // Construct EquipmentRequestUpdateDto
+                    const updateDto: EquipmentRequestUpdateDto = {
+                        Id: detailRow.id,
+                        RWSalesOrderNum:
+                            field === 'RWSalesOrderNum'
+                                ? value
+                                : detailRow.rwsalesOrderNum || '',
+                        DropShipment:
+                            field === 'DropShipment'
+                                ? dropShipment
+                                : detailRow.dropShipment || false,
+                        Username: userInfo?.username || '',
+                        Password: userInfo?.password || '',
+                        Subject: subject,         // Add this line
+                        HtmlBody: htmlBody,       // Add this line
+                    };
 
-                setSnackbar({
-                    open: true,
-                    message: 'Equipment Request updated successfully.',
-                    severity: 'success',
-                });
-                return; // Exit after handling DetailLevel update
+                    // Call API to update equipment request
+                    await Modules.SalesOrderWorkbench.updateEquipmentRequest(updateDto);
+
+                    // Update local state
+                    setDetailLevelData((prevData) =>
+                        prevData.map((row) =>
+                            row.id === id
+                                ? {
+                                    ...row,
+                                    rwsalesOrderNum:
+                                        field === 'RWSalesOrderNum' ? value : row.rwsalesOrderNum,
+                                    dropShipment:
+                                        field === 'DropShipment' ? dropShipment : row.dropShipment,
+                                }
+                                : row
+                        )
+                    );
+
+                    setSnackbar({
+                        open: true,
+                        message: 'Equipment Request updated successfully.',
+                        severity: 'success',
+                    });
+                    return; // Exit after handling DetailLevel update
+                }
             }
 
             console.warn('Update data not found in either EventLevel or DetailLevel');
@@ -184,7 +191,7 @@ const SalesOrderWB: React.FC = () => {
         <div>
             <PageHeader
                 pageName="Sales Order Workbench"
-                pageHref={ROUTE_PATHS.SALES.SALES_ORDER_WB} // Using the correct route path
+                pageHref={ROUTE_PATHS.SALES.SALES_ORDER_WB}
             />
             <Container
                 maxWidth={false}
