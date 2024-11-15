@@ -61,7 +61,6 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onSearch }) => {
                 <Select
                     value={salesRepId}
                     onChange={(e) => setSalesRepId(e.target.value as number | 'all')}
-                    displayEmpty
                     label="Sales Rep"
                 >
                     <MenuItem value="all">All</MenuItem>
