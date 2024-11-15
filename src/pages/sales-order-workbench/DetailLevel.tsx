@@ -1,19 +1,17 @@
 import React from 'react';
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
 import { TableRow } from '@mui/material';
-import DetailLevelRow from './DetailLevelRow'; // Import the new row component
+import DetailLevelRow from './DetailLevelRow';
+import { DetailLevelRowData } from '../../models/SOWorkbench/DetailLevelRowData';
 
 interface DetailLevelProps {
-    data: any[];
+    data: DetailLevelRowData[];
     onUpdate: (updateData: any) => void;
 }
 
 const DetailLevel: React.FC<DetailLevelProps> = ({ data, onUpdate }) => {
-    // Debugging: Log the received data
-    console.log('DetailLevel Data:', data);
-
     const columns = [
-        'rwsalesOrderNum', // Correct casing to match backend
+        'rwsalesOrderNum',
         'qtySold',
         'unitMeasure',
         'partNum',
@@ -31,23 +29,13 @@ const DetailLevel: React.FC<DetailLevelProps> = ({ data, onUpdate }) => {
         'Part Desc',
         'Unit Price',
         'Sales Rep',
-        'Drop Ship'
+        'Drop Shipment'
     ];
 
-    const renderRow = (row: any) => {
-        const flatRow = {
-            rwsalesOrderNum: row.salesOrder.rwsalesOrderNum || '',
-            qtySold: row.salesOrderDetail.qtySold,
-            unitMeasure: row.salesOrderDetail.unitMeasure,
-            partNum: row.salesOrderDetail.partNum,
-            partDesc: row.salesOrderDetail.partDesc,
-            unitPrice: row.salesOrderDetail.unitPrice,
-            salesRep: row.accountManager.uname || '',
-        };
-
+    const renderRow = (row: DetailLevelRowData) => {
         return (
-            <TableRow key={row.salesOrderDetail.id}>
-                <DetailLevelRow row={flatRow} onUpdate={onUpdate} />
+            <TableRow key={row.id}>
+                <DetailLevelRow row={row} onUpdate={onUpdate} />
             </TableRow>
         );
     };
@@ -60,7 +48,7 @@ const DetailLevel: React.FC<DetailLevelProps> = ({ data, onUpdate }) => {
             func={renderRow}
             headerBackgroundColor="#384959"
             hoverColor="#f0f0f0"
-            tableHeight={"40vh"}
+            tableHeight={'40vh'}
         />
     );
 };
