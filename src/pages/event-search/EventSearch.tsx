@@ -81,17 +81,7 @@ const EventSearch: React.FC = () => {
                     </Grid>
                     <Grid item xs={12}>
                         {searched && eventData.length > 0 ? (
-                            <Box
-                                sx={{
-                                    height: '70vh',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    boxShadow: 3,
-                                    overflow: 'auto',
-                                }}
-                            >
-                                <SearchResults results={eventData} />
-                            </Box>
+                            <SearchResults results={eventData} />
                         ) : searched && !loading ? (
                             <Typography variant="h6" align="center" mt={2}>
                                 No results found.

@@ -159,6 +159,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         func={renderRow}
         headerBackgroundColor="#384959"
         hoverColor="#f5f5f5"
+        tableHeight={"100vh"}
       />
     </Box>
   );

@@ -108,6 +108,7 @@ const SearchResults: React.FC<SearchResultsProps> = memo(
           func={renderRow}
           headerBackgroundColor="#384959"
           hoverColor="#f5f5f5"
+          tableHeight={"100vh"}
         />
       </Box>
     );
