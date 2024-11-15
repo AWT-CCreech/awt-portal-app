@@ -2,10 +2,12 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import EventLevel from './EventLevel';
 import DetailLevel from './DetailLevel';
+import { EventLevelRowData } from '../../models/SOWorkbench/EventLevelRowData';
+import { DetailLevelRowData } from '../../models/SOWorkbench/DetailLevelRowData';
 
 interface SearchResultsProps {
-    eventLevelData: any[];
-    detailLevelData: any[];
+    eventLevelData: EventLevelRowData[];
+    detailLevelData: DetailLevelRowData[];
     onUpdate: (data: any) => void;
 }
 
