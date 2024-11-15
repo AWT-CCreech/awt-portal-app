@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
+  Box,
   Dialog,
   DialogActions,
   DialogContent,
@@ -206,13 +207,19 @@ const UserListPage: React.FC = () => {
     }
   }, [users]);
 
+  // Updated to accept hoverColor and remove idx
   const handleRowRendering = useCallback(
-    (user: User): React.ReactElement => (
+    (user: User, hoverColor: string): React.ReactElement => (
       <TableRow
-        key={user.id}
+        key={user.id} // Use user.id as the unique key
         hover
         onClick={() => handleRowClick(user)}
-        style={{ cursor: 'pointer' }}
+        sx={{
+          cursor: 'pointer',
+          '&:hover': {
+            backgroundColor: hoverColor,
+          },
+        }}
       >
         <TableCell>{user.lname}</TableCell>
         <TableCell>{user.fname}</TableCell>
@@ -251,26 +258,39 @@ const UserListPage: React.FC = () => {
   return (
     <div>
       <PageHeader pageName="User List" pageHref={ROUTE_PATHS.USER_LIST} />
-      <Paper className="padded user-table-paper">
-        <div className="header-container">
-          <Typography variant="h5">AWT User List</Typography>
-          <div>
-            <Tooltip title="Add User">
-              <IconButton
-                color="primary"
-                onClick={handleOpenAddUserModal}
-                className="button-margin-right"
-              >
-                <Add />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Export to Excel">
-              <IconButton color="success" onClick={handleExportExcel}>
-                <GetApp />
-              </IconButton>
-            </Tooltip>
-          </div>
-        </div>
+      <Paper className="padded user-table-paper" sx={{ padding: 2 }}>
+        {/* Header Container */}
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+          alignItems="center"
+          mb={2} // Adds margin-bottom for spacing
+        >
+          <Tooltip title="Add User">
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Add />}
+              onClick={handleOpenAddUserModal}
+              sx={{ mr: 1 }} // Adds right margin between buttons
+            >
+              Add User
+            </Button>
+          </Tooltip>
+          <Tooltip title="Export to Excel">
+            <Button
+              variant="contained"
+              color="success"
+              startIcon={<GetApp />}
+              onClick={handleExportExcel}
+            >
+              Export
+            </Button>
+          </Tooltip>
+        </Box>
+        {/* End of Header Container */}
+
+        {/* Notification Snippets */}
         {error && (
           <Snackbar open autoHideDuration={3000}>
             <Alert severity="error">{error}</Alert>
@@ -281,7 +301,20 @@ const UserListPage: React.FC = () => {
             <Alert severity="success">{success}</Alert>
           </Snackbar>
         )}
-        {loading && <CircularProgress />}
+
+        {/* Loading Indicator */}
+        {loading && (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="200px"
+          >
+            <CircularProgress />
+          </Box>
+        )}
+
+        {/* Scrollable Table */}
         {!loading && (
           <PaginatedSortableTable
             tableData={users}
@@ -297,11 +330,13 @@ const UserListPage: React.FC = () => {
             ]}
             columnNames={columnNames}
             headerBackgroundColor="#384959"
-            hoverColor="#f5f5f5"
+            hoverColor="#f5f5f5" // You can change this to your desired hover color
+            tableHeight={"70vh"} // Set desired table height in pixels or use responsive units like '60vh'
           />
         )}
       </Paper>
 
+      {/* Add/Update User Dialog */}
       <Dialog
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -375,6 +410,7 @@ const UserListPage: React.FC = () => {
         </DialogActions>
       </Dialog>
 
+      {/* Delete Confirmation Dialog */}
       <Dialog
         open={confirmDelete.open}
         onClose={() => setConfirmDelete({ open: false, uid: null })}

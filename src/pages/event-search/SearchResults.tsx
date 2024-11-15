@@ -21,7 +21,7 @@ interface SearchResultsProps {
 const SearchResults: React.FC<SearchResultsProps> = React.memo(
     ({
         results,
-        containerHeight = '100%',
+        containerHeight = '60vh',
     }) => {
         const allColumns = [
             'eventId',
@@ -107,6 +107,7 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
                     func={renderRow}
                     headerBackgroundColor="#384959"
                     hoverColor="#f5f5f5"
+                    tableHeight={"100vh"}
                 />
             </Box>
         );
