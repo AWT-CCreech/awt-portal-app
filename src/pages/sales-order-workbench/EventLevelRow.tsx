@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { TableCell, TextField, Checkbox, Link } from '@mui/material';
 import { formatAmount } from '../../utils/dataManipulation';
+import { EventLevelRowData } from '../../models/SOWorkbench/EventLevelRowData';
 
 interface EventLevelRowProps {
-    row: any;
+    row: EventLevelRowData;
     onUpdate: (updateData: any) => void;
 }
 
@@ -14,9 +15,11 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
     const handleRwsalesOrderNumBlur = () => {
         if (rwsalesOrderNum !== row.rwsalesOrderNum) {
             onUpdate({
-                id: row.eventId,
-                field: 'rwsalesOrderNum',
+                type: 'event',
+                id: row.saleId,
+                field: 'RWSalesOrderNum',
                 value: rwsalesOrderNum,
+                dropShipment, // Pass current dropShipment state
             });
         }
     };
@@ -26,9 +29,11 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
             e.preventDefault();
             if (rwsalesOrderNum !== row.rwsalesOrderNum) {
                 onUpdate({
-                    id: row.eventId,
-                    field: 'rwsalesOrderNum',
+                    type: 'event',
+                    id: row.saleId,
+                    field: 'RWSalesOrderNum',
                     value: rwsalesOrderNum,
+                    dropShipment, // Pass current dropShipment state
                 });
             }
         }
@@ -38,13 +43,15 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
         const newValue = e.target.checked;
         setDropShipment(newValue);
         onUpdate({
-            id: row.eventId,
-            field: 'dropShipment',
+            type: 'event',
+            id: row.saleId,
+            field: 'DropShipment',
             value: newValue,
+            dropShipment: newValue,
         });
     };
 
-    const eventIdClickHandler = () => {
+    const saleIdClickHandler = () => {
         window.open(
             `http://10.0.0.8:81/inet/Quotes/qtViewSalesOrder.asp?SaleID=${row.saleId}&EventID=${row.eventId}&QuoteID=${row.quoteId}&UpdFlag=0`
         );
@@ -55,27 +62,19 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
             <TableCell
                 align="left"
                 style={{
-                    cursor: row.eventId ? 'pointer' : 'default',
+                    cursor: 'pointer',
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
                     overflow: 'hidden',
                 }}
-                onClick={row.eventId ? eventIdClickHandler : undefined}
+                onClick={saleIdClickHandler}
             >
-                {row.eventId ? (
-                    <Link underline="hover" target="_blank" rel="noopener noreferrer">
-                        SO-{row.eventId}-{row.version}
-                    </Link>
-                ) : (
-                    ''
-                )}
+                <Link underline="hover" target="_blank" rel="noopener noreferrer">
+                    SO-{row.eventId}-{row.version}
+                </Link>
             </TableCell>
-            <TableCell align="left">
-                {row.salesRep}
-            </TableCell>
-            <TableCell align="left">
-                {row.billToCompanyName}
-            </TableCell>
+            <TableCell align="left">{row.salesRep}</TableCell>
+            <TableCell align="left">{row.billToCompanyName}</TableCell>
             <TableCell align="left">
                 <TextField
                     size="small"
@@ -85,12 +84,8 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
                     onKeyDown={handleRwsalesOrderNumKeyDown}
                 />
             </TableCell>
-            <TableCell align="left">
-                {formatAmount(row.saleTotal)}
-            </TableCell>
-            <TableCell align="left">
-                {row.saleDate}
-            </TableCell>
+            <TableCell align="left">{formatAmount(row.saleTotal)}</TableCell>
+            <TableCell align="left">{row.saleDate}</TableCell>
             <TableCell align="left">
                 <Checkbox
                     checked={dropShipment}
