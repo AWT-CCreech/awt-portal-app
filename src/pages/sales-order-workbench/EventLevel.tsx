@@ -1,17 +1,18 @@
 import React from 'react';
 import PaginatedSortableTable from '../../components/PaginatedSortableTable';
 import { TableRow } from '@mui/material';
-import EventLevelRow from './EventLevelRow'; // Import the new row component
+import EventLevelRow from './EventLevelRow';
+import { EventLevelRowData } from '../../models/SOWorkbench/EventLevelRowData';
 
 interface EventLevelProps {
-    data: any[];
+    data: EventLevelRowData[];
     onUpdate: (updateData: any) => void;
 }
 
 const EventLevel: React.FC<EventLevelProps> = ({ data, onUpdate }) => {
     const columns = [
-        'eventId',
-        'uName',
+        'saleId',
+        'salesRep',
         'billToCompanyName',
         'rwsalesOrderNum',
         'saleTotal',
@@ -29,23 +30,10 @@ const EventLevel: React.FC<EventLevelProps> = ({ data, onUpdate }) => {
         'Drop Shipment',
     ];
 
-    const renderRow = (row: any) => {
-        const flatRow = {
-            eventId: row.salesOrder.eventId,
-            billToCompanyName: row.salesOrder.billToCompanyName || '',
-            saleTotal: row.salesOrder.saleTotal,
-            rwsalesOrderNum: row.salesOrder.rwsalesOrderNum || '',
-            dropShipment: row.salesOrder.dropShipment || false,
-            saleDate: row.salesOrder.saleDate,
-            salesRep: row.accountManager.uname || '',
-            version: row.salesOrder.version,
-            saleId: row.salesOrder.saleId,
-            quoteId: row.salesOrder.quoteId,
-        };
-
+    const renderRow = (row: EventLevelRowData) => {
         return (
-            <TableRow key={row.salesOrder.eventId}>
-                <EventLevelRow row={flatRow} onUpdate={onUpdate} />
+            <TableRow key={row.saleId}>
+                <EventLevelRow row={row} onUpdate={onUpdate} />
             </TableRow>
         );
     };
@@ -58,7 +46,7 @@ const EventLevel: React.FC<EventLevelProps> = ({ data, onUpdate }) => {
             func={renderRow}
             headerBackgroundColor="#384959"
             hoverColor="#f0f0f0"
-            tableHeight={"40vh"}
+            tableHeight={'40vh'}
         />
     );
 };
