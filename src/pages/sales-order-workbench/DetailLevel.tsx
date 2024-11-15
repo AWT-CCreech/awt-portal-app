@@ -60,6 +60,7 @@ const DetailLevel: React.FC<DetailLevelProps> = ({ data, onUpdate }) => {
             func={renderRow}
             headerBackgroundColor="#384959"
             hoverColor="#f0f0f0"
+            tableHeight={"40vh"}
         />
     );
 };
