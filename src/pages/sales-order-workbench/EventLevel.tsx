@@ -11,18 +11,20 @@ interface EventLevelProps {
 const EventLevel: React.FC<EventLevelProps> = ({ data, onUpdate }) => {
     const columns = [
         'eventId',
+        'uName',
         'billToCompanyName',
-        'saleTotal',
         'rwsalesOrderNum',
+        'saleTotal',
         'saleDate',
         'dropShipment',
     ];
 
     const columnNames = [
         'Sale ID',
+        'Sales Rep',
         'Bill To',
-        'Sales Total',
         'MAS SO#(s)',
+        'Sales Total',
         'Sale Date',
         'Drop Shipment',
     ];
@@ -35,8 +37,10 @@ const EventLevel: React.FC<EventLevelProps> = ({ data, onUpdate }) => {
             rwsalesOrderNum: row.salesOrder.rwsalesOrderNum || '',
             dropShipment: row.salesOrder.dropShipment || false,
             saleDate: row.salesOrder.saleDate,
-            salesRep: row.salesOrder.salesRep || '',
+            salesRep: row.accountManager.uname || '',
             version: row.salesOrder.version,
+            saleId: row.salesOrder.saleId,
+            quoteId: row.salesOrder.quoteId,
         };
 
         return (
