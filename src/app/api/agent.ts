@@ -28,7 +28,6 @@ import { DropShipPartsParams } from '../../models/DropShip/DropShipPartParams';
 import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
 import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
 import { EquipmentRequestUpdateDto } from '../../models/SOWorkbench/EquipmentRequestUpdateDto';
-import { SalesOrderEmailDto } from '../../models/SOWorkbench/SalesOrderEmailDto';
 import { SalesOrderUpdateDto } from '../../models/SOWorkbench/SalesOrderUpdateDto';
 
 const devURL = 'http://localhost:5001/api'; // Use for development environment
