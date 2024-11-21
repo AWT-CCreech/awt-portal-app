@@ -8,8 +8,8 @@ import { ROUTE_PATHS } from '../../routes';
 import UserInfoContext from '../../stores/userInfo';
 import { EventLevelRowData } from '../../models/SOWorkbench/EventLevelRowData';
 import { DetailLevelRowData } from '../../models/SOWorkbench/DetailLevelRowData';
-import { SalesOrderUpdateDto } from '../../models/SOWorkbench/SalesOrderUpdateDto';
-import { EquipmentRequestUpdateDto } from '../../models/SOWorkbench/EquipmentRequestUpdateDto';
+import { SalesOrderUpdateDto } from '../../models/Utility/SalesOrderUpdateDto';
+import { EquipmentRequestUpdateDto } from '../../models/Utility/EquipmentRequestUpdateDto';
 
 const SalesOrderWB: React.FC = () => {
     const [eventLevelData, setEventLevelData] = useState<EventLevelRowData[]>([]);
@@ -82,8 +82,8 @@ const SalesOrderWB: React.FC = () => {
                                 : eventRow.dropShipment || false,
                         Username: userInfo?.username || '',
                         Password: userInfo?.password || '',
-                        Subject: subject,         // Add this line
-                        HtmlBody: htmlBody,       // Add this line
+                        Subject: subject,
+                        HtmlBody: htmlBody,
                     };
 
                     // Call API to update sales order
