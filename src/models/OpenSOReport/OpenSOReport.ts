@@ -30,7 +30,7 @@ interface OpenSOReport {
   receivedOnPothatDay?: boolean;
   entryDate?: Date;
   notes: TrkSoNote[];
-  poLog?: PoLogEntry; // Updated to use the new interface
+  poLog?: PoLogEntry;
 }
 
 export default OpenSOReport;
