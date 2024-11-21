@@ -27,8 +27,10 @@ import { Rep } from '../../models/Data/Rep';
 import { DropShipPartsParams } from '../../models/DropShip/DropShipPartParams';
 import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
 import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
-import { EquipmentRequestUpdateDto } from '../../models/SOWorkbench/EquipmentRequestUpdateDto';
-import { SalesOrderUpdateDto } from '../../models/SOWorkbench/SalesOrderUpdateDto';
+import { EquipmentRequestUpdateDto } from '../../models/Utility/EquipmentRequestUpdateDto';
+import { InventoryRulesRequestDto } from '../../models/Utility/InventoryRulesRequestDto';
+import { InventoryRulesResponseDto } from '../../models/Utility/InventoryReulesResponseDto';
+import { SalesOrderUpdateDto } from '../../models/Utility/SalesOrderUpdateDto';
 
 const devURL = 'http://localhost:5001/api'; // Use for development environment
 const prodURL = 'http://10.0.0.8:82/api'; // Use for production environment
@@ -445,16 +447,21 @@ const SalesOrderWorkbench = {
   },
 
   updateSalesOrder: async (updateData: SalesOrderUpdateDto): Promise<void> => {
-    return requests.post('/SalesOrderWorkbench/UpdateSalesOrder', updateData);
+    return requests.post('/SalesOrder/Update', updateData);
   },
 
   updateEquipmentRequest: async (
     updateData: EquipmentRequestUpdateDto
   ): Promise<void> => {
-    return requests.post(
-      '/SalesOrderWorkbench/UpdateEquipmentRequest',
-      updateData
-    );
+    return requests.post('/EquipmentRequest/Update', updateData);
+  },
+};
+
+const InventoryRules = {
+  calculateQtyRules: async (
+    requestData: InventoryRulesRequestDto
+  ): Promise<InventoryRulesResponseDto> => {
+    return requests.post('/InventoryRules/CalculateQtyRules', requestData);
   },
 };
 
