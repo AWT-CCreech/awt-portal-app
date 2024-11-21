@@ -28,8 +28,6 @@ import { DropShipPartsParams } from '../../models/DropShip/DropShipPartParams';
 import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
 import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
 import { EquipmentRequestUpdateDto } from '../../models/Utility/EquipmentRequestUpdateDto';
-import { InventoryRulesRequestDto } from '../../models/Utility/InventoryRulesRequestDto';
-import { InventoryRulesResponseDto } from '../../models/Utility/InventoryReulesResponseDto';
 import { SalesOrderUpdateDto } from '../../models/Utility/SalesOrderUpdateDto';
 
 const devURL = 'http://localhost:5001/api'; // Use for development environment
@@ -454,14 +452,6 @@ const SalesOrderWorkbench = {
     updateData: EquipmentRequestUpdateDto
   ): Promise<void> => {
     return requests.post('/EquipmentRequest/Update', updateData);
-  },
-};
-
-const InventoryRules = {
-  calculateQtyRules: async (
-    requestData: InventoryRulesRequestDto
-  ): Promise<InventoryRulesResponseDto> => {
-    return requests.post('/InventoryRules/CalculateQtyRules', requestData);
   },
 };
 
