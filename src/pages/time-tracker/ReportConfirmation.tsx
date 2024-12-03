@@ -58,7 +58,7 @@ const ReportConfirmation: React.FC<IProps> = ({
         '<table style=\'width: 20%\' border=\'1\'><tr><th>Name</th><th>Hours</th></tr>';
       report.forEach(
         (r) =>
-          (body += `<tr><td style='text-align: center'>${r.fullName}</td>
+        (body += `<tr><td style='text-align: center'>${r.fullName}</td>
                                             <td style='text-align: center'>${r.hours}</td></tr>`)
       );
       body += '</table></body></html>';
@@ -66,7 +66,7 @@ const ReportConfirmation: React.FC<IProps> = ({
       setPageLoading(true);
       agent.TimeTrackers.sendEmailReport({
         body,
-        senderUserName: localStorage.getItem('username'),
+        userName: localStorage.getItem('username'),
         password: localStorage.getItem('password'),
         previousPeriod,
       }).then((response) => {
