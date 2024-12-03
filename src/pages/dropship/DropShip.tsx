@@ -88,7 +88,7 @@ const DropShip = () => {
     }
 
     setLoading(true);
-    const recipientEmails = [
+    const toEmails = [
       autoFillRep?.email,
       ...addedSalesReps.map((sr) => sr.email),
     ].filter(Boolean) as string[];
@@ -98,16 +98,16 @@ const DropShip = () => {
     ].filter(Boolean) as string[];
 
     agent.DropShip.dropShipSendEmail({
-      subject: `Drop Ship Complete: SO#${SONum}`,
-      senderUserName: localStorage.getItem('username'),
-      password: localStorage.getItem('password'),
-      recipientEmails: recipientEmails,
-      recipientNames: recipientNames,
+      Subject: `Drop Ship Complete: SO#${SONum}`,
+      UserName: localStorage.getItem('username') ?? '',
+      Password: localStorage.getItem('password') ?? '',
+      ToEmails: toEmails,
+      RecipientNames: recipientNames,
       PONumber: PONum,
       SONumber: SONum,
-      PartNumbers: selectedParts.map((p) => p.partNumber),
-      Quantities: selectedParts.length.toString(),
-      SerialNumbers: selectedParts.map((p) => p.serialNumber),
+      PartNumber: selectedParts.map((p) => p.partNumber).join(', '),
+      Quantity: selectedParts.length.toString(),
+      SerialNumber: selectedParts.map((p) => p.serialNumber).join(', '),
       Tracking: Tracking,
       Freight: Freight,
     })
