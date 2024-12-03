@@ -41,7 +41,7 @@ const MassMailer: React.FC = () => {
   const [emailSubject, setEmailSubject] = useState<string>('');
   const [selectedPartItems, setSelectedPartItems] = useState<IMassMailerPartItem[]>([]);
   const [recipients, setRecipients] = useState<IMassMailerVendor[]>([]);
-  const [attachFiles, setAttachFiles] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<string[]>([]);
   const [CC, setCC] = useState<IMassMailerUser[]>([]);
   const [allUsers, setAllUsers] = useState<IMassMailerUser[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string>('None');
@@ -118,13 +118,13 @@ const MassMailer: React.FC = () => {
     const obj = {
       Subject: emailSubject,
       Body: finalBody,
-      SenderUserName: localStorage.getItem('username') ?? '',
+      UserName: localStorage.getItem('username') ?? '',
+      Password: localStorage.getItem('password') ?? '',
       RecipientIds: recipients.map((recipient) => recipient.id),
-      RecipientEmails: recipients.map((recipient) => recipient.email),
+      ToEmails: recipients.map((recipient) => recipient.email),
       RecipientNames: recipients.map((recipient) => recipient.contact),
       RecipientCompanies: recipients.map((recipient) => recipient.company),
-      AttachFiles: attachFiles,
-      Password: localStorage.getItem('password') ?? '',
+      Attachments: attachments,
       CCEmails: CC.map((cc) => cc.email),
       CCNames: CC.map((cc) => cc.fullName),
       items: selectedPartItems,
@@ -162,7 +162,7 @@ const MassMailer: React.FC = () => {
     setEmailSubject('');
     setSelectedPartItems([]);
     setRecipients([]);
-    setAttachFiles([]);
+    setAttachments([]);
     setCC([]);
     setSelectedTemplate('None'); // Reset the template to 'None'
 
@@ -197,8 +197,8 @@ const MassMailer: React.FC = () => {
               setEmailBody={setEmailBody}
               emailSubject={emailSubject}
               setEmailSubject={setEmailSubject}
-              attachFiles={attachFiles}
-              setAttachFiles={setAttachFiles}
+              attachments={attachments}
+              setAttachments={setAttachments}
               CC={CC}
               setCC={setCC}
               allUsers={allUsers}
@@ -233,7 +233,7 @@ const MassMailer: React.FC = () => {
               color: 'white',
               bottom: 16,
               right: 16,
-              zIndex: 1000, // Ensure the button floats above other content
+              zIndex: 1000,
               backgroundColor:
                 buttonState === 'success'
                   ? 'success.main'
