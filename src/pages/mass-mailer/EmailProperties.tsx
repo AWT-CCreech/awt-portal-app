@@ -41,8 +41,8 @@ interface IProps {
   setEmailBody: (body: string) => void;
   emailSubject: string;
   setEmailSubject: (subject: string) => void;
-  attachFiles: string[];
-  setAttachFiles: (files: string[]) => void;
+  attachments: string[];
+  setAttachments: (files: string[]) => void;
   CC: IMassMailerUser[];
   setCC: (users: IMassMailerUser[]) => void;
   allUsers: IMassMailerUser[];
@@ -55,8 +55,8 @@ const EmailProperties: React.FC<IProps> = ({
   setEmailBody,
   emailSubject,
   setEmailSubject,
-  attachFiles,
-  setAttachFiles,
+  attachments,
+  setAttachments,
   CC,
   setCC,
   allUsers,
@@ -157,18 +157,18 @@ const EmailProperties: React.FC<IProps> = ({
       });
       formData.set('username', localStorage.getItem('username') ?? '');
 
-      agent.MassMailer.FileUpload.upload(formData).then((attachments) => {
-        const temp = [...attachFiles];
-        attachments.forEach((attachment) => {
-          if (!attachFiles.includes(attachment)) temp.push(attachment);
+      agent.MassMailer.FileUpload.upload(formData).then((uploadedAttachments) => {
+        const temp = [...attachments];
+        uploadedAttachments.forEach((attachment) => {
+          if (!attachments.includes(attachment)) temp.push(attachment);
         });
-        setAttachFiles(temp);
+        setAttachments(temp);
       });
     }
   };
 
   const unselectFile = (fileName: string) => {
-    setAttachFiles(attachFiles.filter((f) => f !== fileName));
+    setAttachments(attachments.filter((f) => f !== fileName));
   };
 
   return (
@@ -249,7 +249,7 @@ const EmailProperties: React.FC<IProps> = ({
               onChange={handleAttachFiles}
             />
           </Box>
-          {attachFiles.map((fileName) => (
+          {attachments.map((fileName) => (
             <SelectedFile
               key={fileName}
               fileName={fileName}
