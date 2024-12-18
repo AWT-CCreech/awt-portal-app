@@ -80,8 +80,17 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
                     size="small"
                     value={rwsalesOrderNum}
                     onChange={(e) => setRwsalesOrderNum(e.target.value)}
-                    onBlur={handleRwsalesOrderNumBlur}
-                    onKeyDown={handleRwsalesOrderNumKeyDown}
+                    onBlur={() => {
+                        if (!/^\d{6}$/.test(rwsalesOrderNum)) {
+                            alert('Sales Order Number must be exactly 6 digits.');
+                            setRwsalesOrderNum(row.rwsalesOrderNum || '');
+                            return;
+                        }
+                        handleRwsalesOrderNumBlur();
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleRwsalesOrderNumBlur();
+                    }}
                 />
             </TableCell>
             <TableCell align="left">{formatAmount(row.saleTotal)}</TableCell>
