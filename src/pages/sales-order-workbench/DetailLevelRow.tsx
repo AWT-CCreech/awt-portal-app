@@ -58,8 +58,17 @@ const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
                     size="small"
                     value={rwsalesOrderNum}
                     onChange={(e) => setRwsalesOrderNum(e.target.value)}
-                    onBlur={handleBlur}
-                    onKeyDown={handleKeyDown}
+                    onBlur={() => {
+                        if (!/^\d{6}$/.test(rwsalesOrderNum)) {
+                            alert('Sales Order Number must be exactly 6 digits.');
+                            setRwsalesOrderNum(row.rwsalesOrderNum || '');
+                            return;
+                        }
+                        handleBlur();
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleBlur();
+                    }}
                 />
             </TableCell>
             <TableCell align="left">{row.qtySold}</TableCell>

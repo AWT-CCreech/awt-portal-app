@@ -110,8 +110,8 @@ const MassMailer: React.FC = () => {
       .replace(/(?:\r\n|\r|\n)/g, '<br/>')
       .replace(/ /g, '&nbsp;');
     finalBody += '<table>';
-    finalBody +=
-      '<tr><th>Airway Part Number</th><th>Mfg Part Number</th><th>Part Description</th><th>Qty</th><th>Manufacturer</th><th>Rev</th></tr>';
+    // finalBody +=
+    //   '<tr><th>Airway Part Number</th><th>Mfg Part Number</th><th>Part Description</th><th>Qty</th><th>Manufacturer</th><th>Rev</th></tr>';
     finalBody += '%%PARTTABLE%%</table>';
 
     // Construct the payload object
