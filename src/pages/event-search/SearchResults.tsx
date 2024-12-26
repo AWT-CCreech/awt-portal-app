@@ -5,7 +5,7 @@ import React, { useCallback } from 'react';
 import { Box, TableCell, TableRow, Link } from '@mui/material';
 
 // Components
-import PaginatedSortableTable from '../../components/PaginatedSortableTable';
+import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 
 // Models
 import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';

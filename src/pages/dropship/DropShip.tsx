@@ -24,7 +24,7 @@ import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
 import { DropShipPart } from '../../models/DropShip/DropShipPart';
 
 // Components
-import PageHeader from '../../components/PageHeader';
+import PageHeader from '../../shared/components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';
 import RecipientModal from './RecipientModal';
 import PartNumberModal from './PartNumberModal';

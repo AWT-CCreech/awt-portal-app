@@ -11,7 +11,7 @@ import OpenSalesOrderReport from './pages/open-so-report/OpenSalesOrderReport';
 import MasterSearch from './pages/master-search/MasterSearch';
 import UserListPage from './pages/user-list/UserListPage';
 import NotFound from './pages/exception-pages/NotFound';
-import PrivateRoute from './components/PrivateRoute';
+import PrivateRoute from './shared/components/PrivateRoute';
 import TimeTrackerPage from './pages/time-tracker/TimeTrackerPage';
 import EventSearch from './pages/event-search/EventSearch';
 import SalesOrderWB from './pages/sales-order-workbench/SalesOrderWB';

@@ -21,7 +21,7 @@ import {
 import { Search } from '@mui/icons-material';
 
 // Shared Components
-import LoadingIconButton from '../../components/LoadingIconButton';
+import LoadingIconButton from '../../shared/components/LoadingIconButton';
 
 // Define the allowed names for select fields
 type SelectFieldName = 'status' | 'salesRep';

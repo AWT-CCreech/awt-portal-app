@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import _ from 'lodash';
 import styled from 'styled-components';
-import { toPascalCase, toLowerFirstLetter } from '../utils/dataManipulation';
+import { toPascalCase, toLowerFirstLetter } from '../../utils/dataManipulation';
 
 function reducer(state: any, action: any) {
   switch (action.type) {
@@ -58,7 +58,7 @@ const StyledTable = styled(Table)`
   border-radius: 8px;
 `;
 
-const StyledTableRow = styled(TableRow)<{ hovercolor?: string }>`
+const StyledTableRow = styled(TableRow) <{ hovercolor?: string }>`
   &:hover {
     background-color: ${(props) => props.hovercolor ?? 'none'} !important;
   }
@@ -146,10 +146,10 @@ const SortableTable: React.FC<IProps> = ({
                 {func
                   ? func(row)
                   : columnNamesInCamelCase.map((col) => (
-                      <StyledTableCell key={col}>
-                        {row[toLowerFirstLetter(col)]}
-                      </StyledTableCell>
-                    ))}
+                    <StyledTableCell key={col}>
+                      {row[toLowerFirstLetter(col)]}
+                    </StyledTableCell>
+                  ))}
               </StyledTableRow>
             ))}
           </TableBody>

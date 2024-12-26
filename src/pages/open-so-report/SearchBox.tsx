@@ -15,7 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import LoadingIconButton from '../../components/LoadingIconButton';
+import LoadingIconButton from '../../shared/components/LoadingIconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';

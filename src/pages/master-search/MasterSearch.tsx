@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 // Components
-import PageHeader from '../../components/PageHeader';
+import PageHeader from '../../shared/components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';
 import BuyOppsEvent from './BuyOppsEvent';
 import SellOppsEvent from './SellOppsEvent';

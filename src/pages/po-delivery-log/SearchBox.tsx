@@ -16,7 +16,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import debounce from 'lodash/debounce';
 import Modules from '../../app/api/agent';
 import SearchInput from '../../models/PODeliveryLog/SearchInput';
-import LoadingIconButton from '../../components/LoadingIconButton';
+import LoadingIconButton from '../../shared/components/LoadingIconButton';
 import { grey } from '@mui/material/colors';
 
 interface Statistics {

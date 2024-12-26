@@ -8,7 +8,7 @@ import {
     InputLabel,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import LoadingIconButton from '../../components/LoadingIconButton';
+import LoadingIconButton from '../../shared/components/LoadingIconButton';
 import Modules from '../../app/api/agent';
 
 interface Rep {

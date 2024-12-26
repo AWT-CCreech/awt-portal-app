@@ -6,7 +6,7 @@ import { TableCell, TableRow, Box } from '@mui/material';
 import { Note, LocalFireDepartment, LocalShipping } from '@mui/icons-material';
 
 // Components
-import PaginatedSortableTable from '../../components/PaginatedSortableTable';
+import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 
 // Models
 import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs';

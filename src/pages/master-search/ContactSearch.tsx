@@ -5,7 +5,7 @@ import React from 'react';
 import MasterSearchContact from '../../models/MasterSearch/MasterSearchContact';
 
 // Components
-import SortableTable from '../../components/SortableTable';
+import SortableTable from '../../shared/components/SortableTable';
 
 // MUI Components and Icons
 import { Box, Paper, Divider, TableCell, Typography } from '@mui/material';

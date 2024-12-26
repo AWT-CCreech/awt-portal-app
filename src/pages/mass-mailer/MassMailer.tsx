@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import EmailProperties from './EmailProperties';
 import PartTable from './PartTable';
 import EmailRecipient from './EmailRecipient';
-import PageHeader from '../../components/PageHeader';
+import PageHeader from '../../shared/components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';
 
 // Models

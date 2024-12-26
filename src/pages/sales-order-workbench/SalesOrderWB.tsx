@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Snackbar, Alert } from '@mui/material';
-import PageHeader from '../../components/PageHeader';
+import PageHeader from '../../shared/components/PageHeader';
 import SearchBox from './SearchBox';
 import SearchResults from './SearchResults';
 import Modules from '../../app/api/agent';

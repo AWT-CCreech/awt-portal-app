@@ -15,7 +15,7 @@ import {
 import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
 
 // Components
-import SortableTable from '../../components/SortableTable';
+import SortableTable from '../../shared/components/SortableTable';
 
 // Utilities
 import { getDateString } from '../../utils/dataManipulation';

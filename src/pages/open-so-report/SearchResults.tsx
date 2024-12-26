@@ -2,7 +2,7 @@
 
 import React, { useCallback, memo } from 'react';
 import { Box } from '@mui/material';
-import PaginatedSortableTable from '../../components/PaginatedSortableTable';
+import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { TrkPoLog } from '../../models/TrkPoLog';

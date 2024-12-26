@@ -17,7 +17,7 @@ import {
     Alert,
 } from '@mui/material';
 
-import PageHeader from '../../components/PageHeader';
+import PageHeader from '../../shared/components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';
 import SearchBox from './SearchBox';
 import SearchResults from './SearchResults';

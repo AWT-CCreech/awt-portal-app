@@ -11,7 +11,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import theme from '../../themes/theme';
 
 import UserInfoContext from '../../stores/userInfo';
-import InactivityModal from '../../components/InactivityModal';
+import InactivityModal from '../../shared/components/InactivityModal';
 import agent from '../../app/api/agent';
 import { isAuthenticated, handleAutoLogout } from '../../utils/authentication';
 import { routes } from '../../routes';

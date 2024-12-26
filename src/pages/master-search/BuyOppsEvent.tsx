@@ -5,7 +5,7 @@ import React from 'react';
 import BuyOppEvent from '../../models/MasterSearch/BuyOppEvent';
 
 // Components
-import SortableTable from '../../components/SortableTable';
+import SortableTable from '../../shared/components/SortableTable';
 
 // Utilities
 import { getDateString } from '../../utils/dataManipulation';

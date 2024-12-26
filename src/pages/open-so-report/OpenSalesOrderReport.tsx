@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 
 // Components
-import PageHeader from '../../components/PageHeader';
+import PageHeader from '../../shared/components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';
 import SearchBox from './SearchBox';
 import SearchResults from './SearchResults';

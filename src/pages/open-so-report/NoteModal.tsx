@@ -24,7 +24,7 @@ import { NoteList } from '../../models/OpenSOReport/NoteList';
 import { TrkSoNote } from '../../models/TrkSoNote';
 
 // Components
-import SortableTable from '../../components/SortableTable';
+import SortableTable from '../../shared/components/SortableTable';
 
 interface NoteModalProps {
   soNum: string;

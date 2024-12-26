@@ -3,7 +3,7 @@ import { Box, Container, Grid, Typography, Breadcrumbs } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PortalMenu from './PortalMenu';
 import { useLocation } from 'react-router-dom';
-import { ROUTE_PATHS } from '../routes';
+import { ROUTE_PATHS } from '../../routes';
 import { Home } from '@mui/icons-material';
 
 interface IProps {

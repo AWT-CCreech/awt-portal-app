@@ -19,8 +19,8 @@ import {
 } from '@mui/material';
 import { Add, Delete, GetApp } from '@mui/icons-material';
 import Modules from '../../app/api/agent';
-import PageHeader from '../../components/PageHeader';
-import PaginatedSortableTable from '../../components/PaginatedSortableTable';
+import PageHeader from '../../shared/components/PageHeader';
+import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 import { User } from '../../models/User';
 import { ROUTE_PATHS } from '../../routes';
 import ExcelJS from 'exceljs';
