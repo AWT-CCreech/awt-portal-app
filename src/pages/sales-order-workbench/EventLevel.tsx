@@ -7,10 +7,43 @@ import { EventLevelRowData } from '../../models/SOWorkbench/EventLevelRowData';
 
 interface EventLevelProps {
     data: EventLevelRowData[];
-    onUpdate: (updateData: any) => void;
+    onBatchUpdate: (updates: any[]) => void;
 }
 
-const EventLevel: React.FC<EventLevelProps> = ({ data, onUpdate }) => {
+const EventLevel: React.FC<EventLevelProps> = ({ data, onBatchUpdate }) => {
+    const [pendingUpdates, setPendingUpdates] = useState<any[]>([]);
+    const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+        open: false,
+        message: '',
+        severity: 'success',
+    });
+
+    const handleRowUpdate = (update: any) => {
+        setPendingUpdates((prevUpdates) => {
+            const existingIndex = prevUpdates.findIndex((u) => u.SaleId === update.SaleId);
+            if (existingIndex !== -1) {
+                const newUpdates = [...prevUpdates];
+                newUpdates[existingIndex] = update; // Update existing entry
+                return newUpdates;
+            }
+            return [...prevUpdates, update]; // Add new entry
+        });
+    };
+
+    const handleSaveChanges = async () => {
+        if (pendingUpdates.length > 0) {
+            try {
+                await onBatchUpdate(pendingUpdates);
+                setSnackbar({ open: true, message: 'Event Level changes saved successfully.', severity: 'success' });
+                setPendingUpdates([]);
+            } catch (error) {
+                setSnackbar({ open: true, message: 'Failed to save Event Level changes.', severity: 'error' });
+            }
+        }
+    };
+
+    const handleSnackbarClose = () => setSnackbar({ open: false, message: '', severity: 'success' });
+
     const columns = [
         'saleId',
         'salesRep',
@@ -31,24 +64,44 @@ const EventLevel: React.FC<EventLevelProps> = ({ data, onUpdate }) => {
         'Drop Shipment',
     ];
 
-    const renderRow = (row: EventLevelRowData) => {
-        return (
-            <TableRow key={row.saleId}>
-                <EventLevelRow row={row} onUpdate={onUpdate} />
-            </TableRow>
-        );
-    };
+    const renderRow = (row: EventLevelRowData) => (
+        <TableRow key={row.saleId}>
+            <EventLevelRow row={row} onUpdate={handleRowUpdate} />
+        </TableRow>
+    );
 
     return (
-        <PaginatedSortableTable
-            columns={columns}
-            columnNames={columnNames}
-            tableData={data}
-            func={renderRow}
-            headerBackgroundColor="#384959"
-            hoverColor="#f0f0f0"
-            tableHeight={'40vh'}
-        />
+        <Box>
+            <PaginatedSortableTable
+                columns={columns}
+                columnNames={columnNames}
+                tableData={data}
+                func={renderRow}
+                headerBackgroundColor="#384959"
+                hoverColor="#f0f0f0"
+                tableHeight={'40vh'}
+            />
+            <Box display="flex" justifyContent="flex-end" mt={2}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSaveChanges}
+                    disabled={pendingUpdates.length === 0}
+                >
+                    Save Changes
+                </Button>
+            </Box>
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={4000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbar.severity}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+        </Box>
     );
 };
 
