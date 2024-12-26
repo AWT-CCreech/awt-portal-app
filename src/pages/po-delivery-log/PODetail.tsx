@@ -80,9 +80,13 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
 
   const handleUpdatePO = async () => {
     setError(null);
+    if (!poDetail?.soNum) {
+      throw new Error('SO Number is required');
+    }
     try {
       const updateDto: PODetailUpdateDto = {
         ...poDetail!,
+        soNum: poDetail?.soNum,
         newNote: notes,
         expectedDelivery: expectedDelivery ? new Date(expectedDelivery) : null,
         userId: parseInt(userInfo.userid, 10),
