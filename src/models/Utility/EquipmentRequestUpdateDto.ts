@@ -1,5 +1,5 @@
 export interface EquipmentRequestUpdateDto {
-    Id: number;
+    RequestId: number;
     RWSalesOrderNum: string;
     DropShipment: boolean;
     Username: string;
