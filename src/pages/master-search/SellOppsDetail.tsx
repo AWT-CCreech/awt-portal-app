@@ -18,7 +18,7 @@ import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
 import SortableTable from '../../shared/components/SortableTable';
 
 // Utilities
-import { getDateString } from '../../utils/dataManipulation';
+import { getDateString } from '../../shared/utils/dataManipulation';
 
 interface IProps {
   sellOppDetails: SellOppDetail[];

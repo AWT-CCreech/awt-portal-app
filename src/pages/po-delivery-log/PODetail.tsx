@@ -14,7 +14,7 @@ import Modules from '../../app/api/agent';
 import UserInfoContext from '../../stores/userInfo';
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
-import { formatPhoneNumber } from '../../utils/dataManipulation';
+import { formatPhoneNumber } from '../../shared/utils/dataManipulation';
 
 interface PODetailProps {
   poDetail: PODetailUpdateDto | null;

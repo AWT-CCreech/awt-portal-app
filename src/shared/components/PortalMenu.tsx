@@ -37,7 +37,7 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import HandymanOutlinedIcon from '@mui/icons-material/HandymanOutlined';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { handleLogOut } from '../../utils/authentication';
+import { handleLogOut } from '../utils/authentication';
 import UserInfoContext from '../../stores/userInfo';
 import fullLogo from '../assets/images/fullLogo.png';
 import { ROUTE_PATHS } from '../../routes'; // Import the path constants

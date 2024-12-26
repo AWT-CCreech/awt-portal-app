@@ -1,4 +1,4 @@
-import { ROUTE_PATHS } from '../routes'; // Adjust the import path if necessary
+import { ROUTE_PATHS } from '../../routes'; // Adjust the import path if necessary
 
 // Define a mapping from path to document title
 const DOCUMENT_TITLES: { [key: string]: string } = {

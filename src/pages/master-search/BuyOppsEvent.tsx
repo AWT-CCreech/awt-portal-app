@@ -8,7 +8,7 @@ import BuyOppEvent from '../../models/MasterSearch/BuyOppEvent';
 import SortableTable from '../../shared/components/SortableTable';
 
 // Utilities
-import { getDateString } from '../../utils/dataManipulation';
+import { getDateString } from '../../shared/utils/dataManipulation';
 
 // MUI Components
 import {

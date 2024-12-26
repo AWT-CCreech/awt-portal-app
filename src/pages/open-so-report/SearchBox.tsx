@@ -24,7 +24,7 @@ import { Rep } from '../../models/Data/Rep';
 import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
 import { ItemCategories } from '../../models/Data/ItemCategories';
 import Modules from '../../app/api/agent';
-import { formatAmount } from '../../utils/dataManipulation';
+import { formatAmount } from '../../shared/utils/dataManipulation';
 
 interface SearchBoxProps {
   searchParams: OpenSalesOrderSearchInput;

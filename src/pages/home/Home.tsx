@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Container, Grid, Button } from '@mui/material';
-import { isAuthenticated } from '../../utils/authentication';
+import { isAuthenticated } from '../../shared/utils/authentication';
 import { ROUTE_PATHS } from '../../routes'; // Import the path constants
 
 const Home: React.FC = () => {

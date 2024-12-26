@@ -13,9 +13,9 @@ import theme from '../../themes/theme';
 import UserInfoContext from '../../stores/userInfo';
 import InactivityModal from '../../shared/components/InactivityModal';
 import agent from '../../app/api/agent';
-import { isAuthenticated, handleAutoLogout } from '../../utils/authentication';
+import { isAuthenticated, handleAutoLogout } from '../../shared/utils/authentication';
 import { routes } from '../../routes';
-import setDocumentTitle from '../../utils/setDocumentTitle';
+import setDocumentTitle from '../../shared/utils/setDocumentTitle';
 
 const App: React.FC = () => {
   const userInfo = useContext(UserInfoContext);

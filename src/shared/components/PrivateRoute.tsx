@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate, useLocation, Outlet } from 'react-router-dom';
-import { isAuthenticated } from '../../utils/authentication';
+import { isAuthenticated } from '../utils/authentication';
 
 const PrivateRoute: React.FC = () => {
   const location = useLocation();

@@ -10,7 +10,7 @@ import PODetail from '../po-delivery-log/PODetail';
 
 // API and Data Manipulation
 import agent from '../../app/api/agent';
-import { formatAmount } from '../../utils/dataManipulation';
+import { formatAmount } from '../../shared/utils/dataManipulation';
 import ExcelJS from 'exceljs';
 
 // MUI Components and Styling

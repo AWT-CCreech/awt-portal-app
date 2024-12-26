@@ -1,5 +1,5 @@
 import React from 'react';
-import PaginatedSortableTable from '../../components/PaginatedSortableTable';
+import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 import { TableRow } from '@mui/material';
 import DetailLevelRow from './DetailLevelRow';
 import { DetailLevelRowData } from '../../models/SOWorkbench/DetailLevelRowData';

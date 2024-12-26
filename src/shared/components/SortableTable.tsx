@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import _ from 'lodash';
 import styled from 'styled-components';
-import { toPascalCase, toLowerFirstLetter } from '../../utils/dataManipulation';
+import { toPascalCase, toLowerFirstLetter } from '../utils/dataManipulation';
 
 function reducer(state: any, action: any) {
   switch (action.type) {

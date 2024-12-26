@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TableCell, TextField, Checkbox, Link } from '@mui/material';
 import { formatAmount } from '../../utils/dataManipulation';
+import { formatAmount } from '../../shared/utils/dataManipulation';
 import { EventLevelRowData } from '../../models/SOWorkbench/EventLevelRowData';
 
 interface EventLevelRowProps {

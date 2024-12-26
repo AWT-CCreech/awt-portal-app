@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { InactivityModalProps } from '../../models/Security/InactivityModal';
-import { handleAutoLogout } from '../../utils/authentication';
+import { handleAutoLogout } from '../utils/authentication';
 
 const InactivityModal: React.FC<InactivityModalProps> = ({
   open,

@@ -6,7 +6,7 @@ import { Warning, Add, Note } from '@mui/icons-material';
 import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { TrkPoLog } from '../../models/TrkPoLog';
-import { formatAmount } from '../../utils/dataManipulation';
+import { formatAmount } from '../../shared/utils/dataManipulation';
 
 interface SearchResultsRowProps {
     order: OpenSOReport & { notes: TrkSoNote[]; poLog?: TrkPoLog };
