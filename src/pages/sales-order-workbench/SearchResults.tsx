@@ -8,21 +8,23 @@ import { DetailLevelRowData } from '../../models/SOWorkbench/DetailLevelRowData'
 interface SearchResultsProps {
     eventLevelData: EventLevelRowData[];
     detailLevelData: DetailLevelRowData[];
-    onUpdate: (data: any) => void;
+    onEventBatchUpdate: (updates: any[]) => Promise<void>;
+    onDetailBatchUpdate: (updates: any[]) => Promise<void>;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({
     eventLevelData,
     detailLevelData,
-    onUpdate,
+    onEventBatchUpdate,
+    onDetailBatchUpdate,
 }) => {
     return (
         <Box>
             <Typography variant="h6">Event Level</Typography>
-            <EventLevel data={eventLevelData} onUpdate={onUpdate} />
+            <EventLevel data={eventLevelData} onBatchUpdate={onEventBatchUpdate} />
 
             <Typography variant="h6" mt={3}>Detail Level</Typography>
-            <DetailLevel data={detailLevelData} onUpdate={onUpdate} />
+            <DetailLevel data={detailLevelData} onBatchUpdate={onDetailBatchUpdate} />
         </Box>
     );
 };
