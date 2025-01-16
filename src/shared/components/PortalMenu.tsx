@@ -39,7 +39,7 @@ import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { handleLogOut } from '../utils/authentication';
 import UserInfoContext from '../../stores/userInfo';
-import fullLogo from '../assets/images/fullLogo.png';
+import fullLogo from '../../assets/images/fullLogo.png';
 import { ROUTE_PATHS } from '../../routes'; // Import the path constants
 
 const drawerWidth = 280;
