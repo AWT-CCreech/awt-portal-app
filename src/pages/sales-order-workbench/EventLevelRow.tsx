@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TableCell, TextField, Checkbox, Link, Snackbar, Alert } from '@mui/material';
+import { TableCell, TextField, Checkbox, Link } from '@mui/material';
 import { formatAmount } from '../../shared/utils/dataManipulation';
 import { EventLevelRowData } from '../../models/SOWorkbench/EventLevelRowData';
 import { SalesOrderUpdateDto } from '../../models/Utility/SalesOrderUpdateDto';
@@ -10,49 +10,55 @@ interface EventLevelRowProps {
 }
 
 const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
-    const [rwsalesOrderNum, setRwsalesOrderNum] = useState<string>(row.rwsalesOrderNum || '');
+    const [salesOrderNum, setRwsalesOrderNum] = useState<string>(row.rwsalesOrderNum || '');
     const [dropShipment, setDropShipment] = useState<boolean>(row.dropShipment || false);
-    const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({
-        open: false,
-        message: '',
-    });
-
-    const handleSnackbarClose = () => setSnackbar({ open: false, message: '' });
 
     const handleRwsalesOrderNumBlur = () => {
-        if (!/^\d{6}$/.test(rwsalesOrderNum)) {
-            setSnackbar({ open: true, message: 'Sales Order Number must be exactly 6 digits.' });
+        // Split on comma, trim whitespace, remove empty entries if any
+        const soItems = salesOrderNum
+            .split(',')
+            .map(item => item.trim())
+            .filter(item => item.length > 0);
+
+        // Check each token for exactly 6 digits
+        const allValid = soItems.every(so => /^\d{6}$/.test(so));
+
+        if (!allValid) {
+            // Revert to the previous row value
             setRwsalesOrderNum(row.rwsalesOrderNum || '');
             return;
         }
-        if (rwsalesOrderNum !== row.rwsalesOrderNum) {
+
+        // If the value changed and is valid, call onUpdate
+        if (salesOrderNum !== row.rwsalesOrderNum) {
             onUpdate({
                 SaleId: row.saleId,
                 EventId: row.eventId,
                 QuoteId: row.quoteId,
-                RWSalesOrderNum: rwsalesOrderNum,
+                SalesOrderNum: salesOrderNum,
                 DropShipment: dropShipment,
                 Username: localStorage.getItem('username') ?? '',
                 Password: localStorage.getItem('password') ?? '',
-                Subject: `Sales Order Updated: ${rwsalesOrderNum}`,
-                HtmlBody: `The sales order ${rwsalesOrderNum} has been updated.`,
+                Subject: `Sales Order Updated: ${salesOrderNum}`,
+                HtmlBody: `The sales order(s) ${salesOrderNum} has been updated.`,
             });
         }
     };
 
     const handleDropShipmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.checked;
+        console.log('Drop Shipment changed:', newValue);
         setDropShipment(newValue);
         onUpdate({
             SaleId: row.saleId,
             EventId: row.eventId,
             QuoteId: row.quoteId,
-            RWSalesOrderNum: rwsalesOrderNum,
+            SalesOrderNum: salesOrderNum,
             DropShipment: newValue,
             Username: localStorage.getItem('username') ?? '',
             Password: localStorage.getItem('password') ?? '',
-            Subject: `Sales Order Updated: ${rwsalesOrderNum}`,
-            HtmlBody: `The sales order ${rwsalesOrderNum} has been updated.`,
+            Subject: `Sales Order Updated: ${salesOrderNum}`,
+            HtmlBody: `The sales order(s) ${salesOrderNum} has been updated.`,
         });
     };
 
@@ -83,7 +89,7 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
             <TableCell align="left">
                 <TextField
                     size="small"
-                    value={rwsalesOrderNum}
+                    value={salesOrderNum}
                     onChange={(e) => setRwsalesOrderNum(e.target.value)}
                     onBlur={handleRwsalesOrderNumBlur}
                     onKeyDown={(e) => {
@@ -96,16 +102,6 @@ const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {
             <TableCell align="left">
                 <Checkbox checked={dropShipment} onChange={handleDropShipmentChange} />
             </TableCell>
-            <Snackbar
-                open={snackbar.open}
-                autoHideDuration={4000}
-                onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-                <Alert onClose={handleSnackbarClose} severity="warning">
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
         </>
     );
 };
