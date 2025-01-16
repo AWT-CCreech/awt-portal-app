@@ -10,8 +10,7 @@ interface DetailLevelRowProps {
 }
 
 const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
-    const [rwsalesOrderNum, setRwsalesOrderNum] = useState<string>(row.rwsalesOrderNum || '');
-    const [dropShipment, setDropShipment] = useState<boolean>(row.dropShipment || false);
+    const [salesOrderNum, setSalesOrderNum] = useState<string>(row.salesOrderNum || '');
     const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({
         open: false,
         message: '',
@@ -20,23 +19,21 @@ const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
     const handleSnackbarClose = () => setSnackbar({ open: false, message: '' });
 
     const handleFieldChange = (field: keyof DetailLevelRowData, value: any) => {
-        if (field === 'rwsalesOrderNum' && !/^\d{6}$/.test(value)) {
+        if (field === 'salesOrderNum' && !/^\d{6}$/.test(value)) {
             setSnackbar({ open: true, message: 'Sales Order Number must be exactly 6 digits.' });
-            setRwsalesOrderNum(row.rwsalesOrderNum || '');
+            setSalesOrderNum(row.salesOrderNum || '');
             return;
         }
 
-        if (field === 'rwsalesOrderNum') setRwsalesOrderNum(value);
-        if (field === 'dropShipment') setDropShipment(value);
+        if (field === 'salesOrderNum') setSalesOrderNum(value);
 
         onUpdate({
             RequestId: row.requestId,
-            RWSalesOrderNum: field === 'rwsalesOrderNum' ? value : rwsalesOrderNum,
-            DropShipment: field === 'dropShipment' ? value : dropShipment,
+            SalesOrderNum: field === 'salesOrderNum' ? value : salesOrderNum,
             Username: localStorage.getItem('username') ?? '',
             Password: localStorage.getItem('password') ?? '',
-            Subject: `Equipment Request Updated: ${rwsalesOrderNum}`,
-            HtmlBody: `The equipment request ${rwsalesOrderNum} has been updated.`,
+            Subject: `Equipment Request Updated: ${salesOrderNum}`,
+            HtmlBody: `The equipment request ${salesOrderNum} has been updated.`,
         });
     };
 
@@ -45,8 +42,8 @@ const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
             <TableCell align="left">
                 <TextField
                     size="small"
-                    value={rwsalesOrderNum}
-                    onChange={(e) => handleFieldChange('rwsalesOrderNum', e.target.value)}
+                    value={salesOrderNum}
+                    onChange={(e) => handleFieldChange('salesOrderNum', e.target.value)}
                 />
             </TableCell>
             <TableCell align="left">{row.qtySold}</TableCell>
@@ -57,12 +54,6 @@ const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
                 {formatAmount(row.unitPrice)}
             </TableCell>
             <TableCell align="left">{row.salesRep}</TableCell>
-            <TableCell align="left">
-                <Checkbox
-                    checked={dropShipment}
-                    onChange={(e) => handleFieldChange('dropShipment', e.target.checked)}
-                />
-            </TableCell>
             <Snackbar
                 open={snackbar.open}
                 autoHideDuration={4000}
