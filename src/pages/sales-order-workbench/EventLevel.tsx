@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Snackbar, Alert } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 import { TableRow } from '@mui/material';
 import EventLevelRow from './EventLevelRow';
@@ -12,21 +12,20 @@ interface EventLevelProps {
 
 const EventLevel: React.FC<EventLevelProps> = ({ data, onBatchUpdate }) => {
     const [pendingUpdates, setPendingUpdates] = useState<any[]>([]);
-    const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
-        open: false,
-        message: '',
-        severity: 'success',
-    });
 
     const handleRowUpdate = (update: any) => {
+        console.log('Update Received in handleRowUpdate:', update); // Debug log
         setPendingUpdates((prevUpdates) => {
             const existingIndex = prevUpdates.findIndex((u) => u.SaleId === update.SaleId);
             if (existingIndex !== -1) {
                 const newUpdates = [...prevUpdates];
-                newUpdates[existingIndex] = update; // Update existing entry
+                newUpdates[existingIndex] = { ...newUpdates[existingIndex], ...update };
+                console.log('Updated Pending Updates:', newUpdates); // Debug log
                 return newUpdates;
             }
-            return [...prevUpdates, update]; // Add new entry
+            const newPendingUpdates = [...prevUpdates, update];
+            console.log('New Pending Updates:', newPendingUpdates); // Debug log
+            return newPendingUpdates;
         });
     };
 
@@ -34,15 +33,12 @@ const EventLevel: React.FC<EventLevelProps> = ({ data, onBatchUpdate }) => {
         if (pendingUpdates.length > 0) {
             try {
                 await onBatchUpdate(pendingUpdates);
-                setSnackbar({ open: true, message: 'Event Level changes saved successfully.', severity: 'success' });
                 setPendingUpdates([]);
             } catch (error) {
-                setSnackbar({ open: true, message: 'Failed to save Event Level changes.', severity: 'error' });
+                console.error('Failed to save Event Level changes:', error);
             }
         }
     };
-
-    const handleSnackbarClose = () => setSnackbar({ open: false, message: '', severity: 'success' });
 
     const columns = [
         'saleId',
@@ -88,19 +84,9 @@ const EventLevel: React.FC<EventLevelProps> = ({ data, onBatchUpdate }) => {
                     onClick={handleSaveChanges}
                     disabled={pendingUpdates.length === 0}
                 >
-                    Save Changes
+                    Save
                 </Button>
             </Box>
-            <Snackbar
-                open={snackbar.open}
-                autoHideDuration={4000}
-                onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-                <Alert onClose={handleSnackbarClose} severity={snackbar.severity}>
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
         </Box>
     );
 };
