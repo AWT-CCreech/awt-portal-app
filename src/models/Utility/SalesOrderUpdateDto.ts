@@ -1,6 +1,6 @@
 export interface SalesOrderUpdateDto {
     SaleId: number;
-    RWSalesOrderNum: string;
+    SalesOrderNum: string;
     DropShipment: boolean;
     EventId?: number;
     QuoteId?: number;
