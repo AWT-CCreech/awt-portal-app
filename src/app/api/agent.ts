@@ -448,9 +448,7 @@ const SalesOrderWorkbench = {
     return requests.post('/SalesOrder/Update', updateData);
   },
 
-  updateEquipmentRequest: async (
-    updateData: EquipmentRequestUpdateDto
-  ): Promise<void> => {
+  updateEquipmentRequest: async (updateData: EquipmentRequestUpdateDto): Promise<void> => {
     return requests.post('/EquipmentRequest/Update', updateData);
   },
 };
