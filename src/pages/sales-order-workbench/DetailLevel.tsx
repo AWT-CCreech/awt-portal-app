@@ -33,7 +33,7 @@ const DetailLevel: React.FC<DetailLevelProps> = ({ data, onBatchUpdate }) => {
     const handleSaveChanges = async () => {
         if (pendingUpdates.length > 0) {
             try {
-                await onBatchUpdate(pendingUpdates);
+                onBatchUpdate(pendingUpdates);
                 setSnackbar({ open: true, message: 'Detail Level changes saved successfully.', severity: 'success' });
                 setPendingUpdates([]);
             } catch (error) {
@@ -52,7 +52,6 @@ const DetailLevel: React.FC<DetailLevelProps> = ({ data, onBatchUpdate }) => {
         'partDesc',
         'unitPrice',
         'salesRep',
-        'dropShipment',
     ];
 
     const columnNames = [
@@ -63,7 +62,6 @@ const DetailLevel: React.FC<DetailLevelProps> = ({ data, onBatchUpdate }) => {
         'Part Desc',
         'Unit Price',
         'Sales Rep',
-        'Drop Shipment',
     ];
 
     const renderRow = (row: DetailLevelRowData) => (
@@ -90,7 +88,7 @@ const DetailLevel: React.FC<DetailLevelProps> = ({ data, onBatchUpdate }) => {
                     onClick={handleSaveChanges}
                     disabled={pendingUpdates.length === 0}
                 >
-                    Save Changes
+                    Save
                 </Button>
             </Box>
             <Snackbar
