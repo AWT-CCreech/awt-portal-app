@@ -39,7 +39,7 @@ import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { handleLogOut } from '../utils/authentication';
 import UserInfoContext from '../stores/userInfo';
-import fullLogo from '../../assets/images/fullLogo.png';
+import fullLogo from '../images/fullLogo.png';
 import { ROUTE_PATHS } from '../../routes'; // Import the path constants
 
 const drawerWidth = 280;
@@ -486,7 +486,7 @@ const PortalMenu: React.FC = () => {
             <Divider />
             {/* Workspace Selector */}
             <WorkspaceSelector>
-              <Avatar src="/assets/images/avatar.png" />
+              <Avatar src="../images/avatar.png" />
               <WorkspaceInfo>
                 <Typography variant="caption">Company</Typography>
                 <Typography variant="subtitle2">Technologies</Typography>
