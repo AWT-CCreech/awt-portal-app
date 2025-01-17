@@ -11,7 +11,7 @@ import PaginatedSortableTable from '../../shared/components/PaginatedSortableTab
 import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
 
 // Styles
-import '../../styles/open-so-report/SearchResults.scss';
+import '../../shared/styles/open-so-report/SearchResults.scss';
 
 interface SearchResultsProps {
     results: EquipReqSearchResult[];

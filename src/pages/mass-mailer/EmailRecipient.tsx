@@ -41,7 +41,7 @@ import agent from '../../app/api/agent';
 import { IMassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
 
 // Styles
-import '../../styles/mass-mailer/EmailRecipient.scss';
+import '../../shared/styles/mass-mailer/EmailRecipient.scss';
 
 interface IProps {
   selectedVendors: IMassMailerVendor[];

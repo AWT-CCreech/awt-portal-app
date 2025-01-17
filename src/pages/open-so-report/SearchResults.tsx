@@ -7,7 +7,7 @@ import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { TrkPoLog } from '../../models/TrkPoLog';
 import SearchResultsRow from './SearchResultsRow'; // Import the row component
-import '../../styles/open-so-report/SearchResults.scss';
+import '../../shared/styles/open-so-report/SearchResults.scss';
 
 interface SearchResultsProps {
   results: (OpenSOReport & { notes: TrkSoNote[]; poLog?: TrkPoLog })[];

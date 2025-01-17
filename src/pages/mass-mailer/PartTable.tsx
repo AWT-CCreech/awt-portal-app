@@ -22,7 +22,7 @@ import agent from '../../app/api/agent';
 import { IMassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
 
 // Styles
-import '../../styles/mass-mailer/PartTable.scss';
+import '../../shared/styles/mass-mailer/PartTable.scss';
 
 interface IProps {
   selectedpartItems: IMassMailerPartItem[];

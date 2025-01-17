@@ -27,7 +27,7 @@ import UserInfo from '../../stores/userInfo';
 import AppState from '../../stores/app';
 import LoginInfo from '../../models/Login/LoginInfo';
 import agent from '../../app/api/agent';
-import '../../styles/login/LoginPage.scss';
+import '../../shared/styles/login/LoginPage.scss';
 
 const LoginPage: React.FC = observer(() => {
   const userInfo = useContext(UserInfo);

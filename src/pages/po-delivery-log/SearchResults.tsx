@@ -12,7 +12,7 @@ import PaginatedSortableTable from '../../shared/components/PaginatedSortableTab
 import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs';
 
 // Styles
-import '../../styles/po-delivery-log/SearchResults.scss';
+import '../../shared/styles/po-delivery-log/SearchResults.scss';
 
 interface SearchResultsProps {
   results: PODeliveryLogs[];

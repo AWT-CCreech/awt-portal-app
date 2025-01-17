@@ -13,7 +13,7 @@ import {
   Button,
   Paper,
 } from '@mui/material';
-import '../../styles/time-tracker/TimeSheet.scss'; // Import the SCSS file
+import '../../shared/styles/time-tracker/TimeSheet.scss'; // Import the SCSS file
 
 interface IProps {
   trackersInPeriod: TimeTracker[];

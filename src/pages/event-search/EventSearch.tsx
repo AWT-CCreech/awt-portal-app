@@ -22,7 +22,7 @@ import { ROUTE_PATHS } from '../../routes';
 import SearchBox from './SearchBox';
 import SearchResults from './SearchResults';
 
-import '../../styles/user-list/UserListPage.scss';
+import '../../shared/styles/user-list/UserListPage.scss';
 
 const EventSearch: React.FC = () => {
     const [searchParams, setSearchParams] = useState<EquipReqSearchCriteria>({

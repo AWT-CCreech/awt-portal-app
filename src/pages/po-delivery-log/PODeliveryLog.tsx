@@ -19,7 +19,7 @@ import SearchInput from '../../models/PODeliveryLog/SearchInput';
 import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs';
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
 import ExcelJS from 'exceljs';
-import '../../styles/user-list/UserListPage.scss';
+import '../../shared/styles/user-list/UserListPage.scss';
 
 interface Statistics {
   uniquePOs: number;
