@@ -8,9 +8,9 @@ import React, {
 import { useLocation, useNavigate, useRoutes } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import theme from '../../themes/theme';
+import theme from '../../shared/themes/theme';
 
-import UserInfoContext from '../../stores/userInfo';
+import UserInfoContext from '../../shared/stores/userInfo';
 import InactivityModal from '../../shared/components/InactivityModal';
 import agent from '../../app/api/agent';
 import { isAuthenticated, handleAutoLogout } from '../../shared/utils/authentication';

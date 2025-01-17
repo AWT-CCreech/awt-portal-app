@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@mui/material';
 import Modules from '../../app/api/agent';
-import UserInfoContext from '../../stores/userInfo';
+import UserInfoContext from '../../shared/stores/userInfo';
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
 import { formatPhoneNumber } from '../../shared/utils/dataManipulation';

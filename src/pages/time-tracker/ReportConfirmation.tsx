@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { TrackerReport } from '../../models/TimeTracker/TrackerReport';
 import agent from '../../app/api/agent';
-import AppState from '../../stores/app';
+import AppState from '../../shared/stores/app';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 
 interface SuperviseeOption {

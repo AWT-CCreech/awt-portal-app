@@ -7,7 +7,7 @@ import { observer } from 'mobx-react-lite';
 import agent from '../../app/api/agent';
 import PageHeader from '../../shared/components/PageHeader';
 import SupervisorApproval from './SupervisorApproval';
-import AppState from '../../stores/app';
+import AppState from '../../shared/stores/app';
 import { useNavigate } from 'react-router-dom';
 
 const TimeTrackerPage: React.FC = () => {
