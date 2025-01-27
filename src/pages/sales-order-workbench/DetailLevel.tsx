@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Snackbar, Alert } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 import { TableRow } from '@mui/material';
 import DetailLevelRow from './DetailLevelRow';
@@ -12,11 +12,6 @@ interface DetailLevelProps {
 
 const DetailLevel: React.FC<DetailLevelProps> = ({ data, onBatchUpdate }) => {
     const [pendingUpdates, setPendingUpdates] = useState<any[]>([]);
-    const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
-        open: false,
-        message: '',
-        severity: 'success',
-    });
 
     const handleRowUpdate = (update: any) => {
         setPendingUpdates((prevUpdates) => {
@@ -32,19 +27,14 @@ const DetailLevel: React.FC<DetailLevelProps> = ({ data, onBatchUpdate }) => {
 
     const handleSaveChanges = async () => {
         if (pendingUpdates.length > 0) {
-            try {
-                onBatchUpdate(pendingUpdates);
-                setSnackbar({ open: true, message: 'Detail Level changes saved successfully.', severity: 'success' });
-                setPendingUpdates([]);
-            } catch (error) {
-                setSnackbar({ open: true, message: 'Failed to save Detail Level changes.', severity: 'error' });
-            }
+            // Let the parent (SalesOrderWB) handle success/error messages in a single Snackbar
+            onBatchUpdate(pendingUpdates);
+            setPendingUpdates([]);
         }
     };
 
-    const handleSnackbarClose = () => setSnackbar({ open: false, message: '', severity: 'success' });
-
     const columns = [
+        'salesOrderNum',
         'rwsalesOrderNum',
         'qtySold',
         'unitMeasure',
@@ -56,6 +46,7 @@ const DetailLevel: React.FC<DetailLevelProps> = ({ data, onBatchUpdate }) => {
 
     const columnNames = [
         'MAS SO#',
+        'New SO#',
         'Qty Sold',
         'U/M',
         'Part Num',
@@ -91,16 +82,6 @@ const DetailLevel: React.FC<DetailLevelProps> = ({ data, onBatchUpdate }) => {
                     Save
                 </Button>
             </Box>
-            <Snackbar
-                open={snackbar.open}
-                autoHideDuration={4000}
-                onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-                <Alert onClose={handleSnackbarClose} severity={snackbar.severity}>
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
         </Box>
     );
 };
