@@ -1,8 +1,10 @@
 export interface DetailLevelRowData {
     id: number; // EquipmentRequest ID
+    eventId: number;
     saleId: number;
     requestId: number;
-    salesOrderNum: string;
+    rwsalesOrderNum: string; // Origin: QtSalesOrderNum
+    salesOrderNum: string; // Origin: EquipmentRequest
     qtySold: number;
     unitMeasure: string;
     partNum: string;
