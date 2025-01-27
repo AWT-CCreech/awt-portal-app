@@ -30,17 +30,31 @@ import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearc
 import { EquipmentRequestUpdateDto } from '../../models/Utility/EquipmentRequestUpdateDto';
 import { SalesOrderUpdateDto } from '../../models/Utility/SalesOrderUpdateDto';
 
+/**
+ * Base URLs for both development and production environments.
+ * Adjust accordingly if more environments (e.g., staging) are added.
+ */
 const devURL = 'http://localhost:5001/api'; // Use for development environment
-const prodURL = 'http://10.0.0.8:82/api'; // Use for production environment
+const prodURL = 'http://10.0.0.8:82/api';   // Use for production environment
 
-// Set the base URL based on the environment
-if (process.env.NODE_ENV === 'development') axios.defaults.baseURL = devURL;
-else axios.defaults.baseURL = prodURL;
+// Conditionally set the baseURL based on the environment variable
+if (process.env.NODE_ENV === 'development') {
+  axios.defaults.baseURL = devURL;
+} else {
+  axios.defaults.baseURL = prodURL;
+}
 
-// Helper function to extract the data from Axios responses
+/**
+ * Extracts the `data` property from the Axios response.
+ * This is a common pattern to reduce boilerplate when handling responses.
+ */
 const responseBody = (response: AxiosResponse) => response.data;
 
-// Axios request methods wrapped for easier use
+/**
+ * A collection of wrapper methods that standardize
+ * GET, POST, PUT, and DELETE requests using axios.
+ * They log requests and responses for easier debugging.
+ */
 const requests = {
   get: async (url: string) => {
     console.log(`GET Request to: ${url}`);
@@ -104,7 +118,10 @@ const requests = {
   },
 };
 
-// Automatically attach the JWT token to every request if it exists in localStorage
+/**
+ * Interceptor that attaches the JWT token from localStorage
+ * to the Authorization header in every outgoing request.
+ */
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -113,12 +130,20 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle token refresh and auto logout on 401 error
+/**
+ * Interceptor that handles:
+ * - Auto-refreshing tokens upon 401 responses
+ * - Logging the user out if refresh also fails
+ *
+ * If a token refresh is successful, the original request is retried
+ * with the new token. If unsuccessful, user session data is cleared.
+ */
 axios.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
+    // Only attempt refresh if we get a 401 (Unauthorized) and haven't retried yet
     if (
       error.response &&
       error.response.status === 401 &&
@@ -133,13 +158,14 @@ axios.interceptors.response.use(
         });
         const newToken = refreshResponse.data.token;
 
+        // Save new token and retry original request
         localStorage.setItem('token', newToken);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axios(originalRequest);
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError);
 
-        // Trigger auto logout if refresh fails
+        // If refresh fails, clear session and redirect to /login
         localStorage.removeItem('token');
         localStorage.removeItem('username');
         localStorage.removeItem('password');
@@ -154,6 +180,9 @@ axios.interceptors.response.use(
   }
 );
 
+/**
+ * CamSearch: Contains endpoints for contact searching in the "Cam" domain.
+ */
 const CamSearch = {
   getAdvancedSearchFields: (): Promise<
     { FieldValue: string; FieldValue2: string; FieldValue4: string }[]
@@ -178,6 +207,10 @@ const CamSearch = {
   },
 };
 
+/**
+ * DataFetch: Contains endpoints that retrieve various static or reference data,
+ * such as account numbers, sales reps, sales teams, etc.
+ */
 const DataFetch = {
   fetchAccountNumbers: async (): Promise<AccountNumbers[]> => {
     try {
@@ -244,6 +277,9 @@ const DataFetch = {
   },
 };
 
+/**
+ * DropShip: Contains endpoints that handle the Drop Ship email process and related data fetching.
+ */
 const DropShip = {
   dropShipSendEmail: (emailInput: object) =>
     requests.post('/DropShipSendEmail', emailInput),
@@ -252,14 +288,20 @@ const DropShip = {
     requests.get(`/DropShipInfo/${poNum}`),
 };
 
+/**
+ * EventSearchPage: Endpoints for searching events and retrieving event-based data.
+ */
 const EventSearchPage = {
   getEventPageData: async (
     params: EquipReqSearchCriteria
   ): Promise<EquipReqSearchResult[]> => {
+    // Convert date objects to YYYY-MM-DD for backend compatibility
     const formattedParams = {
       ...params,
-      fromDate: params.fromDate ? params.fromDate.toISOString().split("T")[0] : null,
-      toDate: params.toDate ? params.toDate.toISOString().split("T")[0] : null,
+      fromDate: params.fromDate
+        ? params.fromDate.toISOString().split('T')[0]
+        : null,
+      toDate: params.toDate ? params.toDate.toISOString().split('T')[0] : null,
     };
 
     try {
@@ -275,6 +317,10 @@ const EventSearchPage = {
   },
 };
 
+/**
+ * MassMailer: Groups endpoints for emailing, file uploads, retrieving
+ * part items, and fetching vendor/user details in the mass mailer functionality.
+ */
 const MassMailer = {
   ClearPartItems: {
     clear: (userid: string): Promise<any> =>
@@ -315,6 +361,10 @@ const MassMailer = {
   },
 };
 
+/**
+ * MasterSearches: A set of endpoints for buy/sell opportunity details
+ * and searching contacts under the "MasterSearch" domain.
+ */
 const MasterSearches = {
   getBuyOppDetails: (input: MasterSearchInput): Promise<BuyOppDetail[]> =>
     requests.getWithParams('/MasterSearch/BuyOppDetails', input),
@@ -331,13 +381,13 @@ const MasterSearches = {
     requests.getWithParams('/MasterSearch/SellOppEvents', input),
 };
 
+/**
+ * OpenSalesOrderNotes: Manages CRUD operations for notes related to sales orders.
+ */
 const OpenSalesOrderNotes = {
   addNote: async (note: TrkSoNote): Promise<TrkSoNote> => {
     try {
-      const response = await requests.post(
-        '/OpenSalesOrderNotes/AddNote',
-        note
-      );
+      const response = await requests.post('/OpenSalesOrderNotes/AddNote', note);
       return response as TrkSoNote;
     } catch (error) {
       console.error('Error adding note', error);
@@ -373,6 +423,9 @@ const OpenSalesOrderNotes = {
   },
 };
 
+/**
+ * OpenSalesOrderReport: Fetches details of open sales orders, including notes.
+ */
 const OpenSalesOrderReport = {
   fetchOpenSalesOrders: async (
     params: OpenSalesOrderSearchInput
@@ -390,6 +443,10 @@ const OpenSalesOrderReport = {
   },
 };
 
+/**
+ * PODeliveryLogService: Contains endpoints for retrieving purchase order delivery logs
+ * and updating PO details, including vendor lookups.
+ */
 const PODeliveryLogService = {
   getPODeliveryLogs: async (
     params: PODeliveryLogSearchInput
@@ -427,7 +484,14 @@ const PODeliveryLogService = {
   },
 };
 
+/**
+ * SalesOrderWorkbench: Endpoints for working with both event-level
+ * and detail-level sales order data.
+ */
 const SalesOrderWorkbench = {
+  // ----------------------------
+  // 1) GET: Event-Level & Detail-Level
+  // ----------------------------
   getEventLevelData: async (params: {
     salesRepId?: number;
     billToCompany?: string;
@@ -444,15 +508,26 @@ const SalesOrderWorkbench = {
     return requests.getWithParams('/SalesOrderWorkbench/DetailLevelData', params);
   },
 
-  updateSalesOrder: async (updateData: SalesOrderUpdateDto): Promise<void> => {
-    return requests.post('/SalesOrder/Update', updateData);
+  // ----------------------------
+  // 2) POST: Event-Level & Detail-Level Updates
+  // ----------------------------
+  updateEventLevel: async (updateData: SalesOrderUpdateDto): Promise<void> => {
+    // Consolidated endpoint for all event-level data updates
+    return requests.post('/SalesOrderWorkbench/UpdateEventLevel', updateData);
   },
 
-  updateEquipmentRequest: async (updateData: EquipmentRequestUpdateDto): Promise<void> => {
-    return requests.post('/EquipmentRequest/Update', updateData);
+  updateDetailLevel: async (
+    updateData: EquipmentRequestUpdateDto
+  ): Promise<void> => {
+    // Consolidated endpoint for all detail-level data updates
+    return requests.post('/SalesOrderWorkbench/UpdateDetailLevel', updateData);
   },
 };
 
+/**
+ * TimeTrackers: Endpoints for managing time tracking,
+ * including approvals, retrieval, and sending time-tracking reports.
+ */
 const TimeTrackers = {
   approve: (approvals: object) =>
     requests.post('/TimeTrackerApprovals', approvals),
@@ -475,6 +550,9 @@ const TimeTrackers = {
     requests.put('/TimeTrackers', body),
 };
 
+/**
+ * UserList: Handles user CRUD operations for an internal user list.
+ */
 const UserList = {
   addUser: async (newUser: User): Promise<User> => {
     try {
@@ -516,30 +594,39 @@ const UserList = {
   },
 };
 
+/**
+ * UserLogins: Endpoints responsible for user authentication
+ * and token refresh mechanisms.
+ */
 const UserLogins = {
   authenticate: (loginInfo: LoginInfo): Promise<LoginInfo> =>
     requests.post('/UserLogins', loginInfo),
-  refreshToken: (tokenRefreshRequest: {
-    token: string;
-  }): Promise<{ token: string }> =>
+
+  refreshToken: (
+    tokenRefreshRequest: { token: string }
+  ): Promise<{ token: string }> =>
     requests.post('/Token/RefreshToken', tokenRefreshRequest),
 };
 
-// Export grouped modules
+/**
+ * Modules: A grouped export of all services for easier imports in other parts
+ * of the application. Each property corresponds to one of the logical groups
+ * defined above.
+ */
 const Modules = {
   CamSearch,
   DataFetch,
   DropShip,
+  EventSearchPage,
   MassMailer,
   MasterSearches,
   OpenSalesOrderNotes,
   OpenSalesOrderReport,
   PODeliveryLogService,
+  SalesOrderWorkbench,
   TimeTrackers,
   UserList,
   UserLogins,
-  EventSearchPage,
-  SalesOrderWorkbench,
 };
 
 export default Modules;
