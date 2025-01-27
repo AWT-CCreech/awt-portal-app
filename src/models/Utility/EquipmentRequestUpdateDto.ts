@@ -1,4 +1,5 @@
 export interface EquipmentRequestUpdateDto {
+    EventId: number;
     RequestId: number;
     SalesOrderNum: string;
     Username: string;
