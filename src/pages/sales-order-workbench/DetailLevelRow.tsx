@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TableCell, TextField, Checkbox, Snackbar, Alert } from '@mui/material';
+import { TableCell, TextField } from '@mui/material';
 import { formatAmount } from '../../shared/utils/dataManipulation';
 import { DetailLevelRowData } from '../../models/SOWorkbench/DetailLevelRowData';
 import { EquipmentRequestUpdateDto } from '../../models/Utility/EquipmentRequestUpdateDto';
@@ -11,23 +11,17 @@ interface DetailLevelRowProps {
 
 const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
     const [salesOrderNum, setSalesOrderNum] = useState<string>(row.salesOrderNum || '');
-    const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({
-        open: false,
-        message: '',
-    });
-
-    const handleSnackbarClose = () => setSnackbar({ open: false, message: '' });
 
     const handleFieldChange = (field: keyof DetailLevelRowData, value: any) => {
-        if (field === 'salesOrderNum' && !/^\d{6}$/.test(value)) {
-            setSnackbar({ open: true, message: 'Sales Order Number must be exactly 6 digits.' });
-            setSalesOrderNum(row.salesOrderNum || '');
-            return;
+        // (Optional) Validate salesOrderNum if needed; 
+        // Otherwise, simply store new value and pass upward for parent-level handling.
+
+        if (field === 'salesOrderNum') {
+            setSalesOrderNum(value);
         }
 
-        if (field === 'salesOrderNum') setSalesOrderNum(value);
-
         onUpdate({
+            EventId: row.eventId,
             RequestId: row.requestId,
             SalesOrderNum: field === 'salesOrderNum' ? value : salesOrderNum,
             Username: localStorage.getItem('username') ?? '',
@@ -39,6 +33,7 @@ const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
 
     return (
         <>
+            <TableCell align="left">{row.rwsalesOrderNum}</TableCell>
             <TableCell align="left">
                 <TextField
                     size="small"
@@ -54,16 +49,6 @@ const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {
                 {formatAmount(row.unitPrice)}
             </TableCell>
             <TableCell align="left">{row.salesRep}</TableCell>
-            <Snackbar
-                open={snackbar.open}
-                autoHideDuration={4000}
-                onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-                <Alert onClose={handleSnackbarClose} severity="warning">
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
         </>
     );
 };
