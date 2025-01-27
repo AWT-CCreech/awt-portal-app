@@ -39,7 +39,7 @@ const SalesOrderWB: React.FC = () => {
         try {
             await Promise.all(
                 updates.map((update) =>
-                    Modules.SalesOrderWorkbench.updateSalesOrder({
+                    Modules.SalesOrderWorkbench.updateEventLevel({
                         ...update,
                         Username: localStorage.getItem('username') ?? '',
                         Password: localStorage.getItem('password') ?? '',
@@ -62,7 +62,7 @@ const SalesOrderWB: React.FC = () => {
         try {
             await Promise.all(
                 updates.map((update) =>
-                    Modules.SalesOrderWorkbench.updateEquipmentRequest({
+                    Modules.SalesOrderWorkbench.updateDetailLevel({
                         ...update,
                         Username: localStorage.getItem('username') ?? '',
                         Password: localStorage.getItem('password') ?? '',
@@ -95,7 +95,7 @@ const SalesOrderWB: React.FC = () => {
                     onDetailBatchUpdate={handleDetailLevelBatchUpdate}
                 />
             </Container>
-            <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+            <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
                 <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
                     {snackbar.message}
                 </Alert>
