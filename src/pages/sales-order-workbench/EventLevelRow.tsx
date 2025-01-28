@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { TableCell, TextField, Checkbox, Link } from '@mui/material';
 import { formatAmount } from '../../shared/utils/dataManipulation';
 import { EventLevelRowData } from '../../models/SOWorkbench/EventLevelRowData';
-import { SalesOrderUpdateDto } from '../../models/Utility/SalesOrderUpdateDto';
+import { EventLevelUpdateDto } from '../../models/SOWorkbench/EventLevelUpdateDto';
 
 interface EventLevelRowProps {
     row: EventLevelRowData;
-    onUpdate: (updateData: SalesOrderUpdateDto) => void;
+    onUpdate: (updateData: EventLevelUpdateDto) => void;
 }
 
 const EventLevelRow: React.FC<EventLevelRowProps> = ({ row, onUpdate }) => {

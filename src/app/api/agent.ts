@@ -27,8 +27,8 @@ import { Rep } from '../../models/Data/Rep';
 import { DropShipPartsParams } from '../../models/DropShip/DropShipPartParams';
 import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
 import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
-import { EquipmentRequestUpdateDto } from '../../models/Utility/EquipmentRequestUpdateDto';
-import { SalesOrderUpdateDto } from '../../models/Utility/SalesOrderUpdateDto';
+import { DetailLevelUpdateDto } from '../../models/SOWorkbench/DetailLevelUpdateDto';
+import { EventLevelUpdateDto } from '../../models/SOWorkbench/EventLevelUpdateDto';
 
 /**
  * Base URLs for both development and production environments.
@@ -511,13 +511,13 @@ const SalesOrderWorkbench = {
   // ----------------------------
   // 2) POST: Event-Level & Detail-Level Updates
   // ----------------------------
-  updateEventLevel: async (updateData: SalesOrderUpdateDto): Promise<void> => {
+  updateEventLevel: async (updateData: EventLevelUpdateDto): Promise<void> => {
     // Consolidated endpoint for all event-level data updates
     return requests.post('/SalesOrderWorkbench/UpdateEventLevel', updateData);
   },
 
   updateDetailLevel: async (
-    updateData: EquipmentRequestUpdateDto
+    updateData: DetailLevelUpdateDto
   ): Promise<void> => {
     // Consolidated endpoint for all detail-level data updates
     return requests.post('/SalesOrderWorkbench/UpdateDetailLevel', updateData);

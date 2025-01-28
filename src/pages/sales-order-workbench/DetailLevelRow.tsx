@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { TableCell, TextField } from '@mui/material';
 import { formatAmount } from '../../shared/utils/dataManipulation';
 import { DetailLevelRowData } from '../../models/SOWorkbench/DetailLevelRowData';
-import { EquipmentRequestUpdateDto } from '../../models/Utility/EquipmentRequestUpdateDto';
+import { DetailLevelUpdateDto } from '../../models/SOWorkbench/DetailLevelUpdateDto';
 
 interface DetailLevelRowProps {
     row: DetailLevelRowData;
-    onUpdate: (updateData: EquipmentRequestUpdateDto) => void;
+    onUpdate: (updateData: DetailLevelUpdateDto) => void;
 }
 
 const DetailLevelRow: React.FC<DetailLevelRowProps> = ({ row, onUpdate }) => {

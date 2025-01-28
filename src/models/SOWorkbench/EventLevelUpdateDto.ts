@@ -1,4 +1,4 @@
-export interface SalesOrderUpdateDto {
+export interface EventLevelUpdateDto {
     SaleId: number;
     SalesOrderNum: string;
     DropShipment: boolean;

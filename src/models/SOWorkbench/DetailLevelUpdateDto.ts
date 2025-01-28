@@ -1,4 +1,4 @@
-export interface EquipmentRequestUpdateDto {
+export interface DetailLevelUpdateDto {
     EventId: number;
     RequestId: number;
     SalesOrderNum: string;
