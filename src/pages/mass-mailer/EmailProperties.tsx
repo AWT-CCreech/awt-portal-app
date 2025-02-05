@@ -284,11 +284,11 @@ const EmailProperties: React.FC<IProps> = ({
               }}
             >
               <Typography className="popup-content">
-                %FULLNAME% for recipient's full name
+                %%FULLNAME%% for recipient's full name
                 <br />
-                %FIRSTNAME% for recipient's first name
+                %%FIRSTNAME%% for recipient's first name
                 <br />
-                %LASTNAME% for recipient's last name
+                %%LASTNAME%% for recipient's last name
               </Typography>
             </Popover>
             <textarea
