@@ -86,13 +86,13 @@ const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }
               <Typography variant="subtitle2">Select</Typography>
             </Grid2>
             <Grid2 size={2}>
-              <Typography variant="subtitle2">Airway Part Number</Typography>
+              <Typography variant="subtitle2">AWT P/N</Typography>
             </Grid2>
             <Grid2 size={2}>
-              <Typography variant="subtitle2">Mfg Part Number</Typography>
+              <Typography variant="subtitle2">MFG P/N</Typography>
             </Grid2>
             <Grid2 size={3}>
-              <Typography variant="subtitle2">Part Description</Typography>
+              <Typography variant="subtitle2">Description</Typography>
             </Grid2>
             <Grid2 size={1}>
               <Typography variant="subtitle2">Qty</Typography>
