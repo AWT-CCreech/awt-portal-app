@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import {
   Button,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
@@ -15,20 +14,22 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 
 // Models
-import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
+import MassMailerUser from '../../models/MassMailer/MassMailerUser';
 
 interface IProps {
-  CC: IMassMailerUser[];
-  setCC: (users: IMassMailerUser[]) => void;
+  CC: MassMailerUser[];
+  setCC: (users: MassMailerUser[]) => void;
 }
 
-const AddCC: React.FC<IProps> = ({ CC, setCC }) => {
+const ExternalCC: React.FC<IProps> = ({ CC, setCC }) => {
   const [open, setOpen] = useState(false);
+  const [uname, setUname] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
 
   const addCC = () => {
-    setCC([...CC, { fullName: name, email: email }]);
+    setCC([...CC, { userName: uname, fullName: name, email: email }]);
+    setUname('');
     setEmail('');
     setName('');
   };
@@ -44,7 +45,7 @@ const AddCC: React.FC<IProps> = ({ CC, setCC }) => {
         Add CC (external)
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>Copy email to people outside of Airway</DialogTitle>
+        <DialogTitle>External CC</DialogTitle>
         <DialogContent>
           <Grid container spacing={2} direction="column" alignItems="center">
             <Grid item marginTop={1}>
@@ -87,14 +88,9 @@ const AddCC: React.FC<IProps> = ({ CC, setCC }) => {
             ))}
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)} color="primary">
-            Done
-          </Button>
-        </DialogActions>
       </Dialog>
     </>
   );
 };
 
-export default AddCC;
+export default ExternalCC;

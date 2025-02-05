@@ -23,15 +23,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 
 // Models
-import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
+import MassMailerUser from '../../models/MassMailer/MassMailerUser';
 
 interface IProps {
-  CC: IMassMailerUser[];
-  setCC: (users: IMassMailerUser[]) => void;
-  allUsers: IMassMailerUser[];
+  CC: MassMailerUser[];
+  setCC: (users: MassMailerUser[]) => void;
+  allUsers: MassMailerUser[];
 }
 
-const CcPopUp: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
+const InternalCC: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
   const [searchCC, setSearchCC] = useState<string>('');
   const [open, setOpen] = useState(false);
 
@@ -39,7 +39,7 @@ const CcPopUp: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
     setCC([...CC, ...allUsers.filter((u) => u.email === email)]);
   };
 
-  const handleSearchCC = (): IMassMailerUser[] => {
+  const handleSearchCC = (): MassMailerUser[] => {
     if (searchCC !== '')
       return allUsers.filter(
         (user) =>
@@ -65,7 +65,7 @@ const CcPopUp: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
         fullWidth
         maxWidth="md"
       >
-        <DialogTitle>Select CC on Email</DialogTitle>
+        <DialogTitle mb={6}>Select CC on Email</DialogTitle>
         <DialogContent>
           <Grid container spacing={2}>
             <Grid item xs={6}>
@@ -132,4 +132,4 @@ const CcPopUp: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
   );
 };
 
-export default CcPopUp;
+export default InternalCC;
