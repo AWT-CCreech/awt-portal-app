@@ -38,14 +38,14 @@ import { debounce } from 'lodash';
 import agent from '../../app/api/agent';
 
 // Models
-import { IMassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
+import { MassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
 
 // Styles
 import '../../shared/styles/mass-mailer/EmailRecipient.scss';
 
 interface IProps {
-  selectedVendors: IMassMailerVendor[];
-  setSelectedVendors: (vendor: IMassMailerVendor[]) => void;
+  selectedVendors: MassMailerVendor[];
+  setSelectedVendors: (vendor: MassMailerVendor[]) => void;
   resetRecipients: boolean; // New prop to trigger reset
 }
 
@@ -64,7 +64,7 @@ const EmailRecipient: React.FC<IProps> = ({
   const [mfgOptions, setMfgOptions] = useState<MfgOption[]>([
     { key: 'All', value: 'All', text: 'All' },
   ]);
-  const [vendorsToSelect, setVendorsToSelect] = useState<IMassMailerVendor[]>([]);
+  const [vendorsToSelect, setVendorsToSelect] = useState<MassMailerVendor[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [mfg, setMfg] = useState<string>('All');
   const [anc, setAnc] = useState<boolean>(false);
