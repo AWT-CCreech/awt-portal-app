@@ -2,10 +2,11 @@ import axios, { AxiosResponse } from 'axios';
 import { AccountNumbers } from '../../models/Data/AccountNumbers';
 import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
 import { CamContact } from '../../models/CamContact';
-import { IMassMailerEmailTemplate } from '../../models/MassMailer/MassMailerEmailTemplate';
-import { IMassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
-import { IMassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
-import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
+import { MassMailHistory } from '../../models/MassMailHistory';
+import { MassMailerEmailTemplate } from '../../models/MassMailer/MassMailerEmailTemplate';
+import { MassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
+import { MassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
+import MassMailerUser from '../../models/MassMailer/MassMailerUser';
 import BuyOppDetail from '../../models/MasterSearch/BuyOppDetail';
 import BuyOppEvent from '../../models/MasterSearch/BuyOppEvent';
 import LoginInfo from '../../models/Login/LoginInfo';
@@ -153,7 +154,7 @@ axios.interceptors.response.use(
 
       try {
         const currentToken = localStorage.getItem('token');
-        const refreshResponse = await axios.post('/UserLogins/refresh', {
+        const refreshResponse = await axios.post('/Login/refresh', {
           token: currentToken,
         });
         const newToken = refreshResponse.data.token;
@@ -318,47 +319,53 @@ const EventSearchPage = {
 };
 
 /**
- * MassMailer: Groups endpoints for emailing, file uploads, retrieving
- * part items, and fetching vendor/user details in the mass mailer functionality.
+ * MassMailer: Endpoints for mass mailer functionality.
  */
 const MassMailer = {
   ClearPartItems: {
-    clear: (userid: string): Promise<any> =>
-      requests.get(`/MassMailerClearPartItems/${userid}`),
+    clear: (userid: string): Promise<any> => requests.get(`/MassMailerClearPartItems/${userid}`),
   },
   EmailOuts: {
     sendEmail: (body: object) => requests.post('/MassMailerEmailOuts', body),
   },
   EmailTemplates: {
-    templatesForUser: (user: string): Promise<IMassMailerEmailTemplate[]> =>
+    templatesForUser: (user: string): Promise<MassMailerEmailTemplate[]> =>
       requests.get(`/MassMailerEmailTemplates/${user}`),
   },
   FileUpload: {
-    clear: (username: string): Promise<any> =>
-      requests.get(`/MassMailerFileUpload/${username}`),
-    upload: (body: FormData): Promise<string[]> =>
-      requests.post('/MassMailerFileUpload', body),
+    clear: (username: string): Promise<any> => requests.get(`/MassMailerFileUpload/${username}`),
+    upload: (body: FormData): Promise<string[]> => requests.post('/MassMailerFileUpload', body),
   },
   Manufacturers: {
-    manufacturerList: (): Promise<string[]> =>
-      requests.get('/MassMailerManufacturers'),
+    manufacturerList: (): Promise<string[]> => requests.get('/MassMailerManufacturers'),
   },
   PartItems: {
-    partItemsForUser: (user: string): Promise<IMassMailerPartItem[]> =>
-      requests.get(`/MassMailerPartItems/${user}`),
+    partItemsForUser: (user: string): Promise<MassMailerPartItem[]> => requests.get(`/MassMailerPartItems/${user}`),
   },
   Vendors: {
-    vendorList: (
-      mfg: string,
-      anc: boolean,
-      fne: boolean
-    ): Promise<IMassMailerVendor[]> => {
-      return requests.get(`/MassMailerVendors/${mfg}/${anc}/${fne}`);
-    },
+    vendorList: (mfg: string, anc: boolean, fne: boolean): Promise<MassMailerVendor[]> =>
+      requests.get(`/MassMailerVendors/${mfg}/${anc}/${fne}`),
   },
   Users: {
-    getAll: (): Promise<IMassMailerUser[]> => requests.get('/MassMailerUsers'),
+    // The front end now calls these endpoints (provided by the UsersController)
+    // which internally use UserService logic.
+    getActive: (): Promise<User[]> => requests.get('/Users/active'),
+    getMassMailer: (): Promise<MassMailerUser[]> => requests.get('/Users/massmailer'),
   },
+};
+
+/**
+ * MassMailerHistory: Endpoints for Mass Mailer History operations.
+ */
+const MassMailerHistory = {
+  getAll: (): Promise<MassMailHistory[]> => requests.get('/MassMailerHistory'),
+  getByUser: (username: string): Promise<MassMailHistory[]> =>
+    requests.get(`/MassMailerHistory/sentBy/${username}`),
+  getByUserAndId: (username: string, id: number): Promise<MassMailHistory> =>
+    requests.get(`/MassMailerHistory/sentBy/${username}/${id}`),
+  update: (id: number, history: MassMailHistory): Promise<any> => requests.put(`/MassMailerHistory/${id}`, history),
+  create: (history: MassMailHistory): Promise<MassMailHistory> => requests.post('/MassMailerHistory', history),
+  delete: (id: number): Promise<MassMailHistory> => requests.delete(`/MassMailerHistory/${id}`),
 };
 
 /**
@@ -550,6 +557,14 @@ const TimeTrackers = {
     requests.put('/TimeTrackers', body),
 };
 
+const Users = {
+  // Retrieves full User model data for all active users.
+  getActive: (): Promise<User[]> => requests.get('/Users/active'),
+
+  // Retrieves only active users who have sent a MassMailer.
+  getMassMailer: (): Promise<MassMailerUser[]> => requests.get('/Users/massmailer'),
+};
+
 /**
  * UserList: Handles user CRUD operations for an internal user list.
  */
@@ -600,7 +615,7 @@ const UserList = {
  */
 const UserLogins = {
   authenticate: (loginInfo: LoginInfo): Promise<LoginInfo> =>
-    requests.post('/UserLogins', loginInfo),
+    requests.post('/Login', loginInfo),
 
   refreshToken: (
     tokenRefreshRequest: { token: string }
@@ -619,12 +634,14 @@ const Modules = {
   DropShip,
   EventSearchPage,
   MassMailer,
+  MassMailerHistory,
   MasterSearches,
   OpenSalesOrderNotes,
   OpenSalesOrderReport,
   PODeliveryLogService,
   SalesOrderWorkbench,
   TimeTrackers,
+  Users,
   UserList,
   UserLogins,
 };
