@@ -109,8 +109,8 @@ const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }
           </Grid2>
 
           {/* Part Items Rows */}
-          {partItems.map((item) => (
-            <Grid2 container size={12} key={item.id} alignItems="center" spacing={1}>
+          {partItems.map((item, index) => (
+            <Grid2 container size={12} key={index} alignItems="center" spacing={1}>
               {/* Checkbox */}
               <Grid2 size={1.5}>
                 <Checkbox
