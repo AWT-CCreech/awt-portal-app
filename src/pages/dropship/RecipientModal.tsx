@@ -19,12 +19,12 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 // Models
-import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
+import MassMailerUser from '../../models/MassMailer/MassMailerUser';
 
 interface IProps {
-  recipients: IMassMailerUser[];
-  setRecipients: (users: IMassMailerUser[]) => void;
-  salesReps: IMassMailerUser[];
+  recipients: MassMailerUser[];
+  setRecipients: (users: MassMailerUser[]) => void;
+  salesReps: MassMailerUser[];
 }
 
 const RecipientModal: React.FC<IProps> = ({
@@ -41,7 +41,7 @@ const RecipientModal: React.FC<IProps> = ({
     ]);
   };
 
-  const handleSearchRecipient = (): IMassMailerUser[] => {
+  const handleSearchRecipient = (): MassMailerUser[] => {
     if (searchRecipient !== '')
       return salesReps.filter(
         (user) =>
