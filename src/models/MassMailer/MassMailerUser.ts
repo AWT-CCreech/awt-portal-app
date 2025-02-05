@@ -1,6 +1,7 @@
-interface IMassMailerUser {
+interface MassMailerUser {
+  userName: string;
   email: string;
   fullName: string;
 }
 
-export default IMassMailerUser;
+export default MassMailerUser;

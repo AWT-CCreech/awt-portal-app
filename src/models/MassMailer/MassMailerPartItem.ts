@@ -1,4 +1,4 @@
-export interface IMassMailerPartItem {
+export interface MassMailerPartItem {
   id: number;
   partNum: string;
   altPartNum: string;

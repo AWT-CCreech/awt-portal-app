@@ -1,4 +1,4 @@
-export interface IMassMailerVendor {
+export interface MassMailerVendor {
   id: number;
   contact: string;
   email: string;
