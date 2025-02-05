@@ -1,12 +1,8 @@
-// React and Hooks
 import React, { useEffect, useState } from 'react';
-
-// MUI Components
 import {
   Box,
   Button,
   Checkbox,
-  Grid,
   IconButton,
   Paper,
   TextField,
@@ -15,25 +11,20 @@ import {
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 
-// API
+// Use Grid2 from the unstable package.
+import Grid2 from '@mui/material/Grid2';
+
 import agent from '../../app/api/agent';
-
-// Models
-import { IMassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
-
-// Styles
+import { MassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
 import '../../shared/styles/mass-mailer/PartTable.scss';
 
 interface IProps {
-  selectedpartItems: IMassMailerPartItem[];
-  setSelectedPartItems: (item: IMassMailerPartItem[]) => void;
+  selectedpartItems: MassMailerPartItem[];
+  setSelectedPartItems: (item: MassMailerPartItem[]) => void;
 }
 
-const PartTable: React.FC<IProps> = ({
-  selectedpartItems,
-  setSelectedPartItems,
-}) => {
-  const [partItems, setPartItems] = useState<IMassMailerPartItem[]>([]);
+const PartTable: React.FC<IProps> = ({ selectedpartItems, setSelectedPartItems }) => {
+  const [partItems, setPartItems] = useState<MassMailerPartItem[]>([]);
 
   useEffect(() => {
     const userid = localStorage.getItem('userid');
@@ -88,50 +79,50 @@ const PartTable: React.FC<IProps> = ({
         <Typography variant="h6" gutterBottom>
           Part Items
         </Typography>
-        <Grid container spacing={1}>
+        <Grid2 container spacing={1}>
           {/* Table Headers */}
-          <Grid container item xs={12} sx={{ backgroundColor: '#f5f5f5', padding: '8px 0' }}>
-            <Grid item xs={1.5}>
+          <Grid2 container size={12} sx={{ backgroundColor: '#f5f5f5', padding: '8px 0' }}>
+            <Grid2 size={1.5}>
               <Typography variant="subtitle2">Select</Typography>
-            </Grid>
-            <Grid item xs={2}>
+            </Grid2>
+            <Grid2 size={2}>
               <Typography variant="subtitle2">Airway Part Number</Typography>
-            </Grid>
-            <Grid item xs={2}>
+            </Grid2>
+            <Grid2 size={2}>
               <Typography variant="subtitle2">Mfg Part Number</Typography>
-            </Grid>
-            <Grid item xs={3}>
+            </Grid2>
+            <Grid2 size={3}>
               <Typography variant="subtitle2">Part Description</Typography>
-            </Grid>
-            <Grid item xs={1}>
+            </Grid2>
+            <Grid2 size={1}>
               <Typography variant="subtitle2">Qty</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
+            </Grid2>
+            <Grid2 size={1.5}>
               <Typography variant="subtitle2">Company</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
+            </Grid2>
+            <Grid2 size={1.5}>
               <Typography variant="subtitle2">Manufacturer</Typography>
-            </Grid>
-            <Grid item xs={1.5}>
+            </Grid2>
+            <Grid2 size={1.5}>
               <Typography variant="subtitle2">Rev</Typography>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
 
           {/* Part Items Rows */}
           {partItems.map((item) => (
-            <Grid container item xs={12} key={item.id} alignItems="center" spacing={1}>
+            <Grid2 container size={12} key={item.id} alignItems="center" spacing={1}>
               {/* Checkbox */}
-              <Grid item xs={1.5}>
+              <Grid2 size={1.5}>
                 <Checkbox
                   checked={selectedpartItems.some((selected) => selected.id === item.id)}
                   onChange={(event) => handleCheckbox(item.id, event.target.checked)}
                   color="primary"
                   inputProps={{ 'aria-label': 'select part item' }}
                 />
-              </Grid>
+              </Grid2>
 
               {/* Airway Part Number */}
-              <Grid item xs={2}>
+              <Grid2 size={2}>
                 <TextField
                   variant="outlined"
                   size="small"
@@ -140,10 +131,10 @@ const PartTable: React.FC<IProps> = ({
                   fullWidth
                   placeholder="Airway Part #"
                 />
-              </Grid>
+              </Grid2>
 
               {/* Mfg Part Number */}
-              <Grid item xs={2}>
+              <Grid2 size={2}>
                 <TextField
                   variant="outlined"
                   size="small"
@@ -152,10 +143,10 @@ const PartTable: React.FC<IProps> = ({
                   fullWidth
                   placeholder="Mfg Part #"
                 />
-              </Grid>
+              </Grid2>
 
               {/* Part Description */}
-              <Grid item xs={3}>
+              <Grid2 size={3}>
                 <TextField
                   variant="outlined"
                   size="small"
@@ -164,10 +155,10 @@ const PartTable: React.FC<IProps> = ({
                   fullWidth
                   placeholder="Description"
                 />
-              </Grid>
+              </Grid2>
 
               {/* Quantity */}
-              <Grid item xs={1}>
+              <Grid2 size={1}>
                 <TextField
                   variant="outlined"
                   size="small"
@@ -178,20 +169,20 @@ const PartTable: React.FC<IProps> = ({
                   inputProps={{ min: 0 }}
                   placeholder="Qty"
                 />
-              </Grid>
+              </Grid2>
 
               {/* Company */}
-              <Grid item xs={1.5}>
+              <Grid2 size={1.5}>
                 <Typography variant="body2">{item.company}</Typography>
-              </Grid>
+              </Grid2>
 
               {/* Manufacturer */}
-              <Grid item xs={1.5}>
+              <Grid2 size={1.5}>
                 <Typography variant="body2">{item.manufacturer}</Typography>
-              </Grid>
+              </Grid2>
 
               {/* Revision */}
-              <Grid item xs={1.5}>
+              <Grid2 size={1.5}>
                 <TextField
                   variant="outlined"
                   size="small"
@@ -200,10 +191,10 @@ const PartTable: React.FC<IProps> = ({
                   fullWidth
                   placeholder="Rev"
                 />
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           ))}
-        </Grid>
+        </Grid2>
       </Paper>
 
       {/* Action Buttons */}
