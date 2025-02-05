@@ -1,5 +1,3 @@
-/* TimeSheet.scss */
-
 /* Variables */
 $margin-top-large: 50px;
 $margin-top-medium: 20px;
@@ -10,7 +8,8 @@ $background-gradient-start: hsl(210, 100%, 97%);
 $background-gradient-end: hsl(0, 0%, 100%);
 $box-shadow-light: hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px;
 $box-shadow-dark: hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px;
-$padding-container: 50px; /* Assuming original div had margin-top:50px, adjust if needed */
+$padding-container: 50px;
+/* Assuming original div had margin-top:50px, adjust if needed */
 $padding-table-container: 20px;
 $display-inline: inline;
 $hidden-download-link-display: none;
