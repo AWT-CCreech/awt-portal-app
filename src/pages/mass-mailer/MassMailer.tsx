@@ -1,4 +1,3 @@
-// React and Hooks
 import React, { useState, useEffect } from 'react';
 
 // Components
@@ -9,9 +8,10 @@ import PageHeader from '../../shared/components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';
 
 // Models
-import { IMassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
-import { IMassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
+import { MassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
+import { MassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
 import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
+import { User } from '../../models/User';
 
 // API
 import agent from '../../app/api/agent';
@@ -26,137 +26,108 @@ import { trim } from 'lodash';
 import {
   Box,
   ClickAwayListener,
-  Grid,
   Fab,
   CircularProgress,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
+
 import SendIcon from '@mui/icons-material/Send';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import HistoryIcon from '@mui/icons-material/History';
+
+// Import the History modal component
+import History from './History';
 
 const MassMailer: React.FC = () => {
   // Form State Variables
   const [emailBody, setEmailBody] = useState<string>('');
   const [emailSubject, setEmailSubject] = useState<string>('');
-  const [selectedPartItems, setSelectedPartItems] = useState<IMassMailerPartItem[]>([]);
-  const [recipients, setRecipients] = useState<IMassMailerVendor[]>([]);
+  const [selectedPartItems, setSelectedPartItems] = useState<MassMailerPartItem[]>([]);
+  const [recipients, setRecipients] = useState<MassMailerVendor[]>([]);
   const [attachments, setAttachments] = useState<string[]>([]);
   const [CC, setCC] = useState<IMassMailerUser[]>([]);
+  // For the CC list: fetch all active users (transformed to IMassMailerUser)
   const [allUsers, setAllUsers] = useState<IMassMailerUser[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string>('None');
 
   // UI State Variables
   const [buttonState, setButtonState] = useState<'default' | 'confirm' | 'loading' | 'success' | 'error'>('default');
-
-  // New State Variable to Reset Recipients
   const [resetRecipients, setResetRecipients] = useState<boolean>(false);
+  // State for opening the History modal
+  const [openHistory, setOpenHistory] = useState<boolean>(false);
+  // State for mass mailer users (for the History modal)
+  const [massMailerUsers, setMassMailerUsers] = useState<IMassMailerUser[]>([]);
+
+  // Retrieve the current username from localStorage
+  const currentUsername = localStorage.getItem('username') ?? '';
 
   useEffect(() => {
-    // Fetch all users on component mount
-    agent.MassMailer.Users.getAll().then(setAllUsers);
+    // Fetch all active users (full User model) then transform to IMassMailerUser for CC.
+    agent.Users.getActive().then((users: User[]) => {
+      const transformed: IMassMailerUser[] = users.map(u => ({
+        fullName: `${u.fname} ${u.lname}`,
+        email: (u.email ?? '').toLowerCase(),
+        // For this example, we'll assume userName is the same as fullName.
+        userName: `${u.fname} ${u.lname}`,
+      }));
+      setAllUsers(transformed);
+    });
 
-    // Clear any existing file uploads for the current user
-    const username = localStorage.getItem('username') ?? '';
-    agent.MassMailer.FileUpload.clear(username);
-  }, []);
+    // Fetch mass mailer users (for the History modal)
+    agent.Users.getMassMailer().then(setMassMailerUsers);
 
-  /**
-   * Handles the primary button click.
-   * - If buttonState is 'default', validates the form and enters confirmation mode.
-   * - If buttonState is 'confirm', proceeds to send the email.
-   */
+    // Clear any existing file uploads for the current user.
+    agent.MassMailer.FileUpload.clear(currentUsername);
+  }, [currentUsername]);
+
   const handleButtonClick = () => {
     if (buttonState === 'default') {
-      // Validate form fields
-      if (!trim(emailBody)) {
-        alert('Please fill in the email message!');
-        return;
-      }
-      if (!trim(emailSubject)) {
-        alert('Please fill in the email subject!');
-        return;
-      }
-      if (recipients.length === 0) {
-        alert('Please select recipients for your email!');
-        return;
-      }
-      if (recipients.length > 25) {
-        alert('Please select less than 25 recipients!');
-        return;
-      }
-      if (selectedPartItems.length === 0) {
-        alert('Please select at least one part item to send email!');
-        return;
-      }
-
-      // Enter confirmation mode
+      if (!trim(emailBody)) { alert('Please fill in the email message!'); return; }
+      if (!trim(emailSubject)) { alert('Please fill in the email subject!'); return; }
+      if (recipients.length === 0) { alert('Please select recipients for your email!'); return; }
+      if (recipients.length > 25) { alert('Please select less than 25 recipients!'); return; }
+      if (selectedPartItems.length === 0) { alert('Please select at least one part item to send email!'); return; }
       setButtonState('confirm');
     } else if (buttonState === 'confirm') {
-      // Proceed to send the email
       handleConfirm();
     }
   };
 
-  /**
-   * Sends the email using the API and handles success/error responses.
-   */
   const handleConfirm = () => {
     setButtonState('loading');
-
-    // Prepare the email body with HTML formatting
     let finalBody = `<p>${emailBody}</p>`;
-    finalBody = finalBody
-      .replace(/(?:\r\n|\r|\n)/g, '<br/>')
-      .replace(/ /g, '&nbsp;');
+    finalBody = finalBody.replace(/(?:\r\n|\r|\n)/g, '<br/>').replace(/ /g, '&nbsp;');
     finalBody += '<table>';
-    // finalBody +=
-    //   '<tr><th>Airway Part Number</th><th>Mfg Part Number</th><th>Part Description</th><th>Qty</th><th>Manufacturer</th><th>Rev</th></tr>';
     finalBody += '%%PARTTABLE%%</table>';
-
-    // Construct the payload object
     const obj = {
       Subject: emailSubject,
       Body: finalBody,
-      UserName: localStorage.getItem('username') ?? '',
+      UserName: currentUsername,
       Password: localStorage.getItem('password') ?? '',
-      RecipientIds: recipients.map((recipient) => recipient.id),
-      ToEmails: recipients.map((recipient) => recipient.email),
-      RecipientNames: recipients.map((recipient) => recipient.contact),
-      RecipientCompanies: recipients.map((recipient) => recipient.company),
+      RecipientIds: recipients.map(r => r.id),
+      ToEmails: recipients.map(r => r.email),
+      RecipientNames: recipients.map(r => r.contact),
+      RecipientCompanies: recipients.map(r => r.company),
       Attachments: attachments,
-      CCEmails: CC.map((cc) => cc.email),
-      CCNames: CC.map((cc) => cc.fullName),
+      CCEmails: CC.map(c => c.email),
+      CCNames: CC.map(c => c.fullName),
       items: selectedPartItems,
     };
-
-    // Send the email via API
     agent.MassMailer.EmailOuts.sendEmail(obj)
       .then(() => {
-        // On success, update button state and reset form
         setButtonState('success');
         resetForm();
-
-        // Revert button to default after 3 seconds
-        setTimeout(() => {
-          setButtonState('default');
-        }, 3000);
+        setTimeout(() => setButtonState('default'), 3000);
       })
       .catch((error) => {
-        // On failure, update button state
         console.error(error);
         setButtonState('error');
-
-        // Revert button to default after 3 seconds
-        setTimeout(() => {
-          setButtonState('default');
-        }, 3000);
+        setTimeout(() => setButtonState('default'), 3000);
       });
   };
 
-  /**
-   * Resets all form fields to their initial states, including the email template.
-   */
   const resetForm = () => {
     setEmailBody('');
     setEmailSubject('');
@@ -164,15 +135,10 @@ const MassMailer: React.FC = () => {
     setRecipients([]);
     setAttachments([]);
     setCC([]);
-    setSelectedTemplate('None'); // Reset the template to 'None'
-
-    // Trigger Reset of Recipients in EmailRecipient Component
-    setResetRecipients((prev) => !prev);
+    setSelectedTemplate('None');
+    setResetRecipients(prev => !prev);
   };
 
-  /**
-   * Resets the button state to default when clicking away during confirmation.
-   */
   const handleClickAway = () => {
     if (buttonState === 'confirm') {
       setButtonState('default');
@@ -181,17 +147,10 @@ const MassMailer: React.FC = () => {
 
   return (
     <div>
-      {/* Page Header */}
-      <PageHeader
-        pageName="Mass Mailer"
-        pageHref={ROUTE_PATHS.PURCHASING.MASS_MAILER}
-      />
-
-      {/* Main Content */}
+      <PageHeader pageName="Mass Mailer" pageHref={ROUTE_PATHS.PURCHASING.MASS_MAILER} />
       <Box sx={{ padding: '20px' }}>
-        <Grid container spacing={3}>
-          {/* Left Column: Email Properties and Part Table */}
-          <Grid item xs={12} md={6}>
+        <Grid2 container spacing={3}>
+          <Grid2 size={{ xs: 12, md: 6 }}>
             <EmailProperties
               emailBody={emailBody}
               setEmailBody={setEmailBody}
@@ -211,21 +170,16 @@ const MassMailer: React.FC = () => {
                 setSelectedPartItems={setSelectedPartItems}
               />
             </Box>
-          </Grid>
-
-          {/* Right Column: Email Recipient */}
-          <Grid item xs={12} md={6}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, md: 6 }}>
             <EmailRecipient
               selectedVendors={recipients}
               setSelectedVendors={setRecipients}
               resetRecipients={resetRecipients}
             />
-          </Grid>
-        </Grid>
-
-        {/* Send Email Button with ClickAwayListener */}
+          </Grid2>
+        </Grid2>
         <ClickAwayListener onClickAway={handleClickAway}>
-          {/* Floating Action Button */}
           <Fab
             onClick={handleButtonClick}
             sx={{
@@ -263,7 +217,29 @@ const MassMailer: React.FC = () => {
             )}
           </Fab>
         </ClickAwayListener>
+        <Fab
+          onClick={() => setOpenHistory(true)}
+          sx={{
+            position: 'fixed',
+            bottom: 16,
+            right: 100,
+            zIndex: 1000,
+            backgroundColor: 'secondary.main',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: 'secondary.dark',
+            },
+          }}
+        >
+          <HistoryIcon />
+        </Fab>
       </Box>
+      <History
+        open={openHistory}
+        onClose={() => setOpenHistory(false)}
+        massMailerUsers={massMailerUsers}
+        defaultUsername={currentUsername}
+      />
     </div>
   );
 };
