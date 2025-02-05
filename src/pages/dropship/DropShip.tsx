@@ -20,7 +20,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import agent from '../../app/api/agent';
 
 // Models
-import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
+import MassMailerUser from '../../models/MassMailer/MassMailerUser';
 import { DropShipPart } from '../../models/DropShip/DropShipPart';
 
 // Components
@@ -30,9 +30,9 @@ import RecipientModal from './RecipientModal';
 import PartNumberModal from './PartNumberModal';
 
 const DropShip = () => {
-  const [allSalesReps, setAllSalesReps] = useState<IMassMailerUser[]>([]);
-  const [autoFillRep, setAutoFillRep] = useState<IMassMailerUser | null>(null);
-  const [addedSalesReps, setAddedSalesReps] = useState<IMassMailerUser[]>([]);
+  const [allSalesReps, setAllSalesReps] = useState<MassMailerUser[]>([]);
+  const [autoFillRep, setAutoFillRep] = useState<MassMailerUser | null>(null);
+  const [addedSalesReps, setAddedSalesReps] = useState<MassMailerUser[]>([]);
   const [SONum, setSONum] = useState<string>('');
   const [PONum, setPONum] = useState<string>('');
   const [Tracking, setTracking] = useState<string>('');
