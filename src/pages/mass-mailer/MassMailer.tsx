@@ -82,7 +82,7 @@ const MassMailer: React.FC = () => {
     agent.MassMailer.FileUpload.clear(currentUsername);
   }, [currentUsername]);
 
-  const handleButtonClick = () => {
+  const handleSendClick = () => {
     if (buttonState === 'default') {
       if (!trim(emailBody)) { alert('Please fill in the email message!'); return; }
       if (!trim(emailSubject)) { alert('Please fill in the email subject!'); return; }
@@ -181,7 +181,7 @@ const MassMailer: React.FC = () => {
         </Grid2>
         <ClickAwayListener onClickAway={handleClickAway}>
           <Fab
-            onClick={handleButtonClick}
+            onClick={handleSendClick}
             sx={{
               position: 'fixed',
               color: 'white',
