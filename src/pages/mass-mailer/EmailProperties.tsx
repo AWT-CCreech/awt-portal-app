@@ -25,13 +25,13 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import agent from '../../app/api/agent';
 
 // Models
-import { IMassMailerEmailTemplate } from '../../models/MassMailer/MassMailerEmailTemplate';
-import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
+import { MassMailerEmailTemplate } from '../../models/MassMailer/MassMailerEmailTemplate';
+import MassMailerUser from '../../models/MassMailer/MassMailerUser';
 
 // Components
-import SelectedFile from './components/SelectedFile';
-import CcPopUp from './CCPopUp';
-import AddCC from './AddCC';
+import SelectedFile from './SelectedFile';
+import InternalCC from './InternalCC';
+import ExternalCC from './ExternalCC';
 
 // Styles
 import '../../shared/styles/mass-mailer/EmailProperties.scss';
@@ -43,9 +43,9 @@ interface IProps {
   setEmailSubject: (subject: string) => void;
   attachments: string[];
   setAttachments: (files: string[]) => void;
-  CC: IMassMailerUser[];
-  setCC: (users: IMassMailerUser[]) => void;
-  allUsers: IMassMailerUser[];
+  CC: MassMailerUser[];
+  setCC: (users: MassMailerUser[]) => void;
+  allUsers: MassMailerUser[];
   selectedTemplate: string;
   setSelectedTemplate: (template: string) => void;
 }
@@ -81,7 +81,7 @@ const EmailProperties: React.FC<IProps> = ({
   );
 
   const [templatesForUser, setTemplatesForUser] = useState<
-    IMassMailerEmailTemplate[]
+    MassMailerEmailTemplate[]
   >([]);
   const [templateOptions, setTemplateOptions] = useState<any[]>([
     { key: 0, value: 'None', text: 'None' },
@@ -106,7 +106,7 @@ const EmailProperties: React.FC<IProps> = ({
       agent.MassMailer.EmailTemplates.templatesForUser(user).then(
         (response) => {
           const options = response.map(
-            (template: IMassMailerEmailTemplate) => ({
+            (template: MassMailerEmailTemplate) => ({
               key: template.id,
               value: template.emailDesc,
               text: template.emailDesc,
@@ -211,9 +211,9 @@ const EmailProperties: React.FC<IProps> = ({
             />
           </Box>
           <Box className="email-properties-cc">
-            <CcPopUp CC={CC} setCC={setCC} allUsers={allUsers} />
+            <InternalCC CC={CC} setCC={setCC} allUsers={allUsers} />
             <Box className="email-properties-addcc">
-              <AddCC CC={CC} setCC={setCC} />
+              <ExternalCC CC={CC} setCC={setCC} />
             </Box>
           </Box>
           {CC.map((selected, index) => (
@@ -284,11 +284,11 @@ const EmailProperties: React.FC<IProps> = ({
               }}
             >
               <Typography className="popup-content">
-                %fullname% for recipient's full name
+                %FULLNAME% for recipient's full name
                 <br />
-                %firstname% for recipient's first name
+                %FIRSTNAME% for recipient's first name
                 <br />
-                %lastname% for recipient's last name
+                %LASTNAME% for recipient's last name
               </Typography>
             </Popover>
             <textarea
