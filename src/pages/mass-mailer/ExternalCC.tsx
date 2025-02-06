@@ -1,19 +1,15 @@
-// React and Hooks
 import React, { useState } from 'react';
-
-// MUI Components and Icons
 import {
   Button,
   Dialog,
   DialogContent,
   DialogTitle,
-  Grid,
   TextField,
   Chip,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-// Models
 import MassMailerUser from '../../models/MassMailer/MassMailerUser';
 
 interface IProps {
@@ -28,7 +24,7 @@ const ExternalCC: React.FC<IProps> = ({ CC, setCC }) => {
   const [email, setEmail] = useState('');
 
   const addCC = () => {
-    setCC([...CC, { userName: uname, fullName: name, email: email }]);
+    setCC([...CC, { userName: uname, fullName: name, email }]);
     setUname('');
     setEmail('');
     setName('');
@@ -47,8 +43,8 @@ const ExternalCC: React.FC<IProps> = ({ CC, setCC }) => {
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>External CC</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} direction="column" alignItems="center">
-            <Grid item marginTop={1}>
+          <Grid2 container spacing={2} direction="column" alignItems="center">
+            <Grid2 size={{ xs: 12 }} sx={{ mt: 1 }}>
               <TextField
                 label="Name"
                 variant="outlined"
@@ -56,8 +52,8 @@ const ExternalCC: React.FC<IProps> = ({ CC, setCC }) => {
                 onChange={(e) => setName(e.target.value)}
                 fullWidth
               />
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2 size={{ xs: 12 }}>
               <TextField
                 label="Email"
                 variant="outlined"
@@ -65,28 +61,28 @@ const ExternalCC: React.FC<IProps> = ({ CC, setCC }) => {
                 onChange={(e) => setEmail(e.target.value)}
                 fullWidth
               />
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2 size={{ xs: 12 }}>
               <Button variant="contained" color="secondary" onClick={addCC}>
                 Add
               </Button>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} justifyContent="flex-start" mt={2}>
+            </Grid2>
+          </Grid2>
+          <Grid2 container spacing={2} justifyContent="flex-start" sx={{ mt: 2 }}>
             {CC.map((selected, index) => (
-              <Grid item key={index}>
+              <Grid2 key={index} size="auto">
                 <Chip
-                  label={selected.fullName || selected.email}
-                  color="success"
-                  onDelete={() =>
-                    setCC(CC.filter((c) => c.email !== selected.email))
+                  label={
+                    selected.fullName.trim() === '' ? selected.email : selected.fullName
                   }
+                  color="success"
+                  onDelete={() => setCC(CC.filter((c) => c.email !== selected.email))}
                   deleteIcon={<DeleteIcon />}
                   style={{ margin: '8px' }}
                 />
-              </Grid>
+              </Grid2>
             ))}
-          </Grid>
+          </Grid2>
         </DialogContent>
       </Dialog>
     </>

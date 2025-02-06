@@ -3,17 +3,13 @@ import {
   Box,
   Button,
   Checkbox,
-  IconButton,
   Paper,
   TextField,
   Typography,
   Tooltip,
 } from '@mui/material';
-import { Delete as DeleteIcon } from '@mui/icons-material';
-
-// Use Grid2 from the unstable package.
 import Grid2 from '@mui/material/Grid2';
-
+import { Delete as DeleteIcon } from '@mui/icons-material';
 import agent from '../../app/api/agent';
 import { MassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
 import '../../shared/styles/mass-mailer/PartTable.scss';

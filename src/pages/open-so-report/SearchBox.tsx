@@ -1,7 +1,6 @@
 import React, { useState, useEffect, ChangeEvent, KeyboardEvent, useCallback } from 'react';
 import {
   Box,
-  Grid,
   TextField,
   Checkbox,
   FormControlLabel,
@@ -26,11 +25,12 @@ import { ItemCategories } from '../../models/Data/ItemCategories';
 import Modules from '../../app/api/agent';
 import { formatAmount } from '../../shared/utils/dataManipulation';
 
+// Import Grid2 from MUI
+import Grid2 from '@mui/material/Grid2';
+
 interface SearchBoxProps {
   searchParams: OpenSalesOrderSearchInput;
-  setSearchParams: React.Dispatch<
-    React.SetStateAction<OpenSalesOrderSearchInput>
-  >;
+  setSearchParams: React.Dispatch<React.SetStateAction<OpenSalesOrderSearchInput>>;
   getResultSets: () => void;
   handleExport: () => void;
   searchResultLength: number;
@@ -104,16 +104,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
     const today = new Date();
     const lastYear = new Date();
     lastYear.setFullYear(today.getFullYear() - 1);
-
-    // Format dates to 'YYYY-MM-DD' for the input fields
-    const todayStr = today.toISOString().substring(0, 10); // 'YYYY-MM-DD'
-    const lastYearStr = lastYear.toISOString().substring(0, 10); // 'YYYY-MM-DD'
-
-    console.log('Setting default date range:', {
-      date1: lastYearStr,
-      date2: todayStr,
-    });
-
+    const todayStr = today.toISOString().substring(0, 10);
+    const lastYearStr = lastYear.toISOString().substring(0, 10);
+    console.log('Setting default date range:', { date1: lastYearStr, date2: todayStr });
     setSearchParams((prevParams) => ({
       ...prevParams,
       date1: lastYearStr,
@@ -181,15 +174,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
       {/* Summary Display */}
       {summary && (
         <Box sx={{ mb: 2 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
-              <Card
-                variant="outlined"
-                sx={{
-                  backgroundColor: grey[100],
-                  height: '100%',
-                }}
-              >
+          <Grid2 container spacing={2}>
+            <Grid2 size={{ xs: 12, sm: 4 }}>
+              <Card variant="outlined" sx={{ backgroundColor: grey[100], height: '100%' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     Total Amount
@@ -199,51 +186,35 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Card
-                variant="outlined"
-                sx={{
-                  backgroundColor: grey[100],
-                  height: '100%',
-                }}
-              >
+            </Grid2>
+            <Grid2 size={{ xs: 12, sm: 4 }}>
+              <Card variant="outlined" sx={{ backgroundColor: grey[100], height: '100%' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     Sales Orders
                   </Typography>
-                  <Typography variant="subtitle1">
-                    {summary.uniqueSalesOrders}
-                  </Typography>
+                  <Typography variant="subtitle1">{summary.uniqueSalesOrders}</Typography>
                 </CardContent>
               </Card>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Card
-                variant="outlined"
-                sx={{
-                  backgroundColor: grey[100],
-                  height: '100%',
-                }}
-              >
+            </Grid2>
+            <Grid2 size={{ xs: 12, sm: 4 }}>
+              <Card variant="outlined" sx={{ backgroundColor: grey[100], height: '100%' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     Total Items
                   </Typography>
-                  <Typography variant="subtitle1">
-                    {summary.totalItems}
-                  </Typography>
+                  <Typography variant="subtitle1">{summary.totalItems}</Typography>
                 </CardContent>
               </Card>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Box>
       )}
 
       {/* Existing Search Fields */}
-      <Grid container spacing={2} onKeyDown={handleKeyDown}>
+      <Grid2 container spacing={2} onKeyDown={handleKeyDown}>
         {/* Date Filter Type */}
-        <Grid item xs={12} sm={3}>
+        <Grid2 size={{ xs: 12, sm: 3 }}>
           <FormControl fullWidth>
             <InputLabel id="dateFilterType-label">Date Filter Type</InputLabel>
             <Select
@@ -261,9 +232,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               </MenuItem>
             </Select>
           </FormControl>
-        </Grid>
+        </Grid2>
         {/* Start Date */}
-        <Grid item xs={12} sm={3}>
+        <Grid2 size={{ xs: 12, sm: 3 }}>
           <TextField
             fullWidth
             type="date"
@@ -274,9 +245,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             InputLabelProps={{ shrink: true }}
             inputProps={{ min: '2000-01-01', max: '2030-12-31' }}
           />
-        </Grid>
+        </Grid2>
         {/* End Date */}
-        <Grid item xs={12} sm={3}>
+        <Grid2 size={{ xs: 12, sm: 3 }}>
           <TextField
             fullWidth
             type="date"
@@ -287,9 +258,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             InputLabelProps={{ shrink: true }}
             inputProps={{ min: '2000-01-01', max: '2030-12-31' }}
           />
-        </Grid>
+        </Grid2>
         {/* Req Date Status */}
-        <Grid item xs={12} sm={3}>
+        <Grid2 size={{ xs: 12, sm: 3 }}>
           <FormControl fullWidth>
             <InputLabel id="reqDateStatus-label">Req Date Status</InputLabel>
             <Select
@@ -307,9 +278,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               </MenuItem>
             </Select>
           </FormControl>
-        </Grid>
+        </Grid2>
         {/* Sales Team */}
-        <Grid item xs={12} sm={3}>
+        <Grid2 size={{ xs: 12, sm: 3 }}>
           <FormControl fullWidth>
             <InputLabel id="salesTeam-label">Sales Team</InputLabel>
             <Select
@@ -329,9 +300,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               ))}
             </Select>
           </FormControl>
-        </Grid>
+        </Grid2>
         {/* Sales Rep */}
-        <Grid item xs={12} sm={3}>
+        <Grid2 size={{ xs: 12, sm: 3 }}>
           <FormControl fullWidth>
             <InputLabel id="salesRep-label">Sales Rep</InputLabel>
             <Select
@@ -351,9 +322,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               ))}
             </Select>
           </FormControl>
-        </Grid>
+        </Grid2>
         {/* AirWay SO */}
-        <Grid item xs={12} sm={3}>
+        <Grid2 size={{ xs: 12, sm: 3 }}>
           <TextField
             fullWidth
             label="AirWay SO"
@@ -361,9 +332,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             value={searchParams.soNum || ''}
             onChange={handleInputChange}
           />
-        </Grid>
+        </Grid2>
         {/* Part Number */}
-        <Grid item xs={12} sm={3}>
+        <Grid2 size={{ xs: 12, sm: 3 }}>
           <TextField
             fullWidth
             label="Part Number"
@@ -371,9 +342,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             value={searchParams.partNum || ''}
             onChange={handleInputChange}
           />
-        </Grid>
+        </Grid2>
         {/* Account Number */}
-        <Grid item xs={12} sm={3}>
+        <Grid2 size={{ xs: 12, sm: 3 }}>
           <FormControl fullWidth>
             <InputLabel id="accountNumber-label">Account Number</InputLabel>
             <Select
@@ -387,18 +358,15 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                 All
               </MenuItem>
               {accountNumbers.map((accountNumber) => (
-                <MenuItem
-                  key={accountNumber.accountNo}
-                  value={accountNumber.accountNo}
-                >
+                <MenuItem key={accountNumber.accountNo} value={accountNumber.accountNo}>
                   {accountNumber.accountNo}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-        </Grid>
+        </Grid2>
         {/* Category */}
-        <Grid item xs={12} sm={3}>
+        <Grid2 size={{ xs: 12, sm: 3 }}>
           <FormControl fullWidth>
             <InputLabel id="category-label">Category</InputLabel>
             <Select
@@ -418,9 +386,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               ))}
             </Select>
           </FormControl>
-        </Grid>
+        </Grid2>
         {/* AirWay PO */}
-        <Grid item xs={12} sm={3}>
+        <Grid2 size={{ xs: 12, sm: 3 }}>
           <TextField
             fullWidth
             label="AirWay PO"
@@ -428,9 +396,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             value={searchParams.poNum || ''}
             onChange={handleInputChange}
           />
-        </Grid>
+        </Grid2>
         {/* Customer PO */}
-        <Grid item xs={12} sm={3}>
+        <Grid2 size={{ xs: 12, sm: 3 }}>
           <TextField
             fullWidth
             label="Customer PO"
@@ -438,9 +406,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             value={searchParams.custPO || ''}
             onChange={handleInputChange}
           />
-        </Grid>
+        </Grid2>
         {/* Customer */}
-        <Grid item xs={12} sm={9}>
+        <Grid2 size={{ xs: 12, sm: 9 }}>
           <TextField
             fullWidth
             label="Customer"
@@ -448,15 +416,15 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             value={searchParams.customer || ''}
             onChange={handleInputChange}
           />
-        </Grid>
+        </Grid2>
         {/* Buttons */}
-        <Grid
-          item
-          xs={12}
-          sm={3}
-          display="flex"
-          justifyContent="flex-start"
-          alignItems="center"
+        <Grid2
+          size={{ xs: 12, sm: 3 }}
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}
         >
           <LoadingIconButton
             text="Search"
@@ -465,7 +433,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             onClick={getResultSets}
             color="primary"
             variant="contained"
-            sx={{ width: '150px', height: '42px', mr: 2 }}
+            sx={{ width: 'auto', height: 'auto', mr: 2 }}
           />
           <LoadingIconButton
             text="Export"
@@ -474,21 +442,16 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             onClick={handleExport}
             color="secondary"
             variant="outlined"
-            sx={{ width: '150px', height: '42px' }}
-            disabled={searchResultLength === 0 || loadingExport || loading} // Now valid
+            sx={{ width: 'auto', height: 'auto' }}
+            disabled={searchResultLength === 0 || loadingExport || loading}
           />
-        </Grid>
-
+        </Grid2>
         {/* Checkboxes */}
-        <Grid
-          item
-          xs={12}
-          display="flex"
-          justifyContent="flex-start"
-          alignItems="center"
+        <Grid2
+          size={{ xs: 12 }}
+          sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}
         >
-          {/* Checkboxes */}
-          <Grid item xs={12} sm={3}>
+          <Grid2 size={{ xs: 12, sm: 12 }}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -519,9 +482,9 @@ const SearchBox: React.FC<SearchBoxProps> = ({
               }
               label="Group by SO"
             />
-          </Grid>
-        </Grid>
-      </Grid>
+          </Grid2>
+        </Grid2>
+      </Grid2>
     </Box>
   );
 };

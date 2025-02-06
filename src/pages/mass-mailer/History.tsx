@@ -15,6 +15,7 @@ import {
     TableRow,
     TableCell
 } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import { MassMailHistory } from '../../models/MassMailHistory';
 import MassMailerUser from '../../models/MassMailer/MassMailerUser';
 import agent from '../../app/api/agent';
@@ -151,7 +152,7 @@ const History: React.FC<HistoryModalProps> = ({
                             'Date Sent',
                             'Responded',
                         ]}
-                        headerBackgroundColor="#1976d2"
+                        headerBackgroundColor="#384959"
                         hoverColor="#f5f5f5"
                         tableHeight={400}
                         func={renderRow}

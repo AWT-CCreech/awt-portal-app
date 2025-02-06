@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import agent from '../../app/api/agent';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import SelectPayPeriodForm from './SelectPayPeriodForm';
-import agent from '../../app/api/agent';
 import {
+  Box,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Grid,
   Button,
   Paper,
 } from '@mui/material';
-import '../../shared/styles/time-tracker/TimeSheet.scss'; // Import the SCSS file
+import '../../shared/styles/time-tracker/TimeSheet.scss';
+
+// Import Grid2 from MUI
+import Grid2 from '@mui/material/Grid2';
 
 interface IProps {
   trackersInPeriod: TimeTracker[];
@@ -129,7 +132,7 @@ const TimeSheet: React.FC<IProps> = ({
         'data:application/vnd.ms-excel,' + encodeURIComponent(content)
       );
       element.setAttribute('download', title);
-      element.className = 'hidden-download-link'; // Optional: for accessibility or additional styling
+      element.className = 'hidden-download-link';
       element.style.display = 'none';
       document.body.appendChild(element);
       element.click();
@@ -138,21 +141,17 @@ const TimeSheet: React.FC<IProps> = ({
   };
 
   return (
-    <div className="time-sheet-container">
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
+    <Box className="time-sheet-container">
+      <Grid2 container spacing={3}>
+        <Grid2 size={{ xs: 12, sm: 6 }}>
           <SelectPayPeriodForm
             previousPeriod={previousPeriod}
             setPreviousPeriod={setPreviousPeriod}
           />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          container
-          justifyContent="flex-end"
-          alignItems="center"
+        </Grid2>
+        <Grid2
+          size={{ xs: 12, sm: 6 }}
+          sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
         >
           <Button
             variant="contained"
@@ -161,8 +160,8 @@ const TimeSheet: React.FC<IProps> = ({
           >
             Export to Excel
           </Button>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
 
       <TableContainer component={Paper} className="time-sheet-table-container">
         <Table>
@@ -198,7 +197,7 @@ const TimeSheet: React.FC<IProps> = ({
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </Box>
   );
 };
 

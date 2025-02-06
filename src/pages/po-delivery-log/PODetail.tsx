@@ -4,12 +4,12 @@ import {
   Typography,
   TextField,
   Button,
-  Grid,
   Box,
   Checkbox,
   Skeleton,
   TableRow,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import Modules from '../../app/api/agent';
 import UserInfoContext from '../../shared/stores/userInfo';
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
@@ -49,7 +49,6 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
 
   const fetchPreviousNotes = useCallback(async () => {
     if (!poDetail) return;
-
     try {
       const notesData = await Modules.PODeliveryLogService.getPODetailByID(poDetail.id);
       if (notesData?.notesList) {
@@ -129,9 +128,9 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
           </span>
         )}
       </Typography>
-      <Grid container spacing={2}>
+      <Grid2 container spacing={2}>
         {/* Contact Information */}
-        <Grid item xs={12}>
+        <Grid2 size={12}>
           <Box
             sx={{
               padding: 2,
@@ -140,8 +139,8 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
               boxShadow: 1,
             }}
           >
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={4}>
+            <Grid2 container spacing={2}>
+              <Grid2 size={{ xs: 12, sm: 4 }}>
                 {loading ? (
                   <Skeleton variant="text" width="80%" animation="wave" />
                 ) : (
@@ -149,8 +148,8 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                     <strong>Contact:</strong> {poDetail?.contactName}
                   </Typography>
                 )}
-              </Grid>
-              <Grid item xs={12} sm={4}>
+              </Grid2>
+              <Grid2 size={{ xs: 12, sm: 4 }}>
                 {loading ? (
                   <Skeleton variant="text" width="80%" animation="wave" />
                 ) : (
@@ -158,8 +157,8 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                     <strong>Company:</strong> {poDetail?.company}
                   </Typography>
                 )}
-              </Grid>
-              <Grid item xs={12} sm={4}>
+              </Grid2>
+              <Grid2 size={{ xs: 12, sm: 4 }}>
                 {loading ? (
                   <Skeleton variant="text" width="80%" animation="wave" />
                 ) : (
@@ -167,13 +166,13 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                     <strong>Phone:</strong> {formatPhoneNumber(poDetail?.phone || '')}
                   </Typography>
                 )}
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </Box>
-        </Grid>
+        </Grid2>
 
         {/* Additional PO Details */}
-        <Grid item xs={12}>
+        <Grid2 size={12}>
           <Box
             sx={{
               padding: 2,
@@ -183,8 +182,8 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
               marginTop: 2,
             }}
           >
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+            <Grid2 container spacing={2}>
+              <Grid2 size={{ xs: 12, sm: 6 }}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
@@ -196,8 +195,8 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                     fullWidth
                   />
                 )}
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              </Grid2>
+              <Grid2 size={{ xs: 12, sm: 6 }}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
@@ -209,8 +208,8 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                     fullWidth
                   />
                 )}
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              </Grid2>
+              <Grid2 size={{ xs: 12, sm: 6 }}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
@@ -222,8 +221,8 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                     fullWidth
                   />
                 )}
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              </Grid2>
+              <Grid2 size={{ xs: 12, sm: 6 }}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
@@ -235,8 +234,8 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                     fullWidth
                   />
                 )}
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              </Grid2>
+              <Grid2 size={{ xs: 12, sm: 6 }}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
@@ -251,17 +250,12 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                   />
                 )}
                 {!loading && poDetail?.expDelEditDate && (
-                  <Typography
-                    variant="caption"
-                    color="textSecondary"
-                    sx={{ marginTop: 1, display: 'block' }}
-                  >
-                    Edited by <b>{poDetail?.editedBy}</b> on{' '}
-                    <b>{new Date(poDetail.expDelEditDate).toLocaleDateString()}</b>
+                  <Typography variant="caption" color="textSecondary" sx={{ marginTop: 1, display: 'block' }}>
+                    Edited by <b>{poDetail?.editedBy}</b> on <b>{new Date(poDetail.expDelEditDate).toLocaleDateString()}</b>
                   </Typography>
                 )}
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              </Grid2>
+              <Grid2 size={{ xs: 12, sm: 6 }}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
@@ -277,24 +271,19 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                     fullWidth
                   />
                 )}
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           </Box>
-        </Grid>
+        </Grid2>
 
         {/* Checkboxes */}
-        <Grid item xs={12}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item>
+        <Grid2 size={12}>
+          <Grid2 container spacing={2} alignItems="center">
+            <Grid2 size="auto">
               {loading ? (
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Skeleton variant="circular" width={24} height={24} animation="wave" />
-                  <Skeleton
-                    variant="text"
-                    width={150}
-                    sx={{ marginLeft: 1 }}
-                    animation="wave"
-                  />
+                  <Skeleton variant="text" width={150} sx={{ marginLeft: 1 }} animation="wave" />
                 </Box>
               ) : (
                 <>
@@ -305,17 +294,12 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                   <Typography component="span">Update All Delivery Dates</Typography>
                 </>
               )}
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2 size="auto">
               {loading ? (
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Skeleton variant="circular" width={24} height={24} animation="wave" />
-                  <Skeleton
-                    variant="text"
-                    width={120}
-                    sx={{ marginLeft: 1 }}
-                    animation="wave"
-                  />
+                  <Skeleton variant="text" width={120} sx={{ marginLeft: 1 }} animation="wave" />
                 </Box>
               ) : (
                 <>
@@ -326,19 +310,19 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                   <Typography component="span">Urgent Email Update</Typography>
                 </>
               )}
-            </Grid>
-          </Grid>
-        </Grid>
+            </Grid2>
+          </Grid2>
+        </Grid2>
 
         {/* Error Message */}
         {error && (
-          <Grid item xs={12}>
+          <Grid2 size={12}>
             <Typography color="error">{error}</Typography>
-          </Grid>
+          </Grid2>
         )}
 
         {/* Notes Section */}
-        <Grid item xs={12}>
+        <Grid2 size={12}>
           <Box
             sx={{
               padding: 2,
@@ -356,19 +340,8 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
             </Typography>
             {loading ? (
               <>
-                <Skeleton
-                  variant="rectangular"
-                  width="100%"
-                  height={100}
-                  animation="wave"
-                />
-                <Skeleton
-                  variant="rectangular"
-                  width="100%"
-                  height={100}
-                  animation="wave"
-                  sx={{ marginTop: 2 }}
-                />
+                <Skeleton variant="rectangular" width="100%" height={100} animation="wave" />
+                <Skeleton variant="rectangular" width="100%" height={100} animation="wave" sx={{ marginTop: 2 }} />
               </>
             ) : (
               <PaginatedSortableTable
@@ -390,18 +363,18 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
               sx={{ marginTop: 2, backgroundColor: 'background.paper' }}
             />
           </Box>
-        </Grid>
+        </Grid2>
 
         {/* Buttons */}
-        <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2}>
+        <Grid2 size={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
           <Button variant="outlined" onClick={onClose}>
             Cancel
           </Button>
           <Button variant="contained" color="primary" onClick={handleUpdatePO}>
             Update PO
           </Button>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Box>
   );
 };

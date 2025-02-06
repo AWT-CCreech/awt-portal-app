@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import {
   Button,
   Modal,
-  Grid,
   List,
   ListItem,
   ListItemText,
@@ -15,6 +14,7 @@ import {
   Box,
   Typography,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -27,12 +27,9 @@ interface IProps {
   salesReps: MassMailerUser[];
 }
 
-const RecipientModal: React.FC<IProps> = ({
-  recipients,
-  setRecipients,
-  salesReps,
-}) => {
+const RecipientModal: React.FC<IProps> = ({ recipients, setRecipients, salesReps }) => {
   const [searchRecipient, setSearchRecipient] = useState<string>('');
+  const [open, setOpen] = useState(false);
 
   const handleSelectRecipient = (email: string) => {
     setRecipients([
@@ -50,8 +47,6 @@ const RecipientModal: React.FC<IProps> = ({
       );
     else return salesReps;
   };
-
-  const [open, setOpen] = useState(false);
 
   return (
     <div>
@@ -78,8 +73,9 @@ const RecipientModal: React.FC<IProps> = ({
           <Typography variant="h6" component="h2" mb={2}>
             Add Recipient
           </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
+          <Grid2 container spacing={2}>
+            {/* Left Side */}
+            <Grid2 size={{ xs: 6 }}>
               <Input
                 fullWidth
                 placeholder="Search..."
@@ -90,27 +86,25 @@ const RecipientModal: React.FC<IProps> = ({
               />
               <List sx={{ maxHeight: 400, overflow: 'auto' }}>
                 {handleSearchRecipient().map((user, i) => (
-                  <ListItem
-                    key={i}
-                    secondaryAction={
-                      <IconButton
-                        edge="end"
-                        aria-label="add"
-                        color="success"
-                        onClick={() => handleSelectRecipient(user.email)}
-                      >
-                        <AddCircleIcon />
-                      </IconButton>
-                    }
-                  >
+                  <ListItem key={i} divider>
                     <ListItemText primary={user.fullName} />
+                    <IconButton
+                      edge="end"
+                      aria-label="add"
+                      color="success"
+                      onClick={() => handleSelectRecipient(user.email)}
+                    >
+                      <AddCircleIcon />
+                    </IconButton>
                   </ListItem>
                 ))}
               </List>
-            </Grid>
-            <Grid item xs={6}>
+            </Grid2>
+            {/* Right Side */}
+            <Grid2 size={{ xs: 6 }}>
               <Box sx={{ maxHeight: 400, overflow: 'auto' }}>
                 {recipients.map((selected, index) => {
+                  // Fallback: if fullName is empty, use email
                   if (selected.fullName.trim() === '')
                     selected.fullName = selected.email;
                   return (
@@ -129,8 +123,8 @@ const RecipientModal: React.FC<IProps> = ({
                   );
                 })}
               </Box>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
           <Box textAlign="center" mt={2}>
             <Button
               variant="contained"

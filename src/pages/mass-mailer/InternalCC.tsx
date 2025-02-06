@@ -1,28 +1,23 @@
-// React and Hooks
 import React, { useState } from 'react';
-
-// MUI Components and Icons
 import {
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid,
   List,
   ListItem,
   ListItemText,
-  ListItemSecondaryAction,
   IconButton,
   Chip,
   TextField,
   Box,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 
-// Models
 import MassMailerUser from '../../models/MassMailer/MassMailerUser';
 
 interface IProps {
@@ -59,16 +54,12 @@ const InternalCC: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
       >
         Add CC (internal)
       </Button>
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        fullWidth
-        maxWidth="md"
-      >
-        <DialogTitle mb={6}>Select CC on Email</DialogTitle>
+      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
+        <DialogTitle>Select CC on Email</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
+          <Grid2 container spacing={2}>
+            {/* Left side: Search & List */}
+            <Grid2 size={{ xs: 6 }}>
               <TextField
                 fullWidth
                 placeholder="Search..."
@@ -77,9 +68,9 @@ const InternalCC: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
               />
               <List sx={{ maxHeight: 400, overflow: 'auto' }}>
                 {handleSearchCC().map((user, i) => (
-                  <ListItem key={i}>
-                    <ListItemText primary={user.fullName} />
-                    <ListItemSecondaryAction>
+                  <ListItem
+                    key={i}
+                    secondaryAction={
                       <IconButton
                         edge="end"
                         color="success"
@@ -87,16 +78,20 @@ const InternalCC: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
                       >
                         <AddCircleIcon />
                       </IconButton>
-                    </ListItemSecondaryAction>
+                    }
+                  >
+                    <ListItemText primary={user.fullName} />
                   </ListItem>
                 ))}
               </List>
-            </Grid>
-            <Grid item xs={6}>
+            </Grid2>
+            {/* Right side: Selected CC */}
+            <Grid2 size={{ xs: 6 }}>
               <Box sx={{ maxHeight: 400, overflow: 'auto' }}>
                 {CC.map((selected, index) => {
-                  if (selected.fullName.trim() === '')
+                  if (selected.fullName.trim() === '') {
                     selected.fullName = selected.email;
+                  }
                   return (
                     <Chip
                       key={index}
@@ -111,8 +106,8 @@ const InternalCC: React.FC<IProps> = ({ CC, setCC, allUsers }) => {
                   );
                 })}
               </Box>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </DialogContent>
         <DialogActions>
           <Button

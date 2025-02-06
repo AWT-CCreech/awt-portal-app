@@ -5,7 +5,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Grid,
   List,
   ListItem,
   ListItemText,
@@ -17,6 +16,7 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import agent from '../../app/api/agent';
@@ -143,14 +143,9 @@ const PartNumberModal: React.FC<IProps> = ({
               {errorMessage}
             </Alert>
           )}
-          <Grid container spacing={2} alignItems="stretch">
+          <Grid2 container spacing={2} alignItems="stretch">
             {/* Left Side */}
-            <Grid
-              item
-              xs={12}
-              md={6}
-              sx={{ display: 'flex', flexDirection: 'column' }}
-            >
+            <Grid2 size={{ xs: 12, md: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
               <Box
                 display="flex"
                 justifyContent="space-between"
@@ -219,14 +214,9 @@ const PartNumberModal: React.FC<IProps> = ({
                   )}
                 </Box>
               </Box>
-            </Grid>
+            </Grid2>
             {/* Right Side */}
-            <Grid
-              item
-              xs={12}
-              md={6}
-              sx={{ display: 'flex', flexDirection: 'column' }}
-            >
+            <Grid2 size={{ xs: 12, md: 6 }} sx={{ display: 'flex', flexDirection: 'column' }}>
               <Box
                 display="flex"
                 justifyContent="space-between"
@@ -271,8 +261,8 @@ const PartNumberModal: React.FC<IProps> = ({
                   </Typography>
                 )}
               </Box>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </DialogContent>
         <DialogActions>
           <Button variant="outlined" onClick={() => setOpen(false)}>

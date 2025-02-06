@@ -15,12 +15,8 @@ import ContactSearch from './ContactSearch';
 import agent from '../../app/api/agent';
 
 // MUI Components
-import {
-  Box,
-  Container,
-  Grid,
-  Typography,
-} from '@mui/material';
+import Container from '@mui/material/Container';
+import Grid2 from '@mui/material/Grid2';
 
 interface IProps { }
 
@@ -61,8 +57,6 @@ const MasterSearch: React.FC<IProps> = () => {
       );
       return;
     }
-
-    // Removed manual loading indicator
 
     const searchObject = {
       Search: searchValue,
@@ -138,13 +132,10 @@ const MasterSearch: React.FC<IProps> = () => {
 
   return (
     <div>
-      <PageHeader
-        pageName="Master Search"
-        pageHref={ROUTE_PATHS.MASTER_SEARCH}
-      />
+      <PageHeader pageName="Master Search" pageHref={ROUTE_PATHS.MASTER_SEARCH} />
       <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
-        <Grid container justifyContent="center">
-          <Grid item xs={12}>
+        <Grid2 container justifyContent="center">
+          <Grid2 size={{ xs: 12 }}>
             <SearchBox
               searchValue={searchValue}
               searchFor={searchFor}
@@ -172,11 +163,11 @@ const MasterSearch: React.FC<IProps> = () => {
               setChkActive={setChkActive}
               getResultSets={getResultSets}
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={{ xs: 12 }}>
             {searchResult}
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Container>
     </div>
   );

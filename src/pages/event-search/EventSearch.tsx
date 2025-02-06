@@ -11,11 +11,11 @@ import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearc
 import {
     Box,
     Container,
-    Grid,
     Typography,
     Snackbar,
     Alert,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 
 import PageHeader from '../../shared/components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';
@@ -35,11 +35,11 @@ const EventSearch: React.FC = () => {
         status: 'Pending',
     });
 
-    const [eventData, setEventData] = useState<EquipReqSearchResult[]>([]); // Initialize as an array
+    const [eventData, setEventData] = useState<EquipReqSearchResult[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-    const [searched, setSearched] = useState(false); // New state variable
+    const [searched, setSearched] = useState(false);
 
     const fetchEventData = useCallback(async () => {
         setLoading(true);
@@ -47,7 +47,7 @@ const EventSearch: React.FC = () => {
         setSuccess(null);
         try {
             const data = await Modules.EventSearchPage.getEventPageData(searchParams);
-            setEventData(Array.isArray(data) ? data : []); // Ensure data is an array
+            setEventData(Array.isArray(data) ? data : []);
             setSuccess('Search completed successfully.');
         } catch (error) {
             console.error('Error fetching Event data:', error);
@@ -59,7 +59,7 @@ const EventSearch: React.FC = () => {
     }, [searchParams]);
 
     const handleSearch = () => {
-        setSearched(true); // Mark that a search has been performed
+        setSearched(true);
         fetchEventData();
     };
 
@@ -69,17 +69,20 @@ const EventSearch: React.FC = () => {
                 pageName="Event Search"
                 pageHref={ROUTE_PATHS.SALES.EVENT_SEARCH}
             />
-            <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
-                <Grid container justifyContent="center" spacing={2}>
-                    <Grid item xs={12}>
+            <Container
+                maxWidth={false}
+                sx={{ padding: { xs: '20px', md: '20px' } }}
+            >
+                <Grid2 container spacing={2} justifyContent="center">
+                    <Grid2 size={12}>
                         <SearchBox
                             searchParams={searchParams}
                             setSearchParams={setSearchParams}
                             onSearch={handleSearch}
                             loading={loading}
                         />
-                    </Grid>
-                    <Grid item xs={12}>
+                    </Grid2>
+                    <Grid2 size={12}>
                         {searched && eventData.length > 0 ? (
                             <SearchResults results={eventData} />
                         ) : searched && !loading ? (
@@ -87,8 +90,8 @@ const EventSearch: React.FC = () => {
                                 No results found.
                             </Typography>
                         ) : null}
-                    </Grid>
-                </Grid>
+                    </Grid2>
+                </Grid2>
             </Container>
 
             {/* Success Snackbar */}

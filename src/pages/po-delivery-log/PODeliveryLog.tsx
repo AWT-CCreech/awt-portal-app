@@ -2,13 +2,13 @@ import React, { useState, useCallback, useMemo } from 'react';
 import {
   Box,
   Container,
-  Grid,
   Typography,
   Modal,
   CircularProgress,
   Snackbar,
   Alert,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import PageHeader from '../../shared/components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';
 import SearchBox from './SearchBox';
@@ -218,8 +218,8 @@ const PODeliveryLog: React.FC = () => {
         pageHref={ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG}
       />
       <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
-        <Grid container justifyContent="center" spacing={2}>
-          <Grid item xs={12}>
+        <Grid2 container justifyContent="center" spacing={2}>
+          <Grid2 size={12}>
             <SearchBox
               searchParams={searchParams}
               setSearchParams={setSearchParams}
@@ -230,10 +230,11 @@ const PODeliveryLog: React.FC = () => {
               searchResultLength={poData.length}
               statistics={statistics} // Passing updated statistics
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={12}>
             {loading ? (
               <Box display="flex" justifyContent="center" mt={4}>
+                <CircularProgress />
               </Box>
             ) : poData.length > 0 ? (
               <Box
@@ -252,8 +253,8 @@ const PODeliveryLog: React.FC = () => {
                 No results found.
               </Typography>
             )}
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Container>
 
       {/* Success Snackbar */}
@@ -263,11 +264,7 @@ const PODeliveryLog: React.FC = () => {
         onClose={() => setSuccess(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert
-          onClose={() => setSuccess(null)}
-          severity="success"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
           {success}
         </Alert>
       </Snackbar>
@@ -279,11 +276,7 @@ const PODeliveryLog: React.FC = () => {
         onClose={() => setError(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert
-          onClose={() => setError(null)}
-          severity="error"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
           {error}
         </Alert>
       </Snackbar>
@@ -295,11 +288,7 @@ const PODeliveryLog: React.FC = () => {
         onClose={() => setExportSuccess(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert
-          onClose={() => setExportSuccess(null)}
-          severity="success"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={() => setExportSuccess(null)} severity="success" sx={{ width: '100%' }}>
           {exportSuccess}
         </Alert>
       </Snackbar>
@@ -311,11 +300,7 @@ const PODeliveryLog: React.FC = () => {
         onClose={() => setExportError(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert
-          onClose={() => setExportError(null)}
-          severity="error"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={() => setExportError(null)} severity="error" sx={{ width: '100%' }}>
           {exportError}
         </Alert>
       </Snackbar>
