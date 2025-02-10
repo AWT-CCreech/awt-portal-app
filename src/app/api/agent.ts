@@ -36,7 +36,7 @@ import { EventLevelUpdateDto } from '../../models/SOWorkbench/EventLevelUpdateDt
  * Adjust accordingly if more environments (e.g., staging) are added.
  */
 const devURL = 'http://localhost:5001/api'; // Use for development environment
-const prodURL = 'http://10.0.0.8:82/api';   // Use for production environment
+const prodURL = 'http://awt-portal-dev.eba-mwhx9dtr.us-east-2.elasticbeanstalk.com/api';   // Use for production environment
 
 // Conditionally set the baseURL based on the environment variable
 if (process.env.NODE_ENV === 'development') {
