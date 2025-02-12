@@ -234,7 +234,6 @@ const PODeliveryLog: React.FC = () => {
           <Grid2 size={12}>
             {loading ? (
               <Box display="flex" justifyContent="center" mt={4}>
-                <CircularProgress />
               </Box>
             ) : poData.length > 0 ? (
               <Box
