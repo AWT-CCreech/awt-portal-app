@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useContext, useCallback, FC, memo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  FC,
+  memo,
+} from 'react';
 import {
   TableCell,
   Typography,
@@ -8,6 +15,7 @@ import {
   Checkbox,
   Skeleton,
   TableRow,
+  Autocomplete,
 } from '@mui/material';
 import Grid2 from '@mui/material/Grid2';
 import Modules from '../../app/api/agent';
@@ -15,6 +23,7 @@ import UserInfoContext from '../../shared/stores/userInfo';
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
 import { formatPhoneNumber } from '../../shared/utils/dataManipulation';
+import { CamContact } from '../../models/CamContact';
 
 interface PODetailProps {
   poDetail: PODetailUpdateDto | null;
@@ -29,7 +38,7 @@ interface PreviousNote {
   note: string;
 }
 
-// Memoized Row Component
+// Memoized Row Component for the Notes table
 const PODetailRow = memo(({ row }: { row: PreviousNote }) => (
   <TableRow>
     <TableCell>{row.date}</TableCell>
@@ -39,6 +48,7 @@ const PODetailRow = memo(({ row }: { row: PreviousNote }) => (
 ));
 
 const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) => {
+  // Existing state variables
   const [notes, setNotes] = useState(poDetail?.newNote || '');
   const [expectedDelivery, setExpectedDelivery] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +57,12 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
   const [previousNotes, setPreviousNotes] = useState<PreviousNote[]>([]);
   const userInfo = useContext(UserInfoContext);
 
+  // NEW: Contact search state using your full CamContact model
+  const [contactQuery, setContactQuery] = useState<string>('');
+  const [contactSuggestions, setContactSuggestions] = useState<CamContact[]>([]);
+  const [selectedContact, setSelectedContact] = useState<CamContact | null>(null);
+
+  // Fetch previous notes for the PO
   const fetchPreviousNotes = useCallback(async () => {
     if (!poDetail) return;
     try {
@@ -77,6 +93,41 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
     }
   }, [poDetail, fetchPreviousNotes]);
 
+  // Set selected contact if one is already assigned
+  useEffect(() => {
+    if (poDetail && poDetail.contactName && !selectedContact) {
+      setSelectedContact({
+        id: poDetail.contactID,
+        contact: poDetail.contactName,
+        company: poDetail.company,
+        phoneDirect: poDetail.phone,
+      } as CamContact);
+      setContactQuery(poDetail.contactName);
+    }
+  }, [poDetail, selectedContact]);
+
+  // Function to fetch contact suggestions (using your Modules.CamSearch API)
+  const fetchContactSuggestions = useCallback(
+    async (query: string) => {
+      if (!query || query.length <= 2) return;
+      try {
+        const response = await Modules.CamSearch.searchContacts({
+          searchText: query,
+          username: userInfo.username,
+          searchBy: 'Contact', // or 'Company' if desired
+          activeOnly: true,
+          orderBy: 'Contact',
+          companyId: 'AIR',
+        });
+        setContactSuggestions(response);
+      } catch (error) {
+        console.error('Error fetching contact suggestions:', error);
+      }
+    },
+    [userInfo.username]
+  );
+
+  // Update PO including contact assignment
   const handleUpdatePO = async () => {
     setError(null);
     if (!poDetail?.soNum) {
@@ -96,6 +147,15 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
         notesList: previousNotes.map(
           (note) => `${note.enteredBy}::${note.note}::${note.date}`
         ),
+        // Include contact info from the selected contact (or fallback)
+        contactID: selectedContact ? selectedContact.id : poDetail?.contactID,
+        contactName: selectedContact ? selectedContact.contact || '' : poDetail?.contactName,
+        company: selectedContact ? selectedContact.company || '' : poDetail?.company,
+        phone: selectedContact
+          ? formatPhoneNumber(
+            selectedContact.phoneDirect || (selectedContact as any).phoneMain || ''
+          )
+          : formatPhoneNumber(poDetail?.phone || ''),
       };
 
       await Modules.PODeliveryLogService.updatePODetail(poDetail!.id, updateDto);
@@ -107,11 +167,10 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
     }
   };
 
-  // Configure columns for the PaginatedSortableTable component
+  // Configure columns for the Notes table
   const columns = ['date', 'enteredBy', 'note'];
   const columnNames = ['Date', 'Entered By', 'Note'];
 
-  // Function to render each row in the table
   const renderRow = useCallback(
     (row: PreviousNote) => <PODetailRow key={`${row.date}-${row.enteredBy}`} row={row} />,
     []
@@ -129,7 +188,6 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
         )}
       </Typography>
       <Grid2 container spacing={2}>
-        {/* Contact Information */}
         <Grid2 size={12}>
           <Box
             sx={{
@@ -137,33 +195,74 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
               backgroundColor: 'grey.100',
               borderRadius: 2,
               boxShadow: 1,
+              marginTop: 2,
             }}
           >
             <Grid2 container spacing={2}>
-              <Grid2 size={{ xs: 12, sm: 4 }}>
+              <Grid2 size={12}>
                 {loading ? (
                   <Skeleton variant="text" width="80%" animation="wave" />
                 ) : (
-                  <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                    <strong>Contact:</strong> {poDetail?.contactName}
-                  </Typography>
+                  <Autocomplete
+                    freeSolo
+                    options={contactSuggestions}
+                    getOptionLabel={(option) =>
+                      typeof option === 'string'
+                        ? option
+                        : `${option.contact || ''} (${option.company || ''})`
+                    }
+                    inputValue={contactQuery}
+                    onInputChange={(event, newValue) => {
+                      setContactQuery(newValue);
+                      if (newValue.length > 2) {
+                        fetchContactSuggestions(newValue);
+                      }
+                    }}
+                    onChange={(event, value) => {
+                      if (value && typeof value !== 'string') {
+                        setSelectedContact(value);
+                        setContactQuery(value.contact || '');
+                      } else {
+                        setSelectedContact(null);
+                      }
+                    }}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id}>
+                        {option.contact} ({option.company})
+                      </li>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Contact"
+                        placeholder="Search Contact"
+                        fullWidth
+                      />
+                    )}
+                  />
                 )}
               </Grid2>
-              <Grid2 size={{ xs: 12, sm: 4 }}>
+              <Grid2 size={6}>
                 {loading ? (
                   <Skeleton variant="text" width="80%" animation="wave" />
                 ) : (
                   <Typography variant="body1" sx={{ textAlign: 'center' }}>
-                    <strong>Company:</strong> {poDetail?.company}
+                    <strong>Company:</strong>{' '}
+                    {selectedContact ? selectedContact.company : poDetail?.company}
                   </Typography>
                 )}
               </Grid2>
-              <Grid2 size={{ xs: 12, sm: 4 }}>
+              <Grid2 size={6}>
                 {loading ? (
                   <Skeleton variant="text" width="80%" animation="wave" />
                 ) : (
                   <Typography variant="body1" sx={{ textAlign: 'right' }}>
-                    <strong>Phone:</strong> {formatPhoneNumber(poDetail?.phone || '')}
+                    <strong>Phone:</strong>{' '}
+                    {selectedContact
+                      ? formatPhoneNumber(
+                        selectedContact.phoneDirect || (selectedContact as any).phoneMain || ''
+                      )
+                      : formatPhoneNumber(poDetail?.phone || '')}
                   </Typography>
                 )}
               </Grid2>
@@ -183,7 +282,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
             }}
           >
             <Grid2 container spacing={2}>
-              <Grid2 size={{ xs: 12, sm: 6 }}>
+              <Grid2 size={6}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
@@ -196,7 +295,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                   />
                 )}
               </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6 }}>
+              <Grid2 size={6}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
@@ -209,7 +308,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                   />
                 )}
               </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6 }}>
+              <Grid2 size={6}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
@@ -222,7 +321,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                   />
                 )}
               </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6 }}>
+              <Grid2 size={6}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
@@ -235,7 +334,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                   />
                 )}
               </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6 }}>
+              <Grid2 size={6}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
@@ -250,12 +349,17 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                   />
                 )}
                 {!loading && poDetail?.expDelEditDate && (
-                  <Typography variant="caption" color="textSecondary" sx={{ marginTop: 1, display: 'block' }}>
-                    Edited by <b>{poDetail?.editedBy}</b> on <b>{new Date(poDetail.expDelEditDate).toLocaleDateString()}</b>
+                  <Typography
+                    variant="caption"
+                    color="textSecondary"
+                    sx={{ marginTop: 1, display: 'block' }}
+                  >
+                    Edited by <b>{poDetail?.editedBy}</b> on{' '}
+                    <b>{new Date(poDetail.expDelEditDate).toLocaleDateString()}</b>
                   </Typography>
                 )}
               </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6 }}>
+              <Grid2 size={6}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height={40} animation="wave" />
                 ) : (
@@ -341,7 +445,13 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
             {loading ? (
               <>
                 <Skeleton variant="rectangular" width="100%" height={100} animation="wave" />
-                <Skeleton variant="rectangular" width="100%" height={100} animation="wave" sx={{ marginTop: 2 }} />
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height={100}
+                  animation="wave"
+                  sx={{ marginTop: 2 }}
+                />
               </>
             ) : (
               <PaginatedSortableTable
