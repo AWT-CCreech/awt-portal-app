@@ -17,6 +17,7 @@ export interface PODetailUpdateDto {
   notesList: string[];
   contactName: string;
   company: string;
+  title: string;
   phone: string;
   issuedBy: string;
   editDate: string;
