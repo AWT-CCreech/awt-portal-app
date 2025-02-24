@@ -4,7 +4,6 @@ import {
   Container,
   Typography,
   Modal,
-  CircularProgress,
   Snackbar,
   Alert,
 } from '@mui/material';
@@ -233,8 +232,7 @@ const PODeliveryLog: React.FC = () => {
           </Grid2>
           <Grid2 size={12}>
             {loading ? (
-              <Box display="flex" justifyContent="center" mt={4}>
-              </Box>
+              <Box display="flex" justifyContent="center" mt={4} />
             ) : poData.length > 0 ? (
               <Box
                 sx={{
@@ -317,18 +315,12 @@ const PODeliveryLog: React.FC = () => {
             overflowY: 'auto',
           }}
         >
-          {detailLoading ? (
-            <Box display="flex" justifyContent="center" mt={4}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <PODetail
-              poDetail={selectedPO}
-              onClose={handleCloseModal}
-              loading={detailLoading}
-              onUpdate={refreshData} // Pass the refreshData function
-            />
-          )}
+          <PODetail
+            poDetail={selectedPO}
+            onClose={handleCloseModal}
+            loading={detailLoading}
+            onUpdate={refreshData} // Pass the refreshData function
+          />
         </Box>
       </Modal>
     </div>
