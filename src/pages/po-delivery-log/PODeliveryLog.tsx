@@ -135,22 +135,22 @@ const PODeliveryLog: React.FC = () => {
 
       worksheet.columns = [
         { header: 'PO#', key: 'ponum', width: 15 },
-        { header: 'Vendor Name', key: 'vendorName', width: 20 },
-        { header: 'Item Number', key: 'itemNum', width: 15 },
-        { header: 'Alternate Part Number', key: 'altPartNum', width: 20 },
+        { header: 'Vendor', key: 'vendorName', width: 20 },
+        { header: 'AWT P/N', key: 'itemNum', width: 15 },
+        { header: 'MFG P/N', key: 'altPartNum', width: 20 },
         { header: 'Issue Date', key: 'issueDate', width: 15 },
         { header: 'Issued By', key: 'issuedBy', width: 15 },
-        { header: 'Expected Delivery', key: 'expectedDelivery', width: 20 },
+        { header: 'Exp. Delivery', key: 'expectedDelivery', width: 20 },
         { header: 'PO Required Date', key: 'poRequiredDate', width: 20 },
-        { header: 'Quantity Ordered', key: 'qtyOrdered', width: 15 },
-        { header: 'Quantity Received', key: 'qtyReceived', width: 15 },
+        { header: 'Ordered', key: 'qtyOrdered', width: 15 },
+        { header: 'Received', key: 'qtyReceived', width: 15 },
         { header: 'Receiver Number', key: 'receiverNum', width: 15 },
         { header: 'Date Delivered', key: 'dateDelivered', width: 15 },
         { header: 'SO#', key: 'sonum', width: 15 },
-        { header: 'Customer Name', key: 'customerName', width: 20 },
+        { header: 'Customer', key: 'customerName', width: 20 },
         { header: 'SO Required Date', key: 'soRequiredDate', width: 20 },
         { header: 'Sales Rep', key: 'salesRep', width: 15 },
-        { header: 'Notes Exist', key: 'notesExist', width: 15 },
+        { header: 'Notes?', key: 'notesExist', width: 15 },
       ];
 
       poData.forEach((po) => {
