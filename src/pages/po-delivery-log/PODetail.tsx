@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useCallback,
-  FC,
-  memo,
-} from 'react';
+import React, { useState, useEffect, useContext, useCallback, FC, memo } from 'react';
 import {
   TableCell,
   Typography,
@@ -16,7 +9,9 @@ import {
   Skeleton,
   TableRow,
   Autocomplete,
+  IconButton,
 } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
 import Grid2 from '@mui/material/Grid2';
 import Modules from '../../app/api/agent';
 import UserInfoContext from '../../shared/stores/userInfo';
@@ -25,11 +20,17 @@ import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto'
 import { formatPhoneNumber } from '../../shared/utils/dataManipulation';
 import { CamContact } from '../../models/CamContact';
 
+// NOTE: Ideally, the NoteDto interface should reside in its own file.
+interface NoteDto {
+  Note: string;
+  EnteredBy: string;
+}
+
 interface PODetailProps {
   poDetail: PODetailUpdateDto | null;
   onClose: () => void;
   loading: boolean;
-  onUpdate: () => void; // Notify parent component to refresh data
+  onUpdate: () => void;
 }
 
 interface PreviousNote {
@@ -38,7 +39,6 @@ interface PreviousNote {
   note: string;
 }
 
-// Memoized Row Component for the Notes table
 const PODetailRow = memo(({ row }: { row: PreviousNote }) => (
   <TableRow>
     <TableCell>{row.date}</TableCell>
@@ -48,7 +48,6 @@ const PODetailRow = memo(({ row }: { row: PreviousNote }) => (
 ));
 
 const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) => {
-  // Existing state variables
   const [notes, setNotes] = useState(poDetail?.newNote || '');
   const [expectedDelivery, setExpectedDelivery] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -56,13 +55,10 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
   const [updateAllDates, setUpdateAllDates] = useState(false);
   const [previousNotes, setPreviousNotes] = useState<PreviousNote[]>([]);
   const userInfo = useContext(UserInfoContext);
-
-  // NEW: Contact search state using your full CamContact model
   const [contactQuery, setContactQuery] = useState<string>('');
   const [contactSuggestions, setContactSuggestions] = useState<CamContact[]>([]);
   const [selectedContact, setSelectedContact] = useState<CamContact | null>(null);
 
-  // Fetch previous notes for the PO
   const fetchPreviousNotes = useCallback(async () => {
     if (!poDetail) return;
     try {
@@ -93,7 +89,6 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
     }
   }, [poDetail, fetchPreviousNotes]);
 
-  // Set selected contact if one is already assigned
   useEffect(() => {
     if (poDetail && poDetail.contactName && !selectedContact) {
       setSelectedContact({
@@ -101,12 +96,12 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
         contact: poDetail.contactName,
         company: poDetail.company,
         phoneDirect: poDetail.phone,
+        title: poDetail.title,
       } as CamContact);
       setContactQuery(poDetail.contactName);
     }
   }, [poDetail, selectedContact]);
 
-  // Function to fetch contact suggestions (using your Modules.CamSearch API)
   const fetchContactSuggestions = useCallback(
     async (query: string) => {
       if (!query || query.length <= 2) return;
@@ -114,7 +109,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
         const response = await Modules.CamSearch.searchContacts({
           searchText: query,
           username: userInfo.username,
-          searchBy: 'Contact', // or 'Company' if desired
+          searchBy: 'Contact',
           activeOnly: true,
           orderBy: 'Contact',
           companyId: 'AIR',
@@ -127,7 +122,33 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
     [userInfo.username]
   );
 
-  // Update PO including contact assignment
+  const handleNoteSubmit = async () => {
+    if (!notes.trim() || !poDetail) return;
+
+    try {
+      // Optimistically update UI
+      const newNote: PreviousNote = {
+        date: new Date().toLocaleDateString(),
+        enteredBy: userInfo.username,
+        note: notes.trim(),
+      };
+      setPreviousNotes(prev => [newNote, ...prev]);
+
+      const noteDto: NoteDto = {
+        Note: notes.trim(),
+        EnteredBy: userInfo.username,
+      };
+
+      await Modules.PODeliveryLogService.addNote(poDetail.id, noteDto);
+      setNotes('');
+      await fetchPreviousNotes();
+    } catch (err) {
+      console.error('Error submitting note:', err);
+      setError('Failed to submit note. Please try again.');
+      setPreviousNotes(prev => prev.filter(note => note.note !== notes.trim()));
+    }
+  };
+
   const handleUpdatePO = async () => {
     setError(null);
     if (!poDetail?.soNum) {
@@ -135,39 +156,35 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
     }
     try {
       const updateDto: PODetailUpdateDto = {
-        ...poDetail!,
-        soNum: poDetail?.soNum,
-        newNote: notes,
+        ...poDetail,
+        soNum: poDetail.soNum,
+        newNote: '', // Note updates are handled separately.
         expectedDelivery: expectedDelivery ? new Date(expectedDelivery) : null,
         userId: parseInt(userInfo.userid, 10),
         userName: userInfo.username,
         password: userInfo.password,
-        updateAllDates,
-        urgentEmail,
-        notesList: previousNotes.map(
-          (note) => `${note.enteredBy}::${note.note}::${note.date}`
-        ),
-        // Include contact info from the selected contact (or fallback)
-        contactID: selectedContact ? selectedContact.id : poDetail?.contactID,
-        contactName: selectedContact ? selectedContact.contact || '' : poDetail?.contactName,
-        company: selectedContact ? selectedContact.company || '' : poDetail?.company,
+        updateAllDates: updateAllDates,
+        urgentEmail: urgentEmail,
+        contactID: selectedContact ? selectedContact.id : poDetail.contactID,
+        contactName: selectedContact ? selectedContact.contact || '' : poDetail.contactName,
+        company: selectedContact ? selectedContact.company || '' : poDetail.company,
+        title: selectedContact ? selectedContact.title || '' : poDetail.title,
         phone: selectedContact
           ? formatPhoneNumber(
             selectedContact.phoneDirect || (selectedContact as any).phoneMain || ''
           )
-          : formatPhoneNumber(poDetail?.phone || ''),
+          : formatPhoneNumber(poDetail.phone || ''),
       };
 
-      await Modules.PODeliveryLogService.updatePODetail(poDetail!.id, updateDto);
-      onUpdate(); // Notify parent to refresh data
-      onClose(); // Close the modal
+      await Modules.PODeliveryLogService.updatePODetail(poDetail.id, updateDto);
+      onUpdate();
+      onClose();
     } catch (err) {
       console.error('Error updating PO:', err);
       setError('Failed to update PO. Please try again.');
     }
   };
 
-  // Configure columns for the Notes table
   const columns = ['date', 'enteredBy', 'note'];
   const columnNames = ['Date', 'Entered By', 'Note'];
 
@@ -207,9 +224,7 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                     freeSolo
                     options={contactSuggestions}
                     getOptionLabel={(option) =>
-                      typeof option === 'string'
-                        ? option
-                        : `${option.contact || ''} (${option.company || ''})`
+                      typeof option === 'string' ? option : option.contact || ''
                     }
                     inputValue={contactQuery}
                     onInputChange={(event, newValue) => {
@@ -228,33 +243,38 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                     }}
                     renderOption={(props, option) => (
                       <li {...props} key={option.id}>
-                        {option.contact} ({option.company})
+                        {option.contact} - {option.title} ({option.company})
                       </li>
                     )}
                     renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Contact"
-                        placeholder="Search Contact"
-                        fullWidth
-                      />
+                      <TextField {...params} label="Contact" placeholder="Search Contact" fullWidth />
                     )}
                   />
                 )}
               </Grid2>
-              <Grid2 size={6}>
+              <Grid2 size={4}>
                 {loading ? (
-                  <Skeleton variant="text" width="80%" animation="wave" />
+                  <Skeleton variant="text" width="34%" animation="wave" />
                 ) : (
-                  <Typography variant="body1" sx={{ textAlign: 'center' }}>
+                  <Typography variant="body1" sx={{ textAlign: 'left' }}>
                     <strong>Company:</strong>{' '}
                     {selectedContact ? selectedContact.company : poDetail?.company}
                   </Typography>
                 )}
               </Grid2>
-              <Grid2 size={6}>
+              <Grid2 size={4}>
                 {loading ? (
-                  <Skeleton variant="text" width="80%" animation="wave" />
+                  <Skeleton variant="text" width="33%" animation="wave" />
+                ) : (
+                  <Typography variant="body1" sx={{ textAlign: 'center' }}>
+                    <strong>Title:</strong>{' '}
+                    {selectedContact ? selectedContact.title : poDetail?.title}
+                  </Typography>
+                )}
+              </Grid2>
+              <Grid2 size={4}>
+                {loading ? (
+                  <Skeleton variant="text" width="33%" animation="wave" />
                 ) : (
                   <Typography variant="body1" sx={{ textAlign: 'right' }}>
                     <strong>Phone:</strong>{' '}
@@ -270,7 +290,6 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
           </Box>
         </Grid2>
 
-        {/* Additional PO Details */}
         <Grid2 size={12}>
           <Box
             sx={{
@@ -380,7 +399,6 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
           </Box>
         </Grid2>
 
-        {/* Checkboxes */}
         <Grid2 size={12}>
           <Grid2 container spacing={2} alignItems="center">
             <Grid2 size="auto">
@@ -418,14 +436,12 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
           </Grid2>
         </Grid2>
 
-        {/* Error Message */}
         {error && (
           <Grid2 size={12}>
             <Typography color="error">{error}</Typography>
           </Grid2>
         )}
 
-        {/* Notes Section */}
         <Grid2 size={12}>
           <Box
             sx={{
@@ -463,19 +479,29 @@ const PODetail: FC<PODetailProps> = ({ poDetail, onClose, loading, onUpdate }) =
                 hoverColor="#f5f5f5"
               />
             )}
-            <TextField
-              label="Add note..."
-              multiline
-              rows={4}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              fullWidth
-              sx={{ marginTop: 2, backgroundColor: 'background.paper' }}
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
+              <TextField
+                label="Add note..."
+                multiline
+                rows={4}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                fullWidth
+                sx={{ backgroundColor: 'background.paper', flexGrow: 1 }}
+              />
+              <IconButton
+                color="primary"
+                onClick={handleNoteSubmit}
+                disabled={!notes.trim() || loading}
+                sx={{ ml: 1 }}
+                aria-label="Send note"
+              >
+                <SendIcon />
+              </IconButton>
+            </Box>
           </Box>
         </Grid2>
 
-        {/* Buttons */}
         <Grid2 size={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
           <Button variant="outlined" onClick={onClose}>
             Cancel
