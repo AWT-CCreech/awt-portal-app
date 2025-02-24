@@ -451,13 +451,10 @@ const OpenSalesOrderReport = {
 };
 
 /**
- * PODeliveryLogService: Contains endpoints for retrieving purchase order delivery logs
- * and updating PO details, including vendor lookups.
+ * PODeliveryLogService: Contains endpoints for PO delivery logs and details.
  */
 const PODeliveryLogService = {
-  getPODeliveryLogs: async (
-    params: PODeliveryLogSearchInput
-  ): Promise<PODeliveryLogs[]> => {
+  getPODeliveryLogs: async (params: PODeliveryLogSearchInput): Promise<PODeliveryLogs[]> => {
     try {
       const response = await requests.getWithParams('/PODeliveryLog', params);
       return response as PODeliveryLogs[];
@@ -466,7 +463,6 @@ const PODeliveryLogService = {
       throw error;
     }
   },
-
   getVendors: (params: {
     PONum?: string;
     PartNum?: string;
@@ -481,13 +477,15 @@ const PODeliveryLogService = {
   }): Promise<string[]> => {
     return requests.getWithParams('/PODeliveryLog/vendors', params);
   },
-
   getPODetailByID: (id: number): Promise<PODetailUpdateDto> => {
     return requests.get(`/PODetail/id/${id}`);
   },
-
   updatePODetail: (id: number, body: PODetailUpdateDto): Promise<void> => {
     return requests.put(`/PODetail/${id}`, body);
+  },
+  // New endpoint to add a note without updating other PO fields.
+  addNote: (id: number, noteDto: { Note: string; EnteredBy: string }): Promise<void> => {
+    return requests.put(`/PODetail/${id}/note`, noteDto);
   },
 };
 
