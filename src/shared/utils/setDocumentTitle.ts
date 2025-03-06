@@ -13,6 +13,8 @@ const DOCUMENT_TITLES: { [key: string]: string } = {
   [ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG]: 'AWT Portal | PO Delivery Log',
   [ROUTE_PATHS.PURCHASING.DROPSHIP]: 'AWT Portal | Drop Ship',
   [ROUTE_PATHS.USER_LIST]: 'AWT Portal | User List',
+  [ROUTE_PATHS.ACCOUNTING.DAILY_GOALS]: 'AWT Portal | Daily Goals Report',
+  [`${ROUTE_PATHS.ACCOUNTING.DAILY_GOALS}/detail`]: 'AWT Portal | Daily Goals Detail',
   // Add other paths and their titles as needed
 };
 
