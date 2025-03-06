@@ -1,0 +1,30 @@
+// Style for the entire row when hovered over.
+.highlightable-row {
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: #f5f5f5;
+    }
+}
+
+// Base style for hoverable table cells.
+.hoverable-cell {
+    cursor: pointer;
+    text-align: right;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+// For cells representing "Sold" and "Unshipped" values,
+// mimic classic ASP: red background with white text on hover.
+.hoverable-cell.sold:hover,
+.hoverable-cell.unshipped:hover {
+    background-color: #f44336;
+    color: #ffffff;
+}
+
+// For the "Shipped" cell,
+// mimic classic ASP: blue background with white text on hover.
+.hoverable-cell.shipped:hover {
+    background-color: #2196f3;
+    color: #ffffff;
+}
