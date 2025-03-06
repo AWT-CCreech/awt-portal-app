@@ -15,6 +15,8 @@ import PrivateRoute from './shared/components/PrivateRoute';
 import TimeTrackerPage from './pages/time-tracker/TimeTrackerPage';
 import EventSearch from './pages/event-search/EventSearch';
 import SalesOrderWB from './pages/sales-order-workbench/SalesOrderWB';
+import DailyGoalsReportPage from './pages/daily-goals/DailyGoalsReport';
+import DailyGoalsDetail from './pages/daily-goals/DailyGoalsDetail';
 
 // Define constants for paths
 export const ROUTE_PATHS = {
@@ -33,6 +35,9 @@ export const ROUTE_PATHS = {
   MASTER_SEARCH: '/mastersearch',
   TIME_TRACKER: '/timetracker',
   USER_LIST: '/userlist',
+  ACCOUNTING: {
+    DAILY_GOALS: '/accounting/dailygoals',
+  },
   // Add other paths as needed
 };
 
@@ -84,6 +89,14 @@ export const routes: RouteObject[] = [
       {
         path: ROUTE_PATHS.USER_LIST,
         element: <UserListPage />,
+      },
+      {
+        path: ROUTE_PATHS.ACCOUNTING.DAILY_GOALS,
+        element: <DailyGoalsReportPage />,
+      },
+      {
+        path: `${ROUTE_PATHS.ACCOUNTING.DAILY_GOALS}/detail`,
+        element: <DailyGoalsDetail />,
       },
       // Add other routes as needed
     ],
