@@ -1,66 +1,57 @@
 import axios, { AxiosResponse } from 'axios';
 import { AccountNumbers } from '../../models/Data/AccountNumbers';
 import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
+import { ItemCategories } from '../../models/Data/ItemCategories';
+import { Rep } from '../../models/Data/Rep';
 import { CamContact } from '../../models/CamContact';
-import { MassMailHistory } from '../../models/MassMailHistory';
+import { DailyGoalDetail } from '../../models/DailyGoalsReport/DailyGoalDetail';
+import { DailyGoalsReport } from '../../models/DailyGoalsReport/DailyGoalsReport';
+import { DetailLevelUpdateDto } from '../../models/SOWorkbench/DetailLevelUpdateDto';
+import { EventLevelUpdateDto } from '../../models/SOWorkbench/EventLevelUpdateDto';
+import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
+import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
+import BuyOppDetail from '../../models/MasterSearch/BuyOppDetail';
+import BuyOppEvent from '../../models/MasterSearch/BuyOppEvent';
+import MasterSearchContact from '../../models/MasterSearch/MasterSearchContact';
+import MasterSearchInput from '../../models/MasterSearch/SearchInput';
+import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
+import SellOppEvent from '../../models/MasterSearch/SellOppEvent';
+import LoginInfo from '../../models/Login/LoginInfo';
 import { MassMailerEmailTemplate } from '../../models/MassMailer/MassMailerEmailTemplate';
 import { MassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
 import { MassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
 import MassMailerUser from '../../models/MassMailer/MassMailerUser';
-import BuyOppDetail from '../../models/MasterSearch/BuyOppDetail';
-import BuyOppEvent from '../../models/MasterSearch/BuyOppEvent';
-import LoginInfo from '../../models/Login/LoginInfo';
-import MasterSearchContact from '../../models/MasterSearch/MasterSearchContact';
-import MasterSearchInput from '../../models/MasterSearch/SearchInput';
-import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
+import { MassMailHistory } from '../../models/MassMailHistory';
 import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
+import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
 import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs';
 import PODeliveryLogSearchInput from '../../models/PODeliveryLog/SearchInput';
-import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
-import SellOppEvent from '../../models/MasterSearch/SellOppEvent';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { User } from '../../models/User';
-import { ItemCategories } from '../../models/Data/ItemCategories';
-import { DropShipPart } from '../../models/DropShip/DropShipPart';
-import { Rep } from '../../models/Data/Rep';
-import { DropShipPartsParams } from '../../models/DropShip/DropShipPartParams';
-import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
-import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
-import { DetailLevelUpdateDto } from '../../models/SOWorkbench/DetailLevelUpdateDto';
-import { EventLevelUpdateDto } from '../../models/SOWorkbench/EventLevelUpdateDto';
+
 
 /**
  * Base URLs for both development and production environments.
- * Adjust accordingly if more environments (e.g., staging) are added.
  */
-const devURL = 'http://localhost:5001/api'; // Use for development environment
-const prodURL = 'http://10.0.0.8:82/api';   // Use for production environment
+const devURL = 'http://localhost:5001/api';
+const prodURL = 'http://10.0.0.8:82/api';
 
-// Conditionally set the baseURL based on the environment variable
-if (process.env.NODE_ENV === 'development') {
-  axios.defaults.baseURL = devURL;
-} else {
-  axios.defaults.baseURL = prodURL;
-}
+axios.defaults.baseURL = process.env.NODE_ENV === 'development' ? devURL : prodURL;
 
 /**
  * Extracts the `data` property from the Axios response.
- * This is a common pattern to reduce boilerplate when handling responses.
  */
 const responseBody = (response: AxiosResponse) => response.data;
 
 /**
- * A collection of wrapper methods that standardize
- * GET, POST, PUT, and DELETE requests using axios.
- * They log requests and responses for easier debugging.
+ * A collection of wrapper methods for GET, POST, PUT, and DELETE requests.
  */
 const requests = {
   get: async (url: string) => {
     console.log(`GET Request to: ${url}`);
-    return axios
-      .get(url)
+    return axios.get(url)
       .then(responseBody)
       .then((data) => {
         console.log(`GET Response from: ${url}`, data);
@@ -69,18 +60,16 @@ const requests = {
   },
   getWithParams: async (url: string, params: object) => {
     console.log(`GET Request to: ${url} with params:`, params);
-    return axios
-      .get(url, { params })
+    return axios.get(url, { params })
       .then(responseBody)
       .then((data) => {
-        console.log(`GET Response from: ${url} with params:`, data);
+        console.log(`GET Response from: ${url}`, data);
         return data;
       });
   },
   post: async (url: string, body: object) => {
     console.log(`POST Request to: ${url} with body:`, body);
-    return axios
-      .post(url, body)
+    return axios.post(url, body)
       .then(responseBody)
       .then((data) => {
         console.log(`POST Response from: ${url}`, data);
@@ -89,8 +78,7 @@ const requests = {
   },
   postNoBody: async (url: string) => {
     console.log(`POST Request to: ${url} with no body`);
-    return axios
-      .post(url)
+    return axios.post(url)
       .then(responseBody)
       .then((data) => {
         console.log(`POST Response from: ${url}`, data);
@@ -99,8 +87,7 @@ const requests = {
   },
   put: async (url: string, body: object) => {
     console.log(`PUT Request to: ${url} with body:`, body);
-    return axios
-      .put(url, body)
+    return axios.put(url, body)
       .then(responseBody)
       .then((data) => {
         console.log(`PUT Response from: ${url}`, data);
@@ -109,8 +96,7 @@ const requests = {
   },
   delete: async (url: string) => {
     console.log(`DELETE Request to: ${url}`);
-    return axios
-      .delete(url)
+    return axios.delete(url)
       .then(responseBody)
       .then((data) => {
         console.log(`DELETE Response from: ${url}`, data);
@@ -120,8 +106,7 @@ const requests = {
 };
 
 /**
- * Interceptor that attaches the JWT token from localStorage
- * to the Authorization header in every outgoing request.
+ * Request interceptor to attach JWT token to every outgoing request.
  */
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
@@ -132,34 +117,18 @@ axios.interceptors.request.use((config) => {
 });
 
 /**
- * Interceptor that handles:
- * - Auto-refreshing tokens upon 401 responses
- * - Logging the user out if refresh also fails
- *
- * If a token refresh is successful, the original request is retried
- * with the new token. If unsuccessful, user session data is cleared.
+ * Response interceptor to handle token refresh.
  */
 axios.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
-    // Only attempt refresh if we get a 401 (Unauthorized) and haven't retried yet
-    if (
-      error.response &&
-      error.response.status === 401 &&
-      !originalRequest._retry
-    ) {
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
       try {
         const currentToken = localStorage.getItem('token');
-        const refreshResponse = await axios.post('/Login/refresh', {
-          token: currentToken,
-        });
+        const refreshResponse = await axios.post('/Login/refresh', { token: currentToken });
         const newToken = refreshResponse.data.token;
-
-        // Save new token and retry original request
         localStorage.setItem('token', newToken);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axios(originalRequest);
@@ -176,140 +145,96 @@ axios.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-
     return Promise.reject(error);
   }
 );
 
 /**
- * CamSearch: Contains endpoints for contact searching in the "Cam" domain.
+ * CamSearch: Endpoints for contact searching in the "Cam" domain.
  */
 const CamSearch = {
-  getAdvancedSearchFields: (): Promise<
-    { FieldValue: string; FieldValue2: string; FieldValue4: string }[]
-  > => {
-    return requests.get('/Cam/AdvancedSearchFields');
-  },
-  getContactTypes: (): Promise<string[]> => {
-    return requests.get('/Cam/ContactTypes');
-  },
-  getSearchFields: (): Promise<string[]> => {
-    return requests.get('/Cam/SearchFields');
-  },
-  searchContacts: (params: {
-    searchText: string;
-    username: string;
-    searchBy: string;
-    activeOnly?: boolean;
-    orderBy?: string;
-    companyId?: string;
-  }): Promise<CamContact[]> => {
-    return requests.getWithParams('/Cam/ContactSearch', params);
-  },
+  getAdvancedSearchFields: (): Promise<{ FieldValue: string; FieldValue2: string; FieldValue4: string }[]> =>
+    requests.get('/Cam/AdvancedSearchFields'),
+  getContactTypes: (): Promise<string[]> => requests.get('/Cam/ContactTypes'),
+  getSearchFields: (): Promise<string[]> => requests.get('/Cam/SearchFields'),
+  searchContacts: (params: { searchText: string; username: string; searchBy: string; activeOnly?: boolean; orderBy?: string; companyId?: string }): Promise<CamContact[]> =>
+    requests.getWithParams('/Cam/ContactSearch', params),
 };
 
 /**
- * DataFetch: Contains endpoints that retrieve various static or reference data,
- * such as account numbers, sales reps, sales teams, etc.
+ * DataFetch: Endpoints to retrieve various static or reference data.
  */
 const DataFetch = {
   fetchAccountNumbers: async (): Promise<AccountNumbers[]> => {
-    try {
-      const response = await requests.get('/Sales/GetAccountNumbers');
-      return response as AccountNumbers[];
-    } catch (error) {
-      console.error('Error fetching account numbers', error);
-      throw error;
-    }
+    const response = await requests.get('/Sales/GetAccountNumbers');
+    return response as AccountNumbers[];
   },
   fetchActiveSalesReps: async (): Promise<Rep[]> => {
-    try {
-      const response = await requests.get('/Sales/GetSalesReps');
-      return response as Rep[];
-    } catch (error) {
-      console.error('Error fetching sales reps', error);
-      throw error;
-    }
+    const response = await requests.get('/Sales/GetSalesReps');
+    return response as Rep[];
   },
   fetchActiveSalesTeams: async (): Promise<ActiveSalesTeams[]> => {
-    try {
-      const response = await requests.get('/Sales/GetSalesTeams');
-      return response as ActiveSalesTeams[];
-    } catch (error) {
-      console.error('Error fetching sales teams', error);
-      throw error;
-    }
+    const response = await requests.get('/Sales/GetSalesTeams');
+    return response as ActiveSalesTeams[];
   },
   fetchItemCategories: async (): Promise<ItemCategories[]> => {
-    try {
-      const response = await requests.get('/Sales/GetCategories');
-      return response as ItemCategories[];
-    } catch (error) {
-      console.error('Error fetching item categories', error);
-      throw error;
-    }
+    const response = await requests.get('/Sales/GetCategories');
+    return response as ItemCategories[];
   },
   fetchPurchasingReps: async (): Promise<Rep[]> => {
-    try {
-      const response = await requests.get('/Purchasing/GetPurchasingReps');
-      return response as Rep[];
-    } catch (error) {
-      console.error('Error fetching purchasing reps', error);
-      throw error;
-    }
+    const response = await requests.get('/Purchasing/GetPurchasingReps');
+    return response as Rep[];
   },
-  fetchDropShipParts: async (
-    poNo?: string,
-    soNo?: string
-  ): Promise<DropShipPart[]> => {
-    try {
-      const params: DropShipPartsParams = {};
-      if (poNo) params.poNo = poNo;
-      if (soNo) params.soNo = soNo;
-      const response = await requests.getWithParams(
-        '/ScanHistory/GetDropShipParts',
-        params
-      );
-      return response as DropShipPart[];
-    } catch (error) {
-      console.error('Error fetching drop ship parts', error);
-      throw error;
-    }
-  },
+  // ... additional data endpoints
 };
 
 /**
- * DropShip: Contains endpoints that handle the Drop Ship email process and related data fetching.
+ * DailyGoals: Endpoints for retrieving the daily goals report.
+ */
+const DailyGoals = {
+  getReport: async (params: { Months?: string; Years?: string }): Promise<DailyGoalsReport> => {
+    try {
+      console.log("Fetching Daily Goals Report with params:", params);
+      const response = await requests.getWithParams('/DailyGoalsReport', params);
+      return response as DailyGoalsReport;
+    } catch (error) {
+      console.error("Error fetching Daily Goals Report", error);
+      throw error;
+    }
+  },
+  getDetail: async (params: { DisplayType: string; SearchDate: string }): Promise<DailyGoalDetail[]> => {
+    try {
+      console.log("Fetching Daily Goals Detail with params:", params);
+      const response = await requests.getWithParams('/DailyGoalsReport/detail', params);
+      return response as DailyGoalDetail[];
+    } catch (error) {
+      console.error("Error fetching Daily Goals Detail", error);
+      throw error;
+    }
+  }
+};
+
+/**
+ * DropShip: Endpoints for Drop Ship operations.
  */
 const DropShip = {
-  dropShipSendEmail: (emailInput: object) =>
-    requests.post('/DropShipSendEmail', emailInput),
+  dropShipSendEmail: (emailInput: object) => requests.post('/DropShipSendEmail', emailInput),
   getAllDropShipSalesReps: () => requests.get('/DropShipSalesReps'),
-  getDropShipInfo: (poNum: string): Promise<any> =>
-    requests.get(`/DropShipInfo/${poNum}`),
+  getDropShipInfo: (poNum: string): Promise<any> => requests.get(`/DropShipInfo/${poNum}`)
 };
 
 /**
- * EventSearchPage: Endpoints for searching events and retrieving event-based data.
+ * EventSearchPage: Endpoints for event searching.
  */
 const EventSearchPage = {
-  getEventPageData: async (
-    params: EquipReqSearchCriteria
-  ): Promise<EquipReqSearchResult[]> => {
-    // Convert date objects to YYYY-MM-DD for backend compatibility
+  getEventPageData: async (params: EquipReqSearchCriteria): Promise<EquipReqSearchResult[]> => {
     const formattedParams = {
       ...params,
-      fromDate: params.fromDate
-        ? params.fromDate.toISOString().split('T')[0]
-        : null,
+      fromDate: params.fromDate ? params.fromDate.toISOString().split('T')[0] : null,
       toDate: params.toDate ? params.toDate.toISOString().split('T')[0] : null,
     };
-
     try {
-      const response = await requests.getWithParams(
-        '/EventSearch/EquipmentRequestSearch',
-        formattedParams
-      );
+      const response = await requests.getWithParams('/EventSearch/EquipmentRequestSearch', formattedParams);
       return response;
     } catch (error) {
       console.error('Error fetching Event Page data', error);
@@ -319,149 +244,97 @@ const EventSearchPage = {
 };
 
 /**
- * MassMailer: Endpoints for mass mailer functionality.
+ * MassMailer: Endpoints for Mass Mailer functionality.
  */
 const MassMailer = {
   ClearPartItems: {
-    clear: (userid: string): Promise<any> => requests.get(`/MassMailerClearPartItems/${userid}`),
+    clear: (userid: string): Promise<any> => requests.get(`/MassMailerClearPartItems/${userid}`)
   },
   EmailOuts: {
-    sendEmail: (body: object) => requests.post('/MassMailerEmailOuts', body),
+    sendEmail: (body: object) => requests.post('/MassMailerEmailOuts', body)
   },
   EmailTemplates: {
-    templatesForUser: (user: string): Promise<MassMailerEmailTemplate[]> =>
-      requests.get(`/MassMailerEmailTemplates/${user}`),
+    templatesForUser: (user: string): Promise<MassMailerEmailTemplate[]> => requests.get(`/MassMailerEmailTemplates/${user}`)
   },
   FileUpload: {
     clear: (username: string): Promise<any> => requests.get(`/MassMailerFileUpload/${username}`),
-    upload: (body: FormData): Promise<string[]> => requests.post('/MassMailerFileUpload', body),
+    upload: (body: FormData): Promise<string[]> => requests.post('/MassMailerFileUpload', body)
   },
   Manufacturers: {
-    manufacturerList: (): Promise<string[]> => requests.get('/MassMailerManufacturers'),
+    manufacturerList: (): Promise<string[]> => requests.get('/MassMailerManufacturers')
   },
   PartItems: {
-    partItemsForUser: (user: string): Promise<MassMailerPartItem[]> => requests.get(`/MassMailerPartItems/${user}`),
+    partItemsForUser: (user: string): Promise<MassMailerPartItem[]> => requests.get(`/MassMailerPartItems/${user}`)
   },
   Vendors: {
-    vendorList: (mfg: string, anc: boolean, fne: boolean): Promise<MassMailerVendor[]> =>
-      requests.get(`/MassMailerVendors/${mfg}/${anc}/${fne}`),
+    vendorList: (mfg: string, anc: boolean, fne: boolean): Promise<MassMailerVendor[]> => requests.get(`/MassMailerVendors/${mfg}/${anc}/${fne}`)
   },
   Users: {
-    // The front end now calls these endpoints (provided by the UsersController)
-    // which internally use UserService logic.
     getActive: (): Promise<User[]> => requests.get('/Users/active'),
-    getMassMailer: (): Promise<MassMailerUser[]> => requests.get('/Users/massmailer'),
-  },
+    getMassMailer: (): Promise<MassMailerUser[]> => requests.get('/Users/massmailer')
+  }
 };
 
 /**
- * MassMailerHistory: Endpoints for Mass Mailer History operations.
+ * MassMailerHistory: Endpoints for Mass Mailer History.
  */
 const MassMailerHistory = {
   getAll: (): Promise<MassMailHistory[]> => requests.get('/MassMailerHistory'),
-  getByUser: (username: string): Promise<MassMailHistory[]> =>
-    requests.get(`/MassMailerHistory/sentBy/${username}`),
-  getByUserAndId: (username: string, id: number): Promise<MassMailHistory> =>
-    requests.get(`/MassMailerHistory/sentBy/${username}/${id}`),
+  getByUser: (username: string): Promise<MassMailHistory[]> => requests.get(`/MassMailerHistory/sentBy/${username}`),
+  getByUserAndId: (username: string, id: number): Promise<MassMailHistory> => requests.get(`/MassMailerHistory/sentBy/${username}/${id}`),
   update: (id: number, history: MassMailHistory): Promise<any> => requests.put(`/MassMailerHistory/${id}`, history),
   create: (history: MassMailHistory): Promise<MassMailHistory> => requests.post('/MassMailerHistory', history),
-  delete: (id: number): Promise<MassMailHistory> => requests.delete(`/MassMailerHistory/${id}`),
+  delete: (id: number): Promise<MassMailHistory> => requests.delete(`/MassMailerHistory/${id}`)
 };
 
 /**
- * MasterSearches: A set of endpoints for buy/sell opportunity details
- * and searching contacts under the "MasterSearch" domain.
+ * MasterSearches: Endpoints for master search operations.
  */
 const MasterSearches = {
-  getBuyOppDetails: (input: MasterSearchInput): Promise<BuyOppDetail[]> =>
-    requests.getWithParams('/MasterSearch/BuyOppDetails', input),
-  getBuyOppEvents: (input: MasterSearchInput): Promise<BuyOppEvent[]> =>
-    requests.getWithParams('/MasterSearch/BuyOppEvents', input),
-  getContacts: (
-    searchValue: string,
-    active: boolean
-  ): Promise<MasterSearchContact[]> =>
-    requests.getWithParams('/MasterSearch/Contacts', { searchValue, active }),
-  getSellOppDetails: (input: MasterSearchInput): Promise<SellOppDetail[]> =>
-    requests.getWithParams('/MasterSearch/SellOppDetails', input),
-  getSellOppEvents: (input: MasterSearchInput): Promise<SellOppEvent[]> =>
-    requests.getWithParams('/MasterSearch/SellOppEvents', input),
+  getBuyOppDetails: (input: MasterSearchInput): Promise<BuyOppDetail[]> => requests.getWithParams('/MasterSearch/BuyOppDetails', input),
+  getBuyOppEvents: (input: MasterSearchInput): Promise<BuyOppEvent[]> => requests.getWithParams('/MasterSearch/BuyOppEvents', input),
+  getContacts: (searchValue: string, active: boolean): Promise<MasterSearchContact[]> => requests.getWithParams('/MasterSearch/Contacts', { searchValue, active }),
+  getSellOppDetails: (input: MasterSearchInput): Promise<SellOppDetail[]> => requests.getWithParams('/MasterSearch/SellOppDetails', input),
+  getSellOppEvents: (input: MasterSearchInput): Promise<SellOppEvent[]> => requests.getWithParams('/MasterSearch/SellOppEvents', input)
 };
 
 /**
- * OpenSalesOrderNotes: Manages CRUD operations for notes related to sales orders.
+ * OpenSalesOrderNotes: Endpoints for sales order notes.
  */
 const OpenSalesOrderNotes = {
   addNote: async (note: TrkSoNote): Promise<TrkSoNote> => {
-    try {
-      const response = await requests.post('/OpenSalesOrderNotes/AddNote', note);
-      return response as TrkSoNote;
-    } catch (error) {
-      console.error('Error adding note', error);
-      throw error;
-    }
+    const response = await requests.post('/OpenSalesOrderNotes/AddNote', note);
+    return response as TrkSoNote;
   },
   deleteNote: async (id: number): Promise<void> => {
-    try {
-      await requests.delete(`/OpenSalesOrderNotes/DeleteNote/${id}`);
-    } catch (error) {
-      console.error('Error deleting note', error);
-      throw error;
-    }
+    await requests.delete(`/OpenSalesOrderNotes/DeleteNote/${id}`);
   },
   getNotes: async (soNum: string, partNum: string): Promise<TrkSoNote[]> => {
-    try {
-      const response = await requests.get(
-        `/OpenSalesOrderNotes/GetNotes/${soNum}/${partNum}`
-      );
-      return response as TrkSoNote[];
-    } catch (error) {
-      console.error('Error fetching notes', error);
-      throw error;
-    }
+    const response = await requests.get(`/OpenSalesOrderNotes/GetNotes/${soNum}/${partNum}`);
+    return response as TrkSoNote[];
   },
   updateNote: async (id: number, note: TrkSoNote): Promise<void> => {
-    try {
-      await requests.put(`/OpenSalesOrderNotes/UpdateNote/${id}`, note);
-    } catch (error) {
-      console.error('Error updating note', error);
-      throw error;
-    }
-  },
+    await requests.put(`/OpenSalesOrderNotes/UpdateNote/${id}`, note);
+  }
 };
 
 /**
- * OpenSalesOrderReport: Fetches details of open sales orders, including notes.
+ * OpenSalesOrderReport: Endpoints for open sales order reports.
  */
 const OpenSalesOrderReport = {
-  fetchOpenSalesOrders: async (
-    params: OpenSalesOrderSearchInput
-  ): Promise<(OpenSOReport & { Notes: TrkSoNote[] })[]> => {
-    try {
-      const response = await requests.getWithParams(
-        '/OpenSalesOrder/GetOpenSalesOrders',
-        params
-      );
-      return response as (OpenSOReport & { Notes: TrkSoNote[] })[];
-    } catch (error) {
-      console.error('Error fetching open sales orders', error);
-      throw error;
-    }
-  },
+  fetchOpenSalesOrders: async (params: OpenSalesOrderSearchInput): Promise<(OpenSOReport & { Notes: TrkSoNote[] })[]> => {
+    const response = await requests.getWithParams('/OpenSalesOrder/GetOpenSalesOrders', params);
+    return response as (OpenSOReport & { Notes: TrkSoNote[] })[];
+  }
 };
 
 /**
- * PODeliveryLogService: Contains endpoints for PO delivery logs and details.
+ * PODeliveryLogService: Endpoints for PO delivery logs.
  */
 const PODeliveryLogService = {
   getPODeliveryLogs: async (params: PODeliveryLogSearchInput): Promise<PODeliveryLogs[]> => {
-    try {
-      const response = await requests.getWithParams('/PODeliveryLog', params);
-      return response as PODeliveryLogs[];
-    } catch (error) {
-      console.error('Error fetching open sales orders', error);
-      throw error;
-    }
+    const response = await requests.getWithParams('/PODeliveryLog', params);
+    return response as PODeliveryLogs[];
   },
   getVendors: (params: {
     PONum?: string;
@@ -474,161 +347,89 @@ const PODeliveryLogService = {
     EquipType?: string;
     CompanyID?: string;
     YearRange?: number;
-  }): Promise<string[]> => {
-    return requests.getWithParams('/PODeliveryLog/vendors', params);
-  },
-  getPODetailByID: (id: number): Promise<PODetailUpdateDto> => {
-    return requests.get(`/PODetail/id/${id}`);
-  },
-  updatePODetail: (id: number, body: PODetailUpdateDto): Promise<void> => {
-    return requests.put(`/PODetail/${id}`, body);
-  },
-  // New endpoint to add a note without updating other PO fields.
-  addNote: (id: number, noteDto: { Note: string; EnteredBy: string }): Promise<void> => {
-    return requests.put(`/PODetail/${id}/note`, noteDto);
-  },
+  }): Promise<string[]> => requests.getWithParams('/PODeliveryLog/vendors', params),
+  getPODetailByID: (id: number): Promise<PODetailUpdateDto> => requests.get(`/PODetail/id/${id}`),
+  updatePODetail: (id: number, body: PODetailUpdateDto): Promise<void> => requests.put(`/PODetail/${id}`, body),
+  addNote: (id: number, noteDto: { Note: string; EnteredBy: string }): Promise<void> => requests.put(`/PODetail/${id}/note`, noteDto)
 };
 
 /**
- * SalesOrderWorkbench: Endpoints for working with both event-level
- * and detail-level sales order data.
+ * SalesOrderWorkbench: Endpoints for sales order workbench operations.
  */
 const SalesOrderWorkbench = {
-  // ----------------------------
-  // 1) GET: Event-Level & Detail-Level
-  // ----------------------------
-  getEventLevelData: async (params: {
-    salesRepId?: number;
-    billToCompany?: string;
-    eventId?: number;
-  }): Promise<any> => {
+  getEventLevelData: async (params: { salesRepId?: number; billToCompany?: string; eventId?: number }): Promise<any> => {
     return requests.getWithParams('/SalesOrderWorkbench/EventLevelData', params);
   },
-
-  getDetailLevelData: async (params: {
-    salesRepId?: number;
-    billToCompany?: string;
-    eventId?: number;
-  }): Promise<any> => {
+  getDetailLevelData: async (params: { salesRepId?: number; billToCompany?: string; eventId?: number }): Promise<any> => {
     return requests.getWithParams('/SalesOrderWorkbench/DetailLevelData', params);
   },
-
-  // ----------------------------
-  // 2) POST: Event-Level & Detail-Level Updates
-  // ----------------------------
   updateEventLevel: async (updateData: EventLevelUpdateDto): Promise<void> => {
-    // Consolidated endpoint for all event-level data updates
     return requests.post('/SalesOrderWorkbench/UpdateEventLevel', updateData);
   },
-
-  updateDetailLevel: async (
-    updateData: DetailLevelUpdateDto
-  ): Promise<void> => {
-    // Consolidated endpoint for all detail-level data updates
+  updateDetailLevel: async (updateData: DetailLevelUpdateDto): Promise<void> => {
     return requests.post('/SalesOrderWorkbench/UpdateDetailLevel', updateData);
-  },
+  }
 };
 
 /**
- * TimeTrackers: Endpoints for managing time tracking,
- * including approvals, retrieval, and sending time-tracking reports.
+ * TimeTrackers: Endpoints for time tracking.
  */
 const TimeTrackers = {
-  approve: (approvals: object) =>
-    requests.post('/TimeTrackerApprovals', approvals),
-  get: (userId: string): Promise<TimeTracker> =>
-    requests.get(`/TimeTrackers/${userId}`),
-  getAllInPeriod: (
-    userId: string,
-    previousPeriod: boolean
-  ): Promise<TimeTracker[]> =>
-    requests.get(
-      `/PeriodTimeTrackers?userId=${userId}&previousPeriod=${previousPeriod}`
-    ),
+  approve: (approvals: object) => requests.post('/TimeTrackerApprovals', approvals),
+  get: (userId: string): Promise<TimeTracker> => requests.get(`/TimeTrackers/${userId}`),
+  getAllInPeriod: (userId: string, previousPeriod: boolean): Promise<TimeTracker[]> =>
+    requests.get(`/PeriodTimeTrackers?userId=${userId}&previousPeriod=${previousPeriod}`),
   isApproved: (userId: string, previousPeriod: boolean) =>
-    requests.get(
-      `/TimeTrackerApprovals?userId=${userId}&previousPeriod=${previousPeriod}`
-    ),
-  sendEmailReport: (body: object) =>
-    requests.post('/TimeTrackerReportSender', body),
-  update: (body: TimeTracker): Promise<TimeTracker> =>
-    requests.put('/TimeTrackers', body),
-};
-
-const Users = {
-  // Retrieves full User model data for all active users.
-  getActive: (): Promise<User[]> => requests.get('/Users/active'),
-
-  // Retrieves only active users who have sent a MassMailer.
-  getMassMailer: (): Promise<MassMailerUser[]> => requests.get('/Users/massmailer'),
+    requests.get(`/TimeTrackerApprovals?userId=${userId}&previousPeriod=${previousPeriod}`),
+  sendEmailReport: (body: object) => requests.post('/TimeTrackerReportSender', body),
+  update: (body: TimeTracker): Promise<TimeTracker> => requests.put('/TimeTrackers', body)
 };
 
 /**
- * UserList: Handles user CRUD operations for an internal user list.
+ * Users: Endpoints for user operations.
+ */
+const Users = {
+  getActive: (): Promise<User[]> => requests.get('/Users/active'),
+  getMassMailer: (): Promise<MassMailerUser[]> => requests.get('/Users/massmailer')
+};
+
+/**
+ * UserList: Endpoints for user list management.
  */
 const UserList = {
   addUser: async (newUser: User): Promise<User> => {
-    try {
-      const response = await requests.post('/UserList/AddUser', newUser);
-      return response as User;
-    } catch (error) {
-      console.error('Error adding user', error);
-      throw error;
-    }
+    const response = await requests.post('/UserList/AddUser', newUser);
+    return response as User;
   },
   deleteUser: async (uid: number): Promise<void> => {
-    try {
-      await requests.delete(`/UserList/DeleteUser/${uid}`);
-    } catch (error) {
-      console.error('Error deleting user', error);
-      throw error;
-    }
+    await requests.delete(`/UserList/DeleteUser/${uid}`);
   },
   fetchUserList: async (): Promise<User[]> => {
-    try {
-      const response = await requests.get('/UserList/GetUserList');
-      return response as User[];
-    } catch (error) {
-      console.error('Error fetching users', error);
-      throw error;
-    }
+    const response = await requests.get('/UserList/GetUserList');
+    return response as User[];
   },
   updateUser: async (uid: number, updatedUser: User): Promise<User> => {
-    try {
-      const response = await requests.put(
-        `/UserList/UpdateUser/${uid}`,
-        updatedUser
-      );
-      return response as User;
-    } catch (error) {
-      console.error('Error updating user', error);
-      throw error;
-    }
-  },
+    const response = await requests.put(`/UserList/UpdateUser/${uid}`, updatedUser);
+    return response as User;
+  }
 };
 
 /**
- * UserLogins: Endpoints responsible for user authentication
- * and token refresh mechanisms.
+ * UserLogins: Endpoints for user authentication.
  */
 const UserLogins = {
-  authenticate: (loginInfo: LoginInfo): Promise<LoginInfo> =>
-    requests.post('/Login', loginInfo),
-
-  refreshToken: (
-    tokenRefreshRequest: { token: string }
-  ): Promise<{ token: string }> =>
-    requests.post('/Token/RefreshToken', tokenRefreshRequest),
+  authenticate: (loginInfo: LoginInfo): Promise<LoginInfo> => requests.post('/Login', loginInfo),
+  refreshToken: (tokenRefreshRequest: { token: string }): Promise<{ token: string }> =>
+    requests.post('/Token/RefreshToken', tokenRefreshRequest)
 };
 
 /**
- * Modules: A grouped export of all services for easier imports in other parts
- * of the application. Each property corresponds to one of the logical groups
- * defined above.
+ * Modules: Aggregated endpoints for easier imports.
  */
 const Modules = {
   CamSearch,
   DataFetch,
+  DailyGoals, // DailyGoals endpoints including getReport and getDetail
   DropShip,
   EventSearchPage,
   MassMailer,
@@ -641,7 +442,7 @@ const Modules = {
   TimeTrackers,
   Users,
   UserList,
-  UserLogins,
+  UserLogins
 };
 
 export default Modules;
