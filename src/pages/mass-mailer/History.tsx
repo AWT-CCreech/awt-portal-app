@@ -154,7 +154,7 @@ const History: React.FC<HistoryModalProps> = ({
                         ]}
                         headerBackgroundColor="#384959"
                         hoverColor="#f5f5f5"
-                        tableHeight={400}
+                        tableHeight={"40vh"}
                         func={renderRow}
                     />
                 )}
