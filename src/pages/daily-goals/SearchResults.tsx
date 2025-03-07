@@ -26,14 +26,14 @@ const HighlightableRow: React.FC<HighlightableRowProps> = ({ row, onDetailClick 
 
     return (
         <tr className="highlightable-row">
-            <td>{new Date(row.date).toLocaleDateString()}</td>
-            <td className="hoverable-cell sold" onClick={() => handleClick('Sold')}>
+            <td align="center">{new Date(row.date).toLocaleDateString()}</td>
+            <td className="hoverable-cell sold" align="center" onClick={() => handleClick('Sold')}>
                 {formatAmount(row.dailySold)}
             </td>
-            <td className="hoverable-cell shipped" onClick={() => handleClick('Shipped')}>
+            <td className="hoverable-cell shipped" align="center" onClick={() => handleClick('Shipped')}>
                 {formatAmount(row.dailyShipped)}
             </td>
-            <td className="hoverable-cell unshipped" onClick={() => handleClick('Unshipped')}>
+            <td className="hoverable-cell unshipped" align="center" onClick={() => handleClick('Unshipped')}>
                 {formatAmount(row.unshippedBackOrder)}
             </td>
         </tr>
