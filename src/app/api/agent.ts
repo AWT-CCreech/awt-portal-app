@@ -4,6 +4,7 @@ import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
 import { ItemCategories } from '../../models/Data/ItemCategories';
 import { Rep } from '../../models/Data/Rep';
 import { CamContact } from '../../models/CamContact';
+import { CustomerPOSearchResult } from '../../models/CustomerPOSearch/CustomerPOSearchResult';
 import { DailyGoalDetail } from '../../models/DailyGoalsReport/DailyGoalDetail';
 import { DailyGoalsReport } from '../../models/DailyGoalsReport/DailyGoalsReport';
 import { DetailLevelUpdateDto } from '../../models/SOWorkbench/DetailLevelUpdateDto';
@@ -159,6 +160,17 @@ const CamSearch = {
   getSearchFields: (): Promise<string[]> => requests.get('/Cam/SearchFields'),
   searchContacts: (params: { searchText: string; username: string; searchBy: string; activeOnly?: boolean; orderBy?: string; companyId?: string }): Promise<CamContact[]> =>
     requests.getWithParams('/Cam/ContactSearch', params),
+};
+
+/** 
+ * Customer PO Search: Endpoints for searching customer POs and retrieving AWT EID, QID, SID.
+ */
+const CustomerPOSearch = {
+  searchByPONum: async (PONum: string): Promise<CustomerPOSearchResult[]> => {
+    const params = { PONum };
+    const response = await requests.getWithParams('/CustomerPO/search', params);
+    return response as CustomerPOSearchResult[];
+  },
 };
 
 /**
@@ -428,8 +440,9 @@ const UserLogins = {
  */
 const Modules = {
   CamSearch,
+  CustomerPOSearch,
   DataFetch,
-  DailyGoals, // DailyGoals endpoints including getReport and getDetail
+  DailyGoals,
   DropShip,
   EventSearchPage,
   MassMailer,
