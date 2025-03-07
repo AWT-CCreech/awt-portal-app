@@ -101,11 +101,40 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                 />
                 {totals && (
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', ml: 'auto' }}>
-                        <Chip label={`Sold: ${formatAmount(totals.totalSold)}`} />
-                        <Chip label={`Shipped: ${formatAmount(totals.totalShipped)}`} />
-                        <Chip label={`Back Order: ${formatAmount(totals.totalBackOrder)}`} />
-                        <Chip label={`SO Batch: ${formatAmount(totals.soBatchTotal)}`} />
+                        <Chip
+                            label={
+                                <span>
+                                    <strong>Sold:</strong> {formatAmount(totals.totalSold)}
+                                </span>
+                            }
+                            sx={{ backgroundColor: '#34c759', color: '#fff' }}
+                        />
+                        <Chip
+                            label={
+                                <span>
+                                    <strong>Shipped:</strong> {formatAmount(totals.totalShipped)}
+                                </span>
+                            }
+                            sx={{ backgroundColor: '#007aff', color: '#fff' }}
+                        />
+                        <Chip
+                            label={
+                                <span>
+                                    <strong>Back Order:</strong> {formatAmount(totals.totalBackOrder)}
+                                </span>
+                            }
+                            sx={{ backgroundColor: '#ff9500', color: '#fff' }}
+                        />
+                        <Chip
+                            label={
+                                <span>
+                                    <strong>SO Batch:</strong> {formatAmount(totals.soBatchTotal)}
+                                </span>
+                            }
+                            sx={{ backgroundColor: '#cecece', color: '#fff' }}
+                        />
                     </Box>
+
                 )}
             </Box>
         </form>
