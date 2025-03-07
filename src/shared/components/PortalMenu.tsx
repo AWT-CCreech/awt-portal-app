@@ -36,12 +36,13 @@ import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailbox
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import HandymanOutlinedIcon from '@mui/icons-material/HandymanOutlined';
 import TodayOutlinedIcon from '@mui/icons-material/TodayOutlined';
+import ShoppingCartOutlined from '@mui/icons-material/ShoppingCartOutlined';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { handleLogOut } from '../utils/authentication';
 import UserInfoContext from '../stores/userInfo';
 import fullLogo from '../images/fullLogo.png';
-import { ROUTE_PATHS } from '../../routes'; // Import the path constants
+import { ROUTE_PATHS } from '../../routes';
 
 const drawerWidth = 280;
 
@@ -245,6 +246,7 @@ const PortalMenu: React.FC = () => {
       { label: 'Received Goods', path: '/receiving/goods' },
     ],
     sales: [
+      { label: 'Customer PO Search', path: ROUTE_PATHS.SALES.CUSTOMER_PO_SEARCH, iconName: 'SellOutlinedIcon', icon: ShoppingCartOutlined },
       { label: 'Event Search', path: ROUTE_PATHS.SALES.EVENT_SEARCH, iconName: 'ManageSearchIcon', icon: ManageSearchIcon },
       { label: 'Open SO Report', path: ROUTE_PATHS.SALES.OPEN_SO_REPORT, iconName: 'SellOutlinedIcon', icon: SellOutlinedIcon },
       { label: 'SO Workbench', path: ROUTE_PATHS.SALES.SALES_ORDER_WB, iconName: 'HandymanOutlinedIcon', icon: HandymanOutlinedIcon },
