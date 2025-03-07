@@ -9,7 +9,7 @@ import DailyGoalsDetail from './DailyGoalsDetail';
 import CloseIcon from '@mui/icons-material/Close';
 
 // Define columns and friendly column names
-const columns = ['date', 'dailySold', 'dailyShipped', 'unshippedBackorder'];
+const columns = ['date', 'dailySold', 'dailyShipped', 'unshippedBackOrder'];
 const columnNames = ['Date', 'Daily Sold', 'Daily Shipped', 'Unshipped Backorder (Cumulative)'];
 
 interface HighlightableRowProps {
@@ -73,7 +73,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ items }) => {
                     )}
                     headerBackgroundColor="#384959"
                     hoverColor="#f5f5f5"
-                    tableHeight="60vh"
+                    tableHeight={"60vh"}
                 />
             </Box>
 
