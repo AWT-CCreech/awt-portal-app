@@ -17,6 +17,7 @@ import EventSearch from './pages/event-search/EventSearch';
 import SalesOrderWB from './pages/sales-order-workbench/SalesOrderWB';
 import DailyGoalsReportPage from './pages/daily-goals/DailyGoalsReport';
 import DailyGoalsDetail from './pages/daily-goals/DailyGoalsDetail';
+import CustomerPOSearchPage from './pages/customer-po-search/CustomerPOSearch';
 
 // Define constants for paths
 export const ROUTE_PATHS = {
@@ -28,6 +29,7 @@ export const ROUTE_PATHS = {
     PO_DELIVERY_LOG: '/purchasing/podeliverylog',
   },
   SALES: {
+    CUSTOMER_PO_SEARCH: '/sales/customerposearch',
     EVENT_SEARCH: '/sales/eventsearch',
     OPEN_SO_REPORT: '/sales/opensalesorderreport',
     SALES_ORDER_WB: '/sales/salesorderworkbench',
@@ -65,6 +67,10 @@ export const routes: RouteObject[] = [
       {
         path: ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG,
         element: <PODeliveryLog />,
+      },
+      {
+        path: ROUTE_PATHS.SALES.CUSTOMER_PO_SEARCH,
+        element: <CustomerPOSearchPage />,
       },
       {
         path: ROUTE_PATHS.SALES.EVENT_SEARCH,
