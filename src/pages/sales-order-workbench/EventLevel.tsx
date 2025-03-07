@@ -75,7 +75,7 @@ const EventLevel: React.FC<EventLevelProps> = ({ data, onBatchUpdate }) => {
                 func={renderRow}
                 headerBackgroundColor="#384959"
                 hoverColor="#f0f0f0"
-                tableHeight={'40vh'}
+                tableHeight={"40vh"}
             />
             <Box display="flex" justifyContent="flex-end" mt={2}>
                 <Button
