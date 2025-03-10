@@ -44,7 +44,7 @@ const DailyGoalsReportPage: React.FC = () => {
         <div>
             <PageHeader pageName="Daily Goals Report" pageHref={ROUTE_PATHS.ACCOUNTING.DAILY_GOALS} />
             <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                <Grid2 container spacing={2}>
+                <Grid2 container spacing={1}>
                     <Grid2 size={{ xs: 12 }}>
                         <SearchBox
                             searchParams={searchParams}
