@@ -1,13 +1,9 @@
-// React and Hooks
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-
-// MUI Components and Icons
 import {
   Box,
   Button,
   Chip,
   Container,
-  Grid,
   IconButton,
   MenuItem,
   Select,
@@ -17,23 +13,20 @@ import {
   Tooltip,
   Popover,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import DeleteIcon from '@mui/icons-material/Delete';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 
-// API
 import agent from '../../app/api/agent';
 
-// Models
-import { IMassMailerEmailTemplate } from '../../models/MassMailer/MassMailerEmailTemplate';
-import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
+import { MassMailerEmailTemplate } from '../../models/MassMailer/MassMailerEmailTemplate';
+import MassMailerUser from '../../models/MassMailer/MassMailerUser';
 
-// Components
-import SelectedFile from './components/SelectedFile';
-import CcPopUp from './CCPopUp';
-import AddCC from './AddCC';
+import SelectedFile from './SelectedFile';
+import InternalCC from './InternalCC';
+import ExternalCC from './ExternalCC';
 
-// Styles
 import '../../shared/styles/mass-mailer/EmailProperties.scss';
 
 interface IProps {
@@ -43,9 +36,9 @@ interface IProps {
   setEmailSubject: (subject: string) => void;
   attachments: string[];
   setAttachments: (files: string[]) => void;
-  CC: IMassMailerUser[];
-  setCC: (users: IMassMailerUser[]) => void;
-  allUsers: IMassMailerUser[];
+  CC: MassMailerUser[];
+  setCC: (users: MassMailerUser[]) => void;
+  allUsers: MassMailerUser[];
   selectedTemplate: string;
   setSelectedTemplate: (template: string) => void;
 }
@@ -80,9 +73,7 @@ const EmailProperties: React.FC<IProps> = ({
     []
   );
 
-  const [templatesForUser, setTemplatesForUser] = useState<
-    IMassMailerEmailTemplate[]
-  >([]);
+  const [templatesForUser, setTemplatesForUser] = useState<MassMailerEmailTemplate[]>([]);
   const [templateOptions, setTemplateOptions] = useState<any[]>([
     { key: 0, value: 'None', text: 'None' },
   ]);
@@ -103,22 +94,15 @@ const EmailProperties: React.FC<IProps> = ({
   useEffect(() => {
     const user = localStorage.getItem('username');
     if (user) {
-      agent.MassMailer.EmailTemplates.templatesForUser(user).then(
-        (response) => {
-          const options = response.map(
-            (template: IMassMailerEmailTemplate) => ({
-              key: template.id,
-              value: template.emailDesc,
-              text: template.emailDesc,
-            })
-          );
-          setTemplateOptions([
-            { key: 0, value: 'None', text: 'None' },
-            ...options,
-          ]);
-          setTemplatesForUser(response);
-        }
-      );
+      agent.MassMailer.EmailTemplates.templatesForUser(user).then((response) => {
+        const options = response.map((template: MassMailerEmailTemplate) => ({
+          key: template.id,
+          value: template.emailDesc,
+          text: template.emailDesc,
+        }));
+        setTemplateOptions([{ key: 0, value: 'None', text: 'None' }, ...options]);
+        setTemplatesForUser(response);
+      });
     }
   }, []);
 
@@ -135,13 +119,7 @@ const EmailProperties: React.FC<IProps> = ({
         setEmailSubject(selectedTemplateObj.emailSubject);
       }
     }
-  }, [
-    selectedTemplate,
-    templatesForUser,
-    setEmailBody,
-    setEmailSubject,
-    noneTemplate,
-  ]);
+  }, [selectedTemplate, templatesForUser, setEmailBody, setEmailSubject, noneTemplate]);
 
   const handleTemplateChange = (event: any) => {
     const value = event.target.value;
@@ -174,22 +152,16 @@ const EmailProperties: React.FC<IProps> = ({
   return (
     <Box className="email-properties-container">
       <Box sx={{ paddingBottom: 2 }}>
-        <Typography variant="h6">
-          Email Properties
-        </Typography>
+        <Typography variant="h6">Email Properties</Typography>
       </Box>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+      <Grid2 container spacing={3}>
+        <Grid2 size={{ xs: 12, md: 6 }}>
           <Box className="email-properties-item">
             <Box className="email-properties-label">
               <Typography variant="subtitle1">Template</Typography>
             </Box>
             <FormControl fullWidth className="email-properties-formcontrol">
-              <Select
-                id="template"
-                value={selectedTemplate}
-                onChange={handleTemplateChange}
-              >
+              <Select id="template" value={selectedTemplate} onChange={handleTemplateChange}>
                 {templateOptions.map((option) => (
                   <MenuItem key={option.key} value={option.value}>
                     {option.text}
@@ -211,23 +183,17 @@ const EmailProperties: React.FC<IProps> = ({
             />
           </Box>
           <Box className="email-properties-cc">
-            <CcPopUp CC={CC} setCC={setCC} allUsers={allUsers} />
+            <InternalCC CC={CC} setCC={setCC} allUsers={allUsers} />
             <Box className="email-properties-addcc">
-              <AddCC CC={CC} setCC={setCC} />
+              <ExternalCC CC={CC} setCC={setCC} />
             </Box>
           </Box>
           {CC.map((selected, index) => (
             <Chip
               key={index}
-              label={
-                selected.fullName.trim() === ''
-                  ? selected.email
-                  : selected.fullName
-              }
+              label={selected.fullName.trim() === '' ? selected.email : selected.fullName}
               color="success"
-              onDelete={() =>
-                setCC(CC.filter((c) => c.email !== selected.email))
-              }
+              onDelete={() => setCC(CC.filter((c) => c.email !== selected.email))}
               deleteIcon={<DeleteIcon />}
               className="email-properties-chip"
             />
@@ -241,23 +207,13 @@ const EmailProperties: React.FC<IProps> = ({
             >
               Attach File(s)
             </Button>
-            <input
-              ref={ref}
-              type="file"
-              hidden
-              multiple
-              onChange={handleAttachFiles}
-            />
+            <input ref={ref} type="file" hidden multiple onChange={handleAttachFiles} />
           </Box>
           {attachments.map((fileName) => (
-            <SelectedFile
-              key={fileName}
-              fileName={fileName}
-              unselect={unselectFile}
-            />
+            <SelectedFile key={fileName} fileName={fileName} unselect={unselectFile} />
           ))}
-        </Grid>
-        <Grid item xs={12} md={6}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, md: 6 }}>
           <Container className="container-centered">
             <Box className="email-properties-item">
               <Box className="email-properties-label">
@@ -284,11 +240,11 @@ const EmailProperties: React.FC<IProps> = ({
               }}
             >
               <Typography className="popup-content">
-                %fullname% for recipient's full name
+                %%FULLNAME%% for recipient's full name
                 <br />
-                %firstname% for recipient's first name
+                %%FIRSTNAME%% for recipient's first name
                 <br />
-                %lastname% for recipient's last name
+                %%LASTNAME%% for recipient's last name
               </Typography>
             </Popover>
             <textarea
@@ -301,8 +257,8 @@ const EmailProperties: React.FC<IProps> = ({
               className="email-body-textarea"
             />
           </Container>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Box>
   );
 };

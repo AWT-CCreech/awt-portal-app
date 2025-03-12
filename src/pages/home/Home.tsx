@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Container, Grid, Button } from '@mui/material';
+import { Container, Button } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import { isAuthenticated } from '../../shared/utils/authentication';
 import { ROUTE_PATHS } from '../../routes'; // Import the path constants
 
@@ -13,8 +14,8 @@ const Home: React.FC = () => {
 
   return (
     <Container sx={{ padding: '300px 100px 0px 100px' }}>
-      <Grid container spacing={4} justifyContent="center">
-        <Grid item xs={3} textAlign="center">
+      <Grid2 container spacing={4} justifyContent="center">
+        <Grid2 size={{ xs: 3 }} textAlign="center">
           <Button
             variant="contained"
             sx={{
@@ -26,8 +27,8 @@ const Home: React.FC = () => {
           >
             Drop Ship
           </Button>
-        </Grid>
-        <Grid item xs={3} textAlign="center">
+        </Grid2>
+        <Grid2 size={{ xs: 3 }} textAlign="center">
           <Button
             variant="contained"
             sx={{
@@ -39,8 +40,8 @@ const Home: React.FC = () => {
           >
             Event Search
           </Button>
-        </Grid>
-        <Grid item xs={3} textAlign="center">
+        </Grid2>
+        <Grid2 size={{ xs: 3 }} textAlign="center">
           <Button
             variant="contained"
             sx={{
@@ -52,17 +53,23 @@ const Home: React.FC = () => {
           >
             Mass Mailer
           </Button>
-        </Grid>
-        {/* <Grid item xs={3} textAlign="center">
+        </Grid2>
+        {/* Uncomment if needed:
+        <Grid2 size={{ xs: 3 }} textAlign="center">
           <Button
             variant="contained"
-            sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: 'grey' } }}
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              '&:hover': { backgroundColor: 'grey' },
+            }}
             onClick={() => navigate(ROUTE_PATHS.TIME_TRACKER)}
           >
             Time Tracker
           </Button>
-        </Grid> */}
-        <Grid item xs={3} textAlign="center">
+        </Grid2>
+        */}
+        <Grid2 size={{ xs: 3 }} textAlign="center">
           <Button
             variant="contained"
             sx={{
@@ -74,8 +81,8 @@ const Home: React.FC = () => {
           >
             Master Search
           </Button>
-        </Grid>
-        <Grid item xs={3} textAlign="center">
+        </Grid2>
+        <Grid2 size={{ xs: 3 }} textAlign="center">
           <Button
             variant="contained"
             sx={{
@@ -87,8 +94,8 @@ const Home: React.FC = () => {
           >
             PO Delivery Log
           </Button>
-        </Grid>
-        <Grid item xs={3} textAlign="center">
+        </Grid2>
+        <Grid2 size={{ xs: 3 }} textAlign="center">
           <Button
             variant="contained"
             sx={{
@@ -100,8 +107,8 @@ const Home: React.FC = () => {
           >
             Open SO Report
           </Button>
-        </Grid>
-        <Grid item xs={3} textAlign="center">
+        </Grid2>
+        <Grid2 size={{ xs: 3 }} textAlign="center">
           <Button
             variant="contained"
             sx={{
@@ -113,8 +120,8 @@ const Home: React.FC = () => {
           >
             SO Workbench
           </Button>
-        </Grid>
-        <Grid item xs={3} textAlign="center">
+        </Grid2>
+        <Grid2 size={{ xs: 3 }} textAlign="center">
           <Button
             variant="contained"
             sx={{
@@ -126,8 +133,8 @@ const Home: React.FC = () => {
           >
             User List
           </Button>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Container>
   );
 };

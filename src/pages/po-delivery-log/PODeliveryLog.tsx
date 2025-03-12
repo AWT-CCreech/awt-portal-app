@@ -2,13 +2,12 @@ import React, { useState, useCallback, useMemo } from 'react';
 import {
   Box,
   Container,
-  Grid,
   Typography,
   Modal,
-  CircularProgress,
   Snackbar,
   Alert,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import PageHeader from '../../shared/components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';
 import SearchBox from './SearchBox';
@@ -136,22 +135,22 @@ const PODeliveryLog: React.FC = () => {
 
       worksheet.columns = [
         { header: 'PO#', key: 'ponum', width: 15 },
-        { header: 'Vendor Name', key: 'vendorName', width: 20 },
-        { header: 'Item Number', key: 'itemNum', width: 15 },
-        { header: 'Alternate Part Number', key: 'altPartNum', width: 20 },
+        { header: 'Vendor', key: 'vendorName', width: 20 },
+        { header: 'AWT P/N', key: 'itemNum', width: 15 },
+        { header: 'MFG P/N', key: 'altPartNum', width: 20 },
         { header: 'Issue Date', key: 'issueDate', width: 15 },
         { header: 'Issued By', key: 'issuedBy', width: 15 },
-        { header: 'Expected Delivery', key: 'expectedDelivery', width: 20 },
+        { header: 'Exp. Delivery', key: 'expectedDelivery', width: 20 },
         { header: 'PO Required Date', key: 'poRequiredDate', width: 20 },
-        { header: 'Quantity Ordered', key: 'qtyOrdered', width: 15 },
-        { header: 'Quantity Received', key: 'qtyReceived', width: 15 },
+        { header: 'Ordered', key: 'qtyOrdered', width: 15 },
+        { header: 'Received', key: 'qtyReceived', width: 15 },
         { header: 'Receiver Number', key: 'receiverNum', width: 15 },
         { header: 'Date Delivered', key: 'dateDelivered', width: 15 },
         { header: 'SO#', key: 'sonum', width: 15 },
-        { header: 'Customer Name', key: 'customerName', width: 20 },
+        { header: 'Customer', key: 'customerName', width: 20 },
         { header: 'SO Required Date', key: 'soRequiredDate', width: 20 },
         { header: 'Sales Rep', key: 'salesRep', width: 15 },
-        { header: 'Notes Exist', key: 'notesExist', width: 15 },
+        { header: 'Notes?', key: 'notesExist', width: 15 },
       ];
 
       poData.forEach((po) => {
@@ -218,8 +217,8 @@ const PODeliveryLog: React.FC = () => {
         pageHref={ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG}
       />
       <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
-        <Grid container justifyContent="center" spacing={2}>
-          <Grid item xs={12}>
+        <Grid2 container justifyContent="center" spacing={2}>
+          <Grid2 size={12}>
             <SearchBox
               searchParams={searchParams}
               setSearchParams={setSearchParams}
@@ -230,11 +229,10 @@ const PODeliveryLog: React.FC = () => {
               searchResultLength={poData.length}
               statistics={statistics} // Passing updated statistics
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={12}>
             {loading ? (
-              <Box display="flex" justifyContent="center" mt={4}>
-              </Box>
+              <Box display="flex" justifyContent="center" mt={4} />
             ) : poData.length > 0 ? (
               <Box
                 sx={{
@@ -252,8 +250,8 @@ const PODeliveryLog: React.FC = () => {
                 No results found.
               </Typography>
             )}
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Container>
 
       {/* Success Snackbar */}
@@ -263,11 +261,7 @@ const PODeliveryLog: React.FC = () => {
         onClose={() => setSuccess(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert
-          onClose={() => setSuccess(null)}
-          severity="success"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
           {success}
         </Alert>
       </Snackbar>
@@ -279,11 +273,7 @@ const PODeliveryLog: React.FC = () => {
         onClose={() => setError(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert
-          onClose={() => setError(null)}
-          severity="error"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
           {error}
         </Alert>
       </Snackbar>
@@ -295,11 +285,7 @@ const PODeliveryLog: React.FC = () => {
         onClose={() => setExportSuccess(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert
-          onClose={() => setExportSuccess(null)}
-          severity="success"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={() => setExportSuccess(null)} severity="success" sx={{ width: '100%' }}>
           {exportSuccess}
         </Alert>
       </Snackbar>
@@ -311,11 +297,7 @@ const PODeliveryLog: React.FC = () => {
         onClose={() => setExportError(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert
-          onClose={() => setExportError(null)}
-          severity="error"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={() => setExportError(null)} severity="error" sx={{ width: '100%' }}>
           {exportError}
         </Alert>
       </Snackbar>
@@ -333,18 +315,12 @@ const PODeliveryLog: React.FC = () => {
             overflowY: 'auto',
           }}
         >
-          {detailLoading ? (
-            <Box display="flex" justifyContent="center" mt={4}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <PODetail
-              poDetail={selectedPO}
-              onClose={handleCloseModal}
-              loading={detailLoading}
-              onUpdate={refreshData} // Pass the refreshData function
-            />
-          )}
+          <PODetail
+            poDetail={selectedPO}
+            onClose={handleCloseModal}
+            loading={detailLoading}
+            onUpdate={refreshData} // Pass the refreshData function
+          />
         </Box>
       </Modal>
     </div>

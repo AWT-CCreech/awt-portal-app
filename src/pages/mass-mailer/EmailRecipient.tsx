@@ -1,7 +1,4 @@
-// React and Hooks
-import React, { useEffect, useState, ChangeEvent, useMemo } from 'react';
-
-// MUI Components
+import React, { useState, useEffect, ChangeEvent, useMemo } from 'react';
 import {
   Box,
   Button,
@@ -13,7 +10,6 @@ import {
   DialogContentText,
   FormControl,
   FormControlLabel,
-  Grid,
   InputLabel,
   List,
   ListItem,
@@ -31,21 +27,18 @@ import {
   IconButton,
   CircularProgress,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import { Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
 import { debounce } from 'lodash';
 
-// API
 import agent from '../../app/api/agent';
+import { MassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
 
-// Models
-import { IMassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
-
-// Styles
 import '../../shared/styles/mass-mailer/EmailRecipient.scss';
 
 interface IProps {
-  selectedVendors: IMassMailerVendor[];
-  setSelectedVendors: (vendor: IMassMailerVendor[]) => void;
+  selectedVendors: MassMailerVendor[];
+  setSelectedVendors: (vendor: MassMailerVendor[]) => void;
   resetRecipients: boolean; // New prop to trigger reset
 }
 
@@ -64,7 +57,7 @@ const EmailRecipient: React.FC<IProps> = ({
   const [mfgOptions, setMfgOptions] = useState<MfgOption[]>([
     { key: 'All', value: 'All', text: 'All' },
   ]);
-  const [vendorsToSelect, setVendorsToSelect] = useState<IMassMailerVendor[]>([]);
+  const [vendorsToSelect, setVendorsToSelect] = useState<MassMailerVendor[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [mfg, setMfg] = useState<string>('All');
   const [anc, setAnc] = useState<boolean>(false);
@@ -245,9 +238,9 @@ const EmailRecipient: React.FC<IProps> = ({
 
       {/* Filters Section */}
       <Paper elevation={3} sx={{ padding: 2, marginBottom: 3 }}>
-        <Grid container spacing={2} alignItems="center">
+        <Grid2 container spacing={2} alignItems="center">
           {/* Manufacturer Filter */}
-          <Grid item xs={12} md={3}>
+          <Grid2 size={{ xs: 12, md: 3 }}>
             <FormControl fullWidth>
               <InputLabel id="mfg-select-label">Manufacturer</InputLabel>
               <Select
@@ -264,10 +257,10 @@ const EmailRecipient: React.FC<IProps> = ({
                 ))}
               </Select>
             </FormControl>
-          </Grid>
+          </Grid2>
 
           {/* Ancillary & FNE Filters */}
-          <Grid item xs={12} md={3}>
+          <Grid2 size={{ xs: 12, md: 3 }}>
             <FormControlLabel
               control={<Checkbox checked={anc} onChange={handleAncChange} color="primary" />}
               label="Ancillary"
@@ -276,10 +269,10 @@ const EmailRecipient: React.FC<IProps> = ({
               control={<Checkbox checked={fne} onChange={handleFneChange} color="primary" />}
               label="FNE"
             />
-          </Grid>
+          </Grid2>
 
           {/* Search Bar */}
-          <Grid item xs={12} md={6}>
+          <Grid2 size={{ xs: 12, md: 6 }}>
             <TextField
               label="Search Vendors"
               variant="outlined"
@@ -287,14 +280,14 @@ const EmailRecipient: React.FC<IProps> = ({
               value={searchValue}
               onChange={handleSearchChange}
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Paper>
 
       {/* Vendors List and Selected Vendors */}
-      <Grid container spacing={2}>
+      <Grid2 container spacing={2}>
         {/* Available Vendors */}
-        <Grid item xs={12} md={6}>
+        <Grid2 size={{ xs: 12, md: 6 }}>
           <Paper elevation={3} sx={{ padding: 2, height: '500px', overflowY: 'auto' }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="h6">Available Vendors</Typography>
@@ -364,10 +357,10 @@ const EmailRecipient: React.FC<IProps> = ({
               </Box>
             )}
           </Paper>
-        </Grid>
+        </Grid2>
 
         {/* Selected Vendors */}
-        <Grid item xs={12} md={6}>
+        <Grid2 size={{ xs: 12, md: 6 }}>
           <Paper elevation={3} sx={{ padding: 2, height: '500px', overflowY: 'auto' }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="h6">Selected Vendors</Typography>
@@ -414,8 +407,8 @@ const EmailRecipient: React.FC<IProps> = ({
               </List>
             )}
           </Paper>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
 
       {/* Confirmation Dialog for Clearing All */}
       <Dialog

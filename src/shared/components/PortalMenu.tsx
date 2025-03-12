@@ -35,12 +35,14 @@ import SellOutlinedIcon from '@mui/icons-material/SellOutlined';
 import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import HandymanOutlinedIcon from '@mui/icons-material/HandymanOutlined';
+import TodayOutlinedIcon from '@mui/icons-material/TodayOutlined';
+import ShoppingCartOutlined from '@mui/icons-material/ShoppingCartOutlined';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { handleLogOut } from '../utils/authentication';
 import UserInfoContext from '../stores/userInfo';
 import fullLogo from '../images/fullLogo.png';
-import { ROUTE_PATHS } from '../../routes'; // Import the path constants
+import { ROUTE_PATHS } from '../../routes';
 
 const drawerWidth = 280;
 
@@ -84,6 +86,7 @@ const NavItemIcon = styled(ListItemIcon)(({ theme }) => ({
   marginRight: theme.spacing(2),
 }));
 
+// Update the iconMap to include our new BarChartOutlined icon
 const iconMap: { [key: string]: React.ElementType } = {
   TravelExploreOutlinedIcon,
   PeopleOutlinedIcon,
@@ -95,6 +98,7 @@ const iconMap: { [key: string]: React.ElementType } = {
   ManageSearchIcon,
   FolderIcon,
   FolderOpenIcon,
+  TodayOutlinedIcon, // New entry for Daily Goals Report
   // Add other icons as needed
 };
 
@@ -109,27 +113,25 @@ interface MenuItemType {
 }
 
 const PortalMenu: React.FC = () => {
-  const [openFolders, setOpenFolders] = useState<{ [key: string]: boolean }>(
-    () => {
-      const savedFolders = localStorage.getItem('openFolders');
-      return savedFolders
-        ? JSON.parse(savedFolders)
-        : {
-          accounting: false,
-          cam: false,
-          commissions: false,
-          consignment: false,
-          helpDesk: false,
-          inventory: false,
-          it: false,
-          operations: false,
-          purchasing: false,
-          receiving: false,
-          sales: false,
-          shipping: false,
-        };
-    }
-  );
+  const [openFolders, setOpenFolders] = useState<{ [key: string]: boolean }>(() => {
+    const savedFolders = localStorage.getItem('openFolders');
+    return savedFolders
+      ? JSON.parse(savedFolders)
+      : {
+        accounting: false,
+        cam: false,
+        commissions: false,
+        consignment: false,
+        helpDesk: false,
+        inventory: false,
+        it: false,
+        operations: false,
+        purchasing: false,
+        receiving: false,
+        sales: false,
+        shipping: false,
+      };
+  });
 
   const [favorites, setFavorites] = useState<MenuItemType[]>(() => {
     const savedFavorites = localStorage.getItem('favorites');
@@ -144,15 +146,12 @@ const PortalMenu: React.FC = () => {
   });
 
   const [drawerOpen, setDrawerOpen] = useState(false);
-
   const navigate = useNavigate();
   const userInfo = useContext(UserInfoContext);
   const { setUserName, setPassWord } = userInfo;
 
   useEffect(() => {
-    const favoritesToStore = favorites.map(
-      ({ icon, onClick, ...rest }) => rest
-    );
+    const favoritesToStore = favorites.map(({ icon, onClick, ...rest }) => rest);
     localStorage.setItem('favorites', JSON.stringify(favoritesToStore));
   }, [favorites]);
 
@@ -165,31 +164,28 @@ const PortalMenu: React.FC = () => {
   };
 
   const handleFolderToggle = (folder: string) => {
-    setOpenFolders((prevOpenFolders) => ({
-      ...prevOpenFolders,
-      [folder]: !prevOpenFolders[folder],
+    setOpenFolders((prev) => ({
+      ...prev,
+      [folder]: !prev[folder],
     }));
   };
 
   const handleFavoriteToggle = (item: MenuItemType) => {
-    setFavorites((prevFavorites) => {
-      const isAlreadyFavorite = prevFavorites.some(
-        (fav) => fav.label === item.label
-      );
+    setFavorites((prev) => {
+      const isAlreadyFavorite = prev.some((fav) => fav.label === item.label);
       if (isAlreadyFavorite) {
-        return prevFavorites.filter((fav) => fav.label !== item.label);
+        return prev.filter((fav) => fav.label !== item.label);
       } else {
         const itemToAdd = { ...item };
         delete itemToAdd.onClick;
         itemToAdd.iconName = getIconName(item.icon);
         delete itemToAdd.icon;
-        return [...prevFavorites, itemToAdd];
+        return [...prev, itemToAdd];
       }
     });
   };
 
-  const isFavorite = (label: string) =>
-    favorites.some((fav) => fav.label === label);
+  const isFavorite = (label: string) => favorites.some((fav) => fav.label === label);
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -201,14 +197,9 @@ const PortalMenu: React.FC = () => {
       it: 'IT',
       cam: 'CAM',
     };
-    return specialCases[folder] || capitalizeFirstLetter(folder);
+    return specialCases[folder] || folder.charAt(0).toUpperCase() + folder.slice(1);
   };
 
-  const capitalizeFirstLetter = (string: string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  };
-
-  // Helper function to get the name of the icon component
   const getIconName = (icon?: React.ElementType): string => {
     for (const [key, value] of Object.entries(iconMap)) {
       if (value === icon) {
@@ -218,169 +209,99 @@ const PortalMenu: React.FC = () => {
     return 'Folder';
   };
 
-  // Define all your folders and their items
+  // Define folders and their items. Update accounting folder to include "Daily Goals Report".
   const folders: { [key: string]: MenuItemType[] } = {
     accounting: [
-      { label: 'Financial Reports', path: '/accounting/financial-reports' },
-      { label: 'Budgeting', path: '/accounting/budgeting' },
-      // Add more items as needed
+      { label: 'Daily Goals Report', path: ROUTE_PATHS.ACCOUNTING.DAILY_GOALS, iconName: 'TodayOutlinedIcon', icon: TodayOutlinedIcon },
     ],
     cam: [
-      {
-        label: 'CAM Dashboard',
-        path: '/cam/dashboard',
-        icon: ContactsOutlinedIcon,
-      },
-      // Add more items as needed
+      { label: 'CAM Dashboard', path: '/cam/dashboard', icon: ContactsOutlinedIcon },
     ],
     commissions: [
-      { label: 'Commission Reports', path: '/commissions/reports' },
-      // Add more items as needed
     ],
     consignment: [
-      { label: 'Consignment Inventory', path: '/consignment/inventory' },
-      // Add more items as needed
     ],
     helpDesk: [
-      { label: 'Support Tickets', path: '/helpdesk/tickets' },
-      // Add more items as needed
     ],
     inventory: [
-      { label: 'Stock Levels', path: '/inventory/stock-levels' },
-      // Add more items as needed
     ],
     it: [
-      { label: 'IT Requests', path: '/it/requests' },
-      // Add more items as needed
     ],
     operations: [
-      { label: 'Operation Schedules', path: '/operations/schedules' },
-      // Add more items as needed
     ],
     purchasing: [
-      {
-        label: 'Drop Ship',
-        path: ROUTE_PATHS.PURCHASING.DROPSHIP,
-        iconName: 'PinDropOutlined',
-        icon: PinDropOutlinedIcon,
-      },
-      {
-        label: 'Mass Mailer',
-        path: ROUTE_PATHS.PURCHASING.MASS_MAILER,
-        iconName: 'EmailOutlined',
-        icon: EmailOutlinedIcon,
-      },
-      {
-        label: 'PO Delivery Log',
-        path: ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG,
-        iconName: 'MarkunreadMailboxOutlined',
-        icon: MarkunreadMailboxOutlinedIcon,
-      },
-      // Add more items as needed
+      { label: 'Drop Ship', path: ROUTE_PATHS.PURCHASING.DROPSHIP, iconName: 'PinDropOutlinedIcon', icon: PinDropOutlinedIcon },
+      { label: 'Mass Mailer', path: ROUTE_PATHS.PURCHASING.MASS_MAILER, iconName: 'EmailOutlinedIcon', icon: EmailOutlinedIcon },
+      { label: 'PO Delivery Log', path: ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG, iconName: 'MarkunreadMailboxOutlinedIcon', icon: MarkunreadMailboxOutlinedIcon },
     ],
     receiving: [
-      { label: 'Received Goods', path: '/receiving/goods' },
-      // Add more items as needed
     ],
     sales: [
-      {
-        label: 'Event Search',
-        path: ROUTE_PATHS.SALES.EVENT_SEARCH,
-        iconName: 'ManageSearchIcon',
-        icon: ManageSearchIcon,
-      },
-      {
-        label: 'Open SO Report',
-        path: ROUTE_PATHS.SALES.OPEN_SO_REPORT,
-        iconName: 'SellOutlined',
-        icon: SellOutlinedIcon,
-      },
-      {
-        label: 'SO Workbench',
-        path: ROUTE_PATHS.SALES.SALES_ORDER_WB,
-        iconName: 'SellOutlined',
-        icon: HandymanOutlinedIcon,
-      },
-      // Add more items as needed
+      { label: 'Customer PO Search', path: ROUTE_PATHS.SALES.CUSTOMER_PO_SEARCH, iconName: 'SellOutlinedIcon', icon: ShoppingCartOutlined },
+      { label: 'Event Search', path: ROUTE_PATHS.SALES.EVENT_SEARCH, iconName: 'ManageSearchIcon', icon: ManageSearchIcon },
+      { label: 'Open SO Report', path: ROUTE_PATHS.SALES.OPEN_SO_REPORT, iconName: 'SellOutlinedIcon', icon: SellOutlinedIcon },
+      { label: 'SO Workbench', path: ROUTE_PATHS.SALES.SALES_ORDER_WB, iconName: 'HandymanOutlinedIcon', icon: HandymanOutlinedIcon },
     ],
     shipping: [
-      { label: 'Shipping Schedule', path: '/shipping/schedule' },
-      // Add more items as needed
     ],
   };
 
   const mainMenuItems: MenuItemType[] = [
     {
       label: 'Master Search',
-      iconName: 'TravelExploreOutlined',
+      iconName: 'TravelExploreOutlinedIcon',
       icon: TravelExploreOutlinedIcon,
       path: ROUTE_PATHS.MASTER_SEARCH,
     },
     {
       label: 'User List',
-      iconName: 'PeopleOutlined',
+      iconName: 'PeopleOutlinedIcon',
       icon: PeopleOutlinedIcon,
       path: ROUTE_PATHS.USER_LIST,
     },
   ];
 
-  const menuData: {
-    section: string;
-    items: MenuItemType[];
-    showFavoriteIcon: boolean;
-  }[] = [
-      {
-        section: 'Favorites',
-        items: favorites.map((item) => ({
+  const menuData: { section: string; items: MenuItemType[]; showFavoriteIcon: boolean }[] = [
+    {
+      section: 'Favorites',
+      items: favorites.map((item) => ({
+        ...item,
+        icon: item.icon || iconMap[item.iconName || 'FolderIcon'],
+      })),
+      showFavoriteIcon: true,
+    },
+    {
+      section: 'Main',
+      items: mainMenuItems,
+      showFavoriteIcon: false,
+    },
+    {
+      section: 'Applications',
+      items: Object.keys(folders).map((folder) => ({
+        label: getFolderTitle(folder),
+        iconName: openFolders[folder] ? 'FolderOpenIcon' : 'FolderIcon',
+        icon: openFolders[folder] ? FolderOpenIcon : FolderIcon,
+        open: openFolders[folder] || false,
+        onClick: () => handleFolderToggle(folder),
+        children: folders[folder].map((item) => ({
           ...item,
-          icon: item.icon || iconMap[item.iconName || 'Folder'],
+          icon: item.icon || iconMap[item.iconName || 'FolderIcon'],
         })),
-        showFavoriteIcon: true,
-      },
-      {
-        section: 'Main',
-        items: mainMenuItems,
-        showFavoriteIcon: false, // Do not show favorite icon for Main section
-      },
-      {
-        section: 'Applications',
-        items: Object.keys(folders).map((folder) => ({
-          label: getFolderTitle(folder),
-          iconName: openFolders[folder] ? 'FolderOpen' : 'Folder',
-          icon: openFolders[folder] ? FolderOpenIcon : FolderIcon,
-          open: openFolders[folder] || false,
-          onClick: () => handleFolderToggle(folder),
-          children: folders[folder].map((item) => ({
-            ...item,
-            icon: item.icon || iconMap[item.iconName || 'Folder'],
-          })),
-        })),
-        showFavoriteIcon: true,
-      },
-    ];
+      })),
+      showFavoriteIcon: true,
+    },
+  ];
 
-  const renderMenuItems = (
-    items: MenuItemType[],
-    depth = 0,
-    showFavoriteIcon: boolean = true
-  ) =>
+  const renderMenuItems = (items: MenuItemType[], depth = 0, showFavoriteIcon = true) =>
     items.map((item) => {
       const paddingLeft = depth * 2;
-
       if (item.children) {
         return (
           <React.Fragment key={item.label}>
             <ListItem disablePadding>
-              <ListItemButton
-                onClick={item.onClick}
-                sx={{ pl: 2 + paddingLeft, pr: 1 }}
-              >
+              <ListItemButton onClick={item.onClick} sx={{ pl: 2 + paddingLeft, pr: 1 }}>
                 <NavItemIcon>
-                  {item.icon ? (
-                    React.createElement(item.icon as React.ElementType)
-                  ) : (
-                    <FolderIcon />
-                  )}
+                  {item.icon ? React.createElement(item.icon) : <FolderIcon />}
                 </NavItemIcon>
                 <ListItemText
                   primary={item.label}
@@ -395,7 +316,7 @@ const PortalMenu: React.FC = () => {
             </ListItem>
             <Collapse in={item.open} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                {renderMenuItems(item.children!, depth + 1, showFavoriteIcon)}
+                {renderMenuItems(item.children, depth + 1, showFavoriteIcon)}
               </List>
             </Collapse>
           </React.Fragment>
@@ -403,16 +324,9 @@ const PortalMenu: React.FC = () => {
       } else {
         return (
           <ListItem disablePadding key={item.label}>
-            <ListItemButton
-              onClick={() => handleNavigation(item.path!)}
-              sx={{ pl: 2 + paddingLeft, pr: 1 }}
-            >
+            <ListItemButton onClick={() => handleNavigation(item.path!)} sx={{ pl: 2 + paddingLeft, pr: 1 }}>
               <NavItemIcon>
-                {item.icon ? (
-                  React.createElement(item.icon as React.ElementType)
-                ) : (
-                  <FolderIcon />
-                )}
+                {item.icon ? React.createElement(item.icon) : <FolderIcon />}
               </NavItemIcon>
               <ListItemText
                 primary={item.label}
@@ -431,11 +345,7 @@ const PortalMenu: React.FC = () => {
                     handleFavoriteToggle(item);
                   }}
                 >
-                  {isFavorite(item.label) ? (
-                    <StarIcon sx={{ color: 'primary.main' }} />
-                  ) : (
-                    <StarBorderIcon />
-                  )}
+                  {isFavorite(item.label) ? <StarIcon sx={{ color: 'primary.main' }} /> : <StarBorderIcon />}
                 </IconButton>
               )}
             </ListItemButton>
@@ -474,7 +384,6 @@ const PortalMenu: React.FC = () => {
         >
           {/* Top Section */}
           <Box>
-            {/* Logo and Header */}
             <DrawerHeader>
               <LogoContainer href="/">
                 <LogoImage src={fullLogo} alt="AWT" />
@@ -484,7 +393,6 @@ const PortalMenu: React.FC = () => {
               </IconButton>
             </DrawerHeader>
             <Divider />
-            {/* Workspace Selector */}
             <WorkspaceSelector>
               <Avatar src="../images/avatar.png" />
               <WorkspaceInfo>
@@ -500,17 +408,12 @@ const PortalMenu: React.FC = () => {
           {/* Middle Section (Scrollable) */}
           <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
             <List>
-              {/* Menu Sections */}
               {menuData.map(
                 (section) =>
                   section.items.length > 0 && (
                     <Box key={section.section}>
                       <SectionTitle>{section.section}</SectionTitle>
-                      {renderMenuItems(
-                        section.items,
-                        0,
-                        section.showFavoriteIcon
-                      )}
+                      {renderMenuItems(section.items, 0, section.showFavoriteIcon)}
                     </Box>
                   )
               )}
@@ -531,12 +434,7 @@ const PortalMenu: React.FC = () => {
                 </IconButton>
               </Tooltip>
               <Tooltip title="Logout">
-                <IconButton
-                  sx={{ color: 'text.secondary' }}
-                  onClick={() =>
-                    handleLogOut(navigate, setUserName, setPassWord)
-                  }
-                >
+                <IconButton sx={{ color: 'text.secondary' }} onClick={() => handleLogOut(navigate, setUserName, setPassWord)}>
                   <PowerSettingsNewIcon />
                 </IconButton>
               </Tooltip>

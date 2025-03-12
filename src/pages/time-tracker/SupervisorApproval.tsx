@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Grid,
   MenuItem,
   FormControl,
   Select,
@@ -9,10 +8,12 @@ import {
   Checkbox,
   FormControlLabel,
   Paper,
+  Typography,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
+import ReportConfirmation from './ReportConfirmation';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import { TrackerReport } from '../../models/TimeTracker/TrackerReport';
-import ReportConfirmation from './ReportConfirmation';
 
 interface IProps {
   selectedSuperviseeId: string | null;
@@ -26,7 +27,7 @@ interface IProps {
 interface SuperviseeOption {
   key: string;
   value: string;
-  text: string; // Added 'text' property
+  text: string;
 }
 
 const SupervisorApproval: React.FC<IProps> = ({
@@ -79,14 +80,13 @@ const SupervisorApproval: React.FC<IProps> = ({
     { key: '237', value: '237-Jason Phillips', text: 'Jason Phillips' },
   ]);
 
-  const [superviseeOptions, setSuperviseeOptions] = useState<
-    SuperviseeOption[]
-  >(superviseeOptionsMap.get(localStorage.getItem('userid')!) || []);
-
+  const [superviseeOptions, setSuperviseeOptions] = useState<SuperviseeOption[]>(
+    superviseeOptionsMap.get(localStorage.getItem('userid')!) || []
+  );
   const [fullName, setFullName] = useState<string>('');
   const [checkBoxValue, setCheckBoxValue] = useState<boolean>(false);
   const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
-  const [report, setReport] = useState<TrackerReport[]>([]); // this contains all the approved employees
+  const [report, setReport] = useState<TrackerReport[]>([]); // Approved employees report
 
   const handleSelectChange = (value: string): void => {
     setSelectedSuperviseeId(value.split('-')[0]);
@@ -94,9 +94,7 @@ const SupervisorApproval: React.FC<IProps> = ({
   };
 
   useEffect(() => {
-    setCheckBoxValue(
-      report.find((tr) => tr.userId === selectedSuperviseeId) !== undefined
-    );
+    setCheckBoxValue(report.find((tr) => tr.userId === selectedSuperviseeId) !== undefined);
   }, [selectedSuperviseeId, report]);
 
   const handleApprovalChange = (checked: boolean): void => {
@@ -123,16 +121,17 @@ const SupervisorApproval: React.FC<IProps> = ({
   };
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={6}>
-        <Paper elevation={3} style={{ padding: '16px' }}>
-          <h3>Select employee:</h3>
+    <Grid2 container spacing={2}>
+      <Grid2 size={{ xs: 12, sm: 6 }}>
+        <Paper elevation={3} sx={{ padding: '16px' }}>
+          <Typography variant="h5">Select employee:</Typography>
           <FormControl fullWidth>
             <InputLabel id="supervisee-select-label">Employee</InputLabel>
             <Select
               labelId="supervisee-select-label"
               value={selectedSuperviseeId || ''}
               onChange={(e) => handleSelectChange(e.target.value)}
+              label="Employee"
             >
               {superviseeOptions.map((option) => (
                 <MenuItem key={option.key} value={option.value}>
@@ -142,9 +141,9 @@ const SupervisorApproval: React.FC<IProps> = ({
             </Select>
           </FormControl>
         </Paper>
-      </Grid>
-      <Grid item xs={12} sm={4}>
-        <Paper elevation={3} style={{ padding: '16px' }}>
+      </Grid2>
+      <Grid2 size={{ xs: 12, sm: 4 }}>
+        <Paper elevation={3} sx={{ padding: '16px' }}>
           <FormControlLabel
             control={
               <Checkbox
@@ -155,14 +154,10 @@ const SupervisorApproval: React.FC<IProps> = ({
             label="Check box to approve"
           />
         </Paper>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={2}
-        container
-        justifyContent="flex-end"
-        alignItems="center"
+      </Grid2>
+      <Grid2
+        size={{ xs: 12, sm: 2 }}
+        sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
       >
         <Button
           variant="contained"
@@ -172,7 +167,7 @@ const SupervisorApproval: React.FC<IProps> = ({
         >
           Send Report
         </Button>
-      </Grid>
+      </Grid2>
       <ReportConfirmation
         openConfirmation={openConfirmation}
         setOpenConfirmation={setOpenConfirmation}
@@ -183,7 +178,7 @@ const SupervisorApproval: React.FC<IProps> = ({
         setTrackersInPeriod={setTrackersInPeriod}
         setSelectedSuperviseeId={setSelectedSuperviseeId}
       />
-    </Grid>
+    </Grid2>
   );
 };
 

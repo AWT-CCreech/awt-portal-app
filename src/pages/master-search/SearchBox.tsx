@@ -1,14 +1,11 @@
-// React and Hooks
 import React, { useEffect, useRef, useState } from 'react';
 
-// MUI Components and Icons
 import {
   Box,
   FormControl,
   FormControlLabel,
   FormGroup,
   FormLabel,
-  Grid,
   Input,
   InputAdornment,
   MenuItem,
@@ -19,12 +16,10 @@ import {
   Checkbox,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-
-// Utilities
 import { isNumber } from 'lodash';
-
-// Import the shared LoadingIconButton
 import LoadingIconButton from '../../shared/components/LoadingIconButton';
+
+import Grid2 from '@mui/material/Grid2';
 
 interface IProps {
   searchValue: string;
@@ -51,7 +46,7 @@ interface IProps {
   setChkCompany: (value: boolean) => void;
   setChkInvNo: (value: boolean) => void;
   setChkActive: (value: boolean) => void;
-  getResultSets: () => Promise<void>; // Ensure it returns a Promise
+  getResultSets: () => Promise<void>;
 }
 
 const SearchBox: React.FC<IProps> = ({
@@ -84,14 +79,11 @@ const SearchBox: React.FC<IProps> = ({
   const searchInput1Ref = useRef<HTMLInputElement>(null);
   const searchInput2Ref = useRef<HTMLInputElement>(null);
 
-  const [loading, setLoading] = useState<boolean>(false); // Add loading state
+  const [loadingState, setLoadingState] = useState<boolean>(false);
 
   useEffect(() => {
-    // Ensure the correct input is always focused
     const searchInput =
       searchFor === 4 ? searchInput2Ref.current : searchInput1Ref.current;
-
-    // Using setTimeout to make sure focus is applied after render
     if (searchInput) {
       setTimeout(() => {
         searchInput.focus();
@@ -121,17 +113,15 @@ const SearchBox: React.FC<IProps> = ({
     }
   }, [searchFor, setChkInvNo, setChkMfg, setChkPONo, setChkSONo]);
 
-  // Handle loading state within getResultSets
   const handleGetResultSets = async () => {
-    setLoading(true); // Start loading
+    setLoadingState(true);
     try {
-      await getResultSets(); // Await the asynchronous operation
+      await getResultSets();
     } catch (error) {
       console.error('Error fetching result sets:', error);
-      // Optionally, handle the error (e.g., show a notification)
       alert('An error occurred while fetching results. Please try again.');
     } finally {
-      setLoading(false); // End loading
+      setLoadingState(false);
     }
   };
 
@@ -145,8 +135,8 @@ const SearchBox: React.FC<IProps> = ({
         boxSizing: 'border-box',
       }}
     >
-      <Grid container spacing={2} alignItems="center">
-        <Grid item xs={12} md={4}>
+      <Grid2 container spacing={2} alignItems="center">
+        <Grid2 size={{ xs: 12, md: 4 }}>
           <FormControl fullWidth>
             <FormLabel>Search For:</FormLabel>
             <Select
@@ -162,12 +152,12 @@ const SearchBox: React.FC<IProps> = ({
               <MenuItem value="4">Contact</MenuItem>
             </Select>
           </FormControl>
-        </Grid>
+        </Grid2>
         {(() => {
           if ([1, 2, 3].includes(searchFor))
             return (
               <>
-                <Grid item xs={12} md={4}>
+                <Grid2 size={{ xs: 12, md: 4 }}>
                   <FormControl fullWidth>
                     <FormLabel>With:</FormLabel>
                     <Input
@@ -188,8 +178,8 @@ const SearchBox: React.FC<IProps> = ({
                       }}
                     />
                   </FormControl>
-                </Grid>
-                <Grid item xs={12} md={4}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 4 }}>
                   <FormControl component="fieldset">
                     <FormLabel>Type:</FormLabel>
                     <RadioGroup
@@ -209,8 +199,8 @@ const SearchBox: React.FC<IProps> = ({
                       />
                     </RadioGroup>
                   </FormControl>
-                </Grid>
-                <Grid item xs={12}>
+                </Grid2>
+                <Grid2 size={{ xs: 12 }}>
                   <FormControl component="fieldset">
                     <FormLabel>In:</FormLabel>
                     <FormGroup row>
@@ -292,13 +282,13 @@ const SearchBox: React.FC<IProps> = ({
                       )}
                     </FormGroup>
                   </FormControl>
-                </Grid>
+                </Grid2>
               </>
             );
           else if (searchFor === 4)
             return (
               <>
-                <Grid item xs={12} md={4}>
+                <Grid2 size={{ xs: 12, md: 4 }}>
                   <FormControl fullWidth>
                     <FormLabel>Name:</FormLabel>
                     <Input
@@ -319,8 +309,8 @@ const SearchBox: React.FC<IProps> = ({
                       }}
                     />
                   </FormControl>
-                </Grid>
-                <Grid item xs={12} md={4}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 4 }}>
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -330,23 +320,23 @@ const SearchBox: React.FC<IProps> = ({
                     }
                     label="Active"
                   />
-                </Grid>
+                </Grid2>
               </>
             );
         })()}
-        <Grid item xs={12}>
+        <Grid2 size={{ xs: 12 }}>
           <LoadingIconButton
             text="Submit"
             icon={SearchIcon} // Optionally, use a different icon
-            loading={loading}
+            loading={loadingState}
             onClick={handleGetResultSets}
             sx={{
               minWidth: '150px',
               height: '42px',
             }}
           />
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </Box>
   );
 };

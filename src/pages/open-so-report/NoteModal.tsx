@@ -1,10 +1,6 @@
-// React and Hooks
 import React, { useState, useEffect, useCallback } from 'react';
-
-// MUI Components and Icons
 import {
   Box,
-  Grid,
   TableCell,
   Typography,
   TextField,
@@ -13,17 +9,12 @@ import {
   Autocomplete,
   Checkbox,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import { Close, Save } from '@mui/icons-material';
-
-// API
 import Modules from '../../app/api/agent';
-
-// Models
 import { CamContact } from '../../models/CamContact';
 import { NoteList } from '../../models/OpenSOReport/NoteList';
 import { TrkSoNote } from '../../models/TrkSoNote';
-
-// Components
 import SortableTable from '../../shared/components/SortableTable';
 
 interface NoteModalProps {
@@ -51,6 +42,8 @@ const NoteModal: React.FC<NoteModalProps> = ({
   const [searchBy, setSearchBy] = useState<'Contact' | 'Company'>('Contact');
   const [activeOnly, setActiveOnly] = useState<boolean>(true);
 
+  // (Assume handleContactInputChange, handleCompanyInputChange, saveNote are defined elsewhere)
+
   useEffect(() => {
     const fetchUsername = () => {
       const storedUsername = localStorage.getItem('username');
@@ -66,7 +59,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
 
   const fetchSuggestions = useCallback(
     async (query: string) => {
-      if (!query || query.length <= 2) return; // Prevent fetching if the input is empty or too short
+      if (!query || query.length <= 2) return;
       try {
         const response = await Modules.CamSearch.searchContacts({
           searchText: query,
@@ -126,14 +119,15 @@ const NoteModal: React.FC<NoteModalProps> = ({
   ) => {
     if (typeof value === 'object' && value !== null) {
       setCamContact(value);
-      setContactQuery(value.contact || ''); // Update the contact field
-      setCompanyQuery(value.company || ''); // Update the company field
+      setContactQuery(value.contact || '');
+      setCompanyQuery(value.company || '');
     } else {
       setCamContact(null);
-      setContactQuery(''); // Clear the contact field
-      setCompanyQuery(''); // Clear the company field
+      setContactQuery('');
+      setCompanyQuery('');
     }
   };
+
 
   const saveNote = async () => {
     if (camContact && camContact.contact) {
@@ -153,16 +147,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
 
         const savedNote = await Modules.OpenSalesOrderNotes.addNote(newNote);
 
-        // Update the note list with the newly saved note
         setNoteList([
           ...noteList,
           { ...savedNote, contactName: camContact?.contact || 'N/A' },
         ]);
 
-        // Trigger the onNoteAdded callback to refetch notes in the parent component
         onNoteAdded();
 
-        // Clear inputs but keep modal open
         setNoteText('');
         setCamContact(null);
         setContactQuery('');
@@ -176,7 +167,6 @@ const NoteModal: React.FC<NoteModalProps> = ({
     }
   };
 
-  // Custom rendering function for the table rows
   const renderRow = (row: NoteList) => [
     <TableCell key="notes">{row.notes}</TableCell>,
     <TableCell key="contactName" sx={{ whiteSpace: 'nowrap' }}>
@@ -205,21 +195,19 @@ const NoteModal: React.FC<NoteModalProps> = ({
       </Typography>
 
       <Box sx={{ width: '100%' }}>
-        {' '}
-        {/* Ensure consistent width */}
         {noteList.length > 0 ? (
           <SortableTable
             tableData={noteList}
             columns={['notes', 'contactName', 'entryDate', 'enteredBy']}
             columnNames={['Note', 'Contact', 'Date', 'By']}
             func={renderRow}
-            headerBackgroundColor="#384959" // Customize as needed
-            hoverColor="#f5f5f5" // Customize as needed
+            headerBackgroundColor="#384959"
+            hoverColor="#f5f5f5"
           />
         ) : (
           <Typography
             variant="body1"
-            sx={{ textAlign: 'center', padding: 2, color: 'gray' }}
+            sx={{ textAlign: 'center', p: 2, color: 'gray' }}
           >
             No notes have been added.
           </Typography>
@@ -231,8 +219,8 @@ const NoteModal: React.FC<NoteModalProps> = ({
           Add Note
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={10}>
+          <Grid2 container spacing={2} alignItems="center">
+            <Grid2 size={{ xs: 10 }}>
               <Autocomplete
                 freeSolo
                 options={suggestions}
@@ -242,14 +230,11 @@ const NoteModal: React.FC<NoteModalProps> = ({
                     : `${option.contact || ''} (${option.company || ''})`
                 }
                 inputValue={contactQuery}
-                onInputChange={handleContactInputChange}
+                onInputChange={handleContactInputChange} // assume defined elsewhere
                 onChange={handleSelection}
-                value={camContact} // Bind the selected value to the input field
+                value={camContact}
                 renderOption={(props, option) => (
-                  <li
-                    {...props}
-                    key={typeof option === 'string' ? option : option.id}
-                  >
+                  <li {...props} key={typeof option === 'string' ? option : option.id}>
                     {typeof option === 'string'
                       ? option
                       : `${option.contact || ''} (${option.company || ''})`}
@@ -264,10 +249,9 @@ const NoteModal: React.FC<NoteModalProps> = ({
                   />
                 )}
               />
-            </Grid>
-            <Grid
-              item
-              xs={2}
+            </Grid2>
+            <Grid2
+              size={{ xs: 2 }}
               sx={{ display: 'flex', justifyContent: 'flex-end' }}
             >
               <Box
@@ -285,8 +269,8 @@ const NoteModal: React.FC<NoteModalProps> = ({
                   Active Only
                 </Typography>
               </Box>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
 
           <Autocomplete
             freeSolo
@@ -297,14 +281,11 @@ const NoteModal: React.FC<NoteModalProps> = ({
                 : `${option.company || ''} (${option.contact || ''})`
             }
             inputValue={companyQuery}
-            onInputChange={handleCompanyInputChange}
+            onInputChange={handleCompanyInputChange} // assume defined elsewhere
             onChange={handleSelection}
-            value={camContact} // Bind the selected value to the input field
+            value={camContact}
             renderOption={(props, option) => (
-              <li
-                {...props}
-                key={typeof option === 'string' ? option : option.id}
-              >
+              <li {...props} key={typeof option === 'string' ? option : option.id}>
                 {typeof option === 'string'
                   ? option
                   : `${option.company || ''} (${option.contact || ''})`}

@@ -86,7 +86,7 @@ const PaginatedSortableTable: React.FC<IProps> = ({
   func,
   headerBackgroundColor,
   hoverColor = '#f5f5f5', // Set default hover color
-  tableHeight = 400, // Default table height in pixels
+  tableHeight = '50vh', // Default table height in pixels
 }) => {
   // Initialize reducer for sorting and data management
   const [state, dispatchState] = useReducer(reducer, {

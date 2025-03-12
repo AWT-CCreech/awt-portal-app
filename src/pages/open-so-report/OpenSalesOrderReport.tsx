@@ -10,18 +10,16 @@ import PODetail from '../po-delivery-log/PODetail';
 
 // API and Data Manipulation
 import agent from '../../app/api/agent';
-import { formatAmount } from '../../shared/utils/dataManipulation';
 import ExcelJS from 'exceljs';
 
 // MUI Components and Styling
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
+import Grid2 from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import Snackbar from '@mui/material/Snackbar';
 import Modal from '@mui/material/Modal';
-import { grey } from '@mui/material/colors';
-import { Alert, Card, CardContent, useTheme, useMediaQuery } from '@mui/material';
+import { Alert, useTheme, useMediaQuery } from '@mui/material';
 
 // Models
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
@@ -285,8 +283,8 @@ const OpenSalesOrderReport: React.FC = () => {
         pageHref={ROUTE_PATHS.SALES.OPEN_SO_REPORT}
       />
       <Container maxWidth={false} sx={{ padding: { xs: '20px', md: '20px' } }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
+        <Grid2 container spacing={2}>
+          <Grid2 size={{ xs: 12 }}>
             <SearchBox
               searchParams={searchParams}
               setSearchParams={setSearchParams}
@@ -301,9 +299,8 @@ const OpenSalesOrderReport: React.FC = () => {
                 totalItems,
               }}
             />
-          </Grid>
-
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={{ xs: 12 }}>
             {searchResult.length > 0 ? (
               <Box
                 sx={{
@@ -324,25 +321,20 @@ const OpenSalesOrderReport: React.FC = () => {
               </Box>
             ) : (
               <Typography variant="h6" align="center" mt={2}>
-                {loading ? 'Loading...' : 'No results found.'}
+                {loading ? '' : 'No results found.'}
               </Typography>
             )}
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Container>
 
-      {/* Snackbars for Export Success and Error */}
       <Snackbar
         open={Boolean(exportSuccess)}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity="success"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
           {exportSuccess}
         </Alert>
       </Snackbar>
@@ -352,11 +344,7 @@ const OpenSalesOrderReport: React.FC = () => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity="error"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
           {exportError}
         </Alert>
       </Snackbar>
@@ -366,16 +354,11 @@ const OpenSalesOrderReport: React.FC = () => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity="error"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
           {error}
         </Alert>
       </Snackbar>
 
-      {/* Modals */}
       {/* Note Modal */}
       <Modal
         open={showNoteModal}
@@ -417,6 +400,7 @@ const OpenSalesOrderReport: React.FC = () => {
           />
         </Box>
       </Modal>
+
       {/* PO Detail Modal */}
       <Modal
         open={poDetailModalOpen}
@@ -452,7 +436,7 @@ const OpenSalesOrderReport: React.FC = () => {
           <PODetail
             poDetail={selectedPO}
             onClose={() => setPoDetailModalOpen(false)}
-            onUpdate={handlePODetailUpdate} // Centralized update handler
+            onUpdate={handlePODetailUpdate}
             loading={poDetailLoading}
           />
         </Box>

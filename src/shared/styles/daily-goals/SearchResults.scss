@@ -1,0 +1,29 @@
+// Style for the entire row when hovered over.
+.highlightable-row {
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: #f5f5f5;
+    }
+}
+
+// Base style for hoverable table cells.
+.hoverable-cell {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* When hovering over a Sold cell */
+.hoverable-cell.sold:hover {
+    background-color: #34c759;
+}
+
+/* When hovering over a Shipped cell */
+.hoverable-cell.shipped:hover {
+    background-color: #007aff;
+}
+
+/* When hovering over an Unshipped cell */
+.hoverable-cell.unshipped:hover {
+    background-color: #ff9500;
+}

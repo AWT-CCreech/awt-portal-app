@@ -1,4 +1,4 @@
-export interface IMassMailerEmailTemplate {
+export interface MassMailerEmailTemplate {
   id: number;
   emailType: string;
   emailDesc: string;

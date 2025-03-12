@@ -15,6 +15,9 @@ import PrivateRoute from './shared/components/PrivateRoute';
 import TimeTrackerPage from './pages/time-tracker/TimeTrackerPage';
 import EventSearch from './pages/event-search/EventSearch';
 import SalesOrderWB from './pages/sales-order-workbench/SalesOrderWB';
+import DailyGoalsReportPage from './pages/daily-goals/DailyGoalsReport';
+import DailyGoalsDetail from './pages/daily-goals/DailyGoalsDetail';
+import CustomerPOSearchPage from './pages/customer-po-search/CustomerPOSearch';
 
 // Define constants for paths
 export const ROUTE_PATHS = {
@@ -26,6 +29,7 @@ export const ROUTE_PATHS = {
     PO_DELIVERY_LOG: '/purchasing/podeliverylog',
   },
   SALES: {
+    CUSTOMER_PO_SEARCH: '/sales/customerposearch',
     EVENT_SEARCH: '/sales/eventsearch',
     OPEN_SO_REPORT: '/sales/opensalesorderreport',
     SALES_ORDER_WB: '/sales/salesorderworkbench',
@@ -33,6 +37,9 @@ export const ROUTE_PATHS = {
   MASTER_SEARCH: '/mastersearch',
   TIME_TRACKER: '/timetracker',
   USER_LIST: '/userlist',
+  ACCOUNTING: {
+    DAILY_GOALS: '/accounting/dailygoals',
+  },
   // Add other paths as needed
 };
 
@@ -62,6 +69,10 @@ export const routes: RouteObject[] = [
         element: <PODeliveryLog />,
       },
       {
+        path: ROUTE_PATHS.SALES.CUSTOMER_PO_SEARCH,
+        element: <CustomerPOSearchPage />,
+      },
+      {
         path: ROUTE_PATHS.SALES.EVENT_SEARCH,
         element: <EventSearch />,
       },
@@ -84,6 +95,14 @@ export const routes: RouteObject[] = [
       {
         path: ROUTE_PATHS.USER_LIST,
         element: <UserListPage />,
+      },
+      {
+        path: ROUTE_PATHS.ACCOUNTING.DAILY_GOALS,
+        element: <DailyGoalsReportPage />,
+      },
+      {
+        path: `${ROUTE_PATHS.ACCOUNTING.DAILY_GOALS}/detail`,
+        element: <DailyGoalsDetail />,
       },
       // Add other routes as needed
     ],

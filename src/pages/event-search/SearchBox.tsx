@@ -11,13 +11,13 @@ import { Rep } from '../../models/Data/Rep';
 import {
     Box,
     TextField,
-    Grid,
     FormControl,
     InputLabel,
     Select,
     MenuItem,
     SelectChangeEvent,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import { Search } from '@mui/icons-material';
 
 // Shared Components
@@ -152,18 +152,21 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                     borderRadius: 2,
                 }}
             >
-                <Grid container spacing={2}>
+                <Grid2 container spacing={2}>
                     {/* Render Text Fields */}
                     {textFieldsConfig.map((field) => (
-                        <Grid item xs={12} sm={6} md={3} key={field.name}>
+                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }} key={field.name}>
                             <TextField
                                 fullWidth
                                 label={field.label}
                                 name={field.name}
                                 type={field.type}
                                 value={
-                                    field.type === 'date' && searchParams[field.name] instanceof Date
-                                        ? (searchParams[field.name] as Date).toISOString().split('T')[0]
+                                    field.type === 'date' &&
+                                        searchParams[field.name] instanceof Date
+                                        ? (searchParams[field.name] as Date)
+                                            .toISOString()
+                                            .split('T')[0]
                                         : (searchParams[field.name] as string) || ''
                                 }
                                 onChange={handleInputChange}
@@ -173,12 +176,12 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                                     },
                                 }}
                             />
-                        </Grid>
+                        </Grid2>
                     ))}
 
                     {/* Render Select Fields */}
                     {selectFieldsConfig.map((field) => (
-                        <Grid item xs={12} sm={6} md={3} key={field.name}>
+                        <Grid2 size={{ xs: 12, sm: 6, md: 3 }} key={field.name}>
                             <FormControl fullWidth>
                                 <InputLabel>{field.label}</InputLabel>
                                 <Select<string>
@@ -203,16 +206,17 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                                         ))}
                                 </Select>
                             </FormControl>
-                        </Grid>
+                        </Grid2>
                     ))}
 
                     {/* Search Button */}
-                    <Grid
-                        item
-                        xs={12}
-                        display="flex"
-                        justifyContent="flex-start"
-                        alignItems="center"
+                    <Grid2
+                        size={12}
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'flex-start',
+                            alignItems: 'center',
+                        }}
                     >
                         <LoadingIconButton
                             text="Search"
@@ -228,8 +232,8 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                             variant="contained"
                             aria-label="Search Events"
                         />
-                    </Grid>
-                </Grid>
+                    </Grid2>
+                </Grid2>
             </Box>
         </form>
     );

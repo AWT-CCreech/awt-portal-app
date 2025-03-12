@@ -1,0 +1,17 @@
+@use './shared' as *;
+
+// Define the flex-center mixin locally
+@mixin flex-center($margin-top: null) {
+    display: flex;
+    align-items: center;
+
+    @if $margin-top !=null {
+        margin-top: $margin-top;
+    }
+}
+
+.history-loading-container {
+    @include flex-center(); // Now the mixin is defined
+    justify-content: center;
+    min-height: 200px;
+}

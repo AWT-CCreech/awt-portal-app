@@ -4,7 +4,6 @@ import React, { useEffect, useState, useRef } from 'react';
 // MUI Components and Icons
 import {
   Container,
-  Grid,
   Box,
   Chip,
   TextField,
@@ -14,13 +13,14 @@ import {
   Alert,
   Paper,
 } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 // API
 import agent from '../../app/api/agent';
 
 // Models
-import IMassMailerUser from '../../models/MassMailer/MassMailerUser';
+import MassMailerUser from '../../models/MassMailer/MassMailerUser';
 import { DropShipPart } from '../../models/DropShip/DropShipPart';
 
 // Components
@@ -30,9 +30,9 @@ import RecipientModal from './RecipientModal';
 import PartNumberModal from './PartNumberModal';
 
 const DropShip = () => {
-  const [allSalesReps, setAllSalesReps] = useState<IMassMailerUser[]>([]);
-  const [autoFillRep, setAutoFillRep] = useState<IMassMailerUser | null>(null);
-  const [addedSalesReps, setAddedSalesReps] = useState<IMassMailerUser[]>([]);
+  const [allSalesReps, setAllSalesReps] = useState<MassMailerUser[]>([]);
+  const [autoFillRep, setAutoFillRep] = useState<MassMailerUser | null>(null);
+  const [addedSalesReps, setAddedSalesReps] = useState<MassMailerUser[]>([]);
   const [SONum, setSONum] = useState<string>('');
   const [PONum, setPONum] = useState<string>('');
   const [Tracking, setTracking] = useState<string>('');
@@ -62,7 +62,11 @@ const DropShip = () => {
               'No Sales Rep found with this SO. Please add manually!'
             );
         } else {
-          setAutoFillRep({ fullName: res.fullName, email: res.email });
+          setAutoFillRep({
+            userName: res.userName,
+            fullName: res.fullName,
+            email: res.email,
+          });
         }
       });
     }
@@ -154,8 +158,8 @@ const DropShip = () => {
               {alertMessage}
             </Alert>
           )}
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
+          <Grid2 container spacing={2}>
+            <Grid2 size={12}>
               <TextField
                 label="PO Number"
                 variant="outlined"
@@ -165,8 +169,8 @@ const DropShip = () => {
                 required
                 inputRef={PONumRef}
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 size={12}>
               <TextField
                 label="SO Number"
                 variant="outlined"
@@ -177,16 +181,12 @@ const DropShip = () => {
                 required
                 inputRef={SONumRef}
               />
-            </Grid>
+            </Grid2>
             {/* PartNumber/SerialNumber selection */}
-            <Grid item xs={12}>
+            <Grid2 size={12}>
               <Paper variant="outlined" sx={{ p: 2 }}>
-                <Grid
-                  container
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Grid item xs={12} md={8}>
+                <Grid2 container alignItems="center" justifyContent="space-between">
+                  <Grid2 size={{ xs: 12, md: 8 }}>
                     <Typography variant="subtitle1">
                       PartNumber/SerialNumber *
                     </Typography>
@@ -212,11 +212,9 @@ const DropShip = () => {
                         No parts selected.
                       </Typography>
                     )}
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    md={4}
+                  </Grid2>
+                  <Grid2
+                    size={{ xs: 12, md: 4 }}
                     sx={{
                       textAlign: { xs: 'left', md: 'right' },
                       mt: { xs: 2, md: 0 },
@@ -228,19 +226,15 @@ const DropShip = () => {
                       poNo={PONum.trim() || undefined}
                       soNo={SONum.trim() || undefined}
                     />
-                  </Grid>
-                </Grid>
+                  </Grid2>
+                </Grid2>
               </Paper>
-            </Grid>
+            </Grid2>
             {/* Sales Rep selection */}
-            <Grid item xs={12}>
+            <Grid2 size={12}>
               <Paper variant="outlined" sx={{ p: 2 }}>
-                <Grid
-                  container
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Grid item xs={12} md={8}>
+                <Grid2 container alignItems="center" justifyContent="space-between">
+                  <Grid2 size={{ xs: 12, md: 8 }}>
                     <Typography variant="subtitle1">Sales Rep *</Typography>
                     {autoFillRep && (
                       <Chip
@@ -270,11 +264,9 @@ const DropShip = () => {
                         {noMatchingMessage}
                       </Typography>
                     )}
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    md={4}
+                  </Grid2>
+                  <Grid2
+                    size={{ xs: 12, md: 4 }}
                     sx={{
                       textAlign: { xs: 'left', md: 'right' },
                       mt: { xs: 2, md: 0 },
@@ -285,12 +277,12 @@ const DropShip = () => {
                       setRecipients={setAddedSalesReps}
                       salesReps={allSalesReps}
                     />
-                  </Grid>
-                </Grid>
+                  </Grid2>
+                </Grid2>
               </Paper>
-            </Grid>
+            </Grid2>
             {/* Additional fields */}
-            <Grid item xs={12}>
+            <Grid2 size={12}>
               <TextField
                 label="Tracking"
                 variant="outlined"
@@ -298,8 +290,8 @@ const DropShip = () => {
                 value={Tracking}
                 onChange={(e) => setTracking(e.target.value)}
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+            <Grid2 size={12}>
               <TextField
                 label="Freight"
                 variant="outlined"
@@ -307,9 +299,9 @@ const DropShip = () => {
                 value={Freight}
                 onChange={(e) => setFreight(e.target.value)}
               />
-            </Grid>
+            </Grid2>
             {/* Submit button */}
-            <Grid item xs={12} sx={{ textAlign: 'center', mt: 3 }}>
+            <Grid2 size={12} sx={{ textAlign: 'center', mt: 3 }}>
               <Button
                 variant="contained"
                 color="primary"
@@ -318,8 +310,8 @@ const DropShip = () => {
               >
                 Submit
               </Button>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Paper>
       </Container>
     </>
