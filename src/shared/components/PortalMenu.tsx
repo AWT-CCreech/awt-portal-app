@@ -212,30 +212,22 @@ const PortalMenu: React.FC = () => {
   // Define folders and their items. Update accounting folder to include "Daily Goals Report".
   const folders: { [key: string]: MenuItemType[] } = {
     accounting: [
-      { label: 'Financial Reports', path: '/accounting/financial-reports' },
-      { label: 'Budgeting', path: '/accounting/budgeting' },
       { label: 'Daily Goals Report', path: ROUTE_PATHS.ACCOUNTING.DAILY_GOALS, iconName: 'TodayOutlinedIcon', icon: TodayOutlinedIcon },
     ],
     cam: [
       { label: 'CAM Dashboard', path: '/cam/dashboard', icon: ContactsOutlinedIcon },
     ],
     commissions: [
-      { label: 'Commission Reports', path: '/commissions/reports' },
     ],
     consignment: [
-      { label: 'Consignment Inventory', path: '/consignment/inventory' },
     ],
     helpDesk: [
-      { label: 'Support Tickets', path: '/helpdesk/tickets' },
     ],
     inventory: [
-      { label: 'Stock Levels', path: '/inventory/stock-levels' },
     ],
     it: [
-      { label: 'IT Requests', path: '/it/requests' },
     ],
     operations: [
-      { label: 'Operation Schedules', path: '/operations/schedules' },
     ],
     purchasing: [
       { label: 'Drop Ship', path: ROUTE_PATHS.PURCHASING.DROPSHIP, iconName: 'PinDropOutlinedIcon', icon: PinDropOutlinedIcon },
@@ -243,7 +235,6 @@ const PortalMenu: React.FC = () => {
       { label: 'PO Delivery Log', path: ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG, iconName: 'MarkunreadMailboxOutlinedIcon', icon: MarkunreadMailboxOutlinedIcon },
     ],
     receiving: [
-      { label: 'Received Goods', path: '/receiving/goods' },
     ],
     sales: [
       { label: 'Customer PO Search', path: ROUTE_PATHS.SALES.CUSTOMER_PO_SEARCH, iconName: 'SellOutlinedIcon', icon: ShoppingCartOutlined },
@@ -252,7 +243,6 @@ const PortalMenu: React.FC = () => {
       { label: 'SO Workbench', path: ROUTE_PATHS.SALES.SALES_ORDER_WB, iconName: 'HandymanOutlinedIcon', icon: HandymanOutlinedIcon },
     ],
     shipping: [
-      { label: 'Shipping Schedule', path: '/shipping/schedule' },
     ],
   };
 
