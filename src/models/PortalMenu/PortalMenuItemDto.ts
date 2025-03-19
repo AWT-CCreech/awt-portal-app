@@ -6,5 +6,6 @@ export interface PortalMenuItemDto {
     itemType: string;
     ordering: number;
     columnGroup: number;
+    isFavorite: boolean;
     children?: PortalMenuItemDto[];
 }
