@@ -33,6 +33,7 @@ import PODeliveryLogSearchInput from '../../models/PODeliveryLog/SearchInput';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { User } from '../../models/User';
+import { WorkspaceDto } from '../../models/PortalMenu/WorkspaceDto';
 
 
 /**
@@ -371,12 +372,24 @@ const PODeliveryLogService = {
  * Portal: Endpoints for portal-related operations.
  */
 const PortalMenu = {
-  getMenu: async (workspaceId: number): Promise<PortalMenuItemDto[]> => {
-    return requests.get(`/Portal/${workspaceId}/menu`);
+  getMenu: async (workspaceId: number, userId: number): Promise<PortalMenuItemDto[]> => {
+    return requests.get(`/Portal/${workspaceId}/menu/${userId}`);
   },
 
   getRoutes: async (workspaceId: number): Promise<PortalRouteDto[]> => {
     return requests.get(`/Portal/${workspaceId}/routes`);
+  },
+
+  getWorkspaces: async (): Promise<WorkspaceDto[]> => {
+    return requests.get('/Portal/workspaces');
+  },
+
+  addFavorite: async (userId: number, itemId: number): Promise<void> => {
+    return requests.postNoBody(`/Portal/favorites/${userId}/${itemId}`);
+  },
+
+  removeFavorite: async (userId: number, itemId: number): Promise<void> => {
+    return requests.delete(`/Portal/favorites/${userId}/${itemId}`);
   }
 };
 
