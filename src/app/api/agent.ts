@@ -25,6 +25,8 @@ import MassMailerUser from '../../models/MassMailer/MassMailerUser';
 import { MassMailHistory } from '../../models/MassMailHistory';
 import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';
+import { PortalMenuItemDto } from '../../models/PortalMenu/PortalMenuItemDto';
+import { PortalRouteDto } from '../../models/PortalMenu/PortalRouteDto';
 import { PODetailUpdateDto } from '../../models/PODeliveryLog/PODetailUpdateDto';
 import { PODeliveryLogs } from '../../models/PODeliveryLog/PODeliveryLogs';
 import PODeliveryLogSearchInput from '../../models/PODeliveryLog/SearchInput';
@@ -366,6 +368,19 @@ const PODeliveryLogService = {
 };
 
 /**
+ * Portal: Endpoints for portal-related operations.
+ */
+const PortalMenu = {
+  getMenu: async (workspaceId: number): Promise<PortalMenuItemDto[]> => {
+    return requests.get(`/Portal/${workspaceId}/menu`);
+  },
+
+  getRoutes: async (workspaceId: number): Promise<PortalRouteDto[]> => {
+    return requests.get(`/Portal/${workspaceId}/routes`);
+  }
+};
+
+/**
  * SalesOrderWorkbench: Endpoints for sales order workbench operations.
  */
 const SalesOrderWorkbench = {
@@ -451,6 +466,7 @@ const Modules = {
   OpenSalesOrderNotes,
   OpenSalesOrderReport,
   PODeliveryLogService,
+  PortalMenu,
   SalesOrderWorkbench,
   TimeTrackers,
   Users,
