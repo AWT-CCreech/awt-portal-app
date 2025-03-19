@@ -88,7 +88,6 @@ const PortalMenu: React.FC = () => {
     JSON.parse(localStorage.getItem('selectedWorkspace') || '1')
   );
   const [openFolders, setOpenFolders] = useState(() => JSON.parse(localStorage.getItem('openFolders') || '{}'));
-  const [favorites, setFavorites] = useState<any[]>(() => JSON.parse(localStorage.getItem('favorites') || '[]'));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const { setUserName, setPassWord } = useContext(UserInfoContext);
@@ -102,6 +101,16 @@ const PortalMenu: React.FC = () => {
     Modules.PortalMenu.getMenu(selectedWorkspace, userId).then(setMenuItems);
   }, [selectedWorkspace, userId]);
 
+  const flattenMenuItems = (items: any[]): any[] => {
+    return items.reduce((acc, item) => {
+      acc.push(item);
+      if (item.children) {
+        acc = acc.concat(flattenMenuItems(item.children));
+      }
+      return acc;
+    }, []);
+  };
+
   const handleDrawerToggle = () => setDrawerOpen(!drawerOpen);
 
   const handleFolderToggle = (label: string) => {
@@ -113,12 +122,16 @@ const PortalMenu: React.FC = () => {
     setDrawerOpen(false);
   };
 
-  const toggleFavorite = (item: any) => {
-    setFavorites((prev: any[]) =>
-      prev.some((fav) => fav.id === item.id)
-        ? prev.filter((fav) => fav.id !== item.id)
-        : [...prev, item]
-    );
+  const toggleFavorite = async (item: any) => {
+    if (item.isFavorite) {
+      await Modules.PortalMenu.removeFavorite(userId, item.id);
+    } else {
+      await Modules.PortalMenu.addFavorite(userId, item.id);
+    }
+
+    // Immediately refresh menu items after favorite update
+    const updatedMenuItems = await Modules.PortalMenu.getMenu(selectedWorkspace, userId);
+    setMenuItems(updatedMenuItems);
   };
 
   const handleWorkspaceChange = () => {
@@ -131,7 +144,6 @@ const PortalMenu: React.FC = () => {
     items.map((item) => {
       const paddingLeft = depth * 2;
       const IconComponent = getIconComponent(item.iconName);
-      const isFav = favorites.some((fav) => fav.id === item.id);
 
       return item.itemType === 'folder' ? (
         <React.Fragment key={item.id}>
@@ -150,7 +162,7 @@ const PortalMenu: React.FC = () => {
           <ListItemText primary={item.label} />
           {showFavorites && (
             <IconButton edge="end" size="small" onClick={(e) => { e.stopPropagation(); toggleFavorite(item); }}>
-              {isFav ? <StarIcon color="primary" /> : <StarBorderIcon />}
+              {item.isFavorite ? <StarIcon color="primary" /> : <StarBorderIcon />}
             </IconButton>
           )}
         </ListItemButton>
@@ -183,13 +195,25 @@ const PortalMenu: React.FC = () => {
           <Divider />
           <Box className="scrollable-content">
             <SectionTitle>Favorites</SectionTitle>
-            <List>{renderMenuItems(favorites, 0, false)}</List>
+            <List>
+              {renderMenuItems(
+                flattenMenuItems(menuItems).filter((item) => item.isFavorite),
+                0,
+                false
+              )}
+            </List>
             <Divider />
             <SectionTitle>Main</SectionTitle>
-            <List>{renderMenuItems(menuItems.filter(i => !i.parentId && i.itemType !== 'folder'))}</List>
+            <List>
+              {renderMenuItems(
+                menuItems.filter((i) => !i.parentId && i.itemType !== 'folder')
+              )}
+            </List>
             <Divider />
             <SectionTitle>Applications</SectionTitle>
-            <List>{renderMenuItems(menuItems.filter(i => i.itemType === 'folder'))}</List>
+            <List>
+              {renderMenuItems(menuItems.filter((i) => i.itemType === 'folder'))}
+            </List>
           </Box>
           <Divider />
           <Box sx={{ display: 'flex', justifyContent: 'center', p: 1 }}>
