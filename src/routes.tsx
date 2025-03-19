@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteObject } from 'react-router-dom';
 
-// Import your page components
+// Import page components
 import Home from './pages/home/Home';
 import LoginPage from './pages/login/LoginPage';
 import DropShip from './pages/dropship/DropShip';
