@@ -3,17 +3,16 @@ import {
   Box,
   Drawer,
   List,
-  ListItem,
-  ListItemText,
   ListItemIcon,
+  ListItemText,
   Collapse,
   IconButton,
   Divider,
   Typography,
-  Avatar,
   Tooltip,
   CssBaseline,
   ListItemButton,
+  Avatar
 } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -26,25 +25,15 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import TravelExploreOutlinedIcon from '@mui/icons-material/TravelExploreOutlined';
-import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
-import PinDropOutlinedIcon from '@mui/icons-material/PinDropOutlined';
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import ContactsOutlinedIcon from '@mui/icons-material/ContactsOutlined';
-import SellOutlinedIcon from '@mui/icons-material/SellOutlined';
-import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined';
-import ManageSearchIcon from '@mui/icons-material/ManageSearch';
-import HandymanOutlinedIcon from '@mui/icons-material/HandymanOutlined';
-import TodayOutlinedIcon from '@mui/icons-material/TodayOutlined';
-import ShoppingCartOutlined from '@mui/icons-material/ShoppingCartOutlined';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { handleLogOut } from '../utils/authentication';
 import UserInfoContext from '../stores/userInfo';
+import { handleLogOut } from '../utils/authentication';
 import fullLogo from '../images/fullLogo.png';
-import { ROUTE_PATHS } from '../../routes';
-
-const drawerWidth = 280;
+import Modules from '../../app/api/agent';
+import { getIconComponent } from '../utils/iconMap';
+import '../styles/portal-menu/PortalMenu.scss';
 
 const DrawerHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -53,392 +42,164 @@ const DrawerHeader = styled(Box)(({ theme }) => ({
   justifyContent: 'space-between',
 }));
 
-const LogoContainer = styled('a')(({ theme }) => ({
+const LogoContainer = styled('a')({
   display: 'flex',
   alignItems: 'center',
   textDecoration: 'none',
-}));
+});
 
-const LogoImage = styled('img')(({ theme }) => ({
+const LogoImage = styled('img')({
   height: '36px',
-  marginRight: theme.spacing(1),
-}));
-
-const WorkspaceSelector = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(2),
-}));
-
-const WorkspaceInfo = styled(Box)(({ theme }) => ({
-  marginLeft: theme.spacing(2),
-}));
+});
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
-  padding: theme.spacing(2),
+  padding: theme.spacing(1, 2),
   textTransform: 'uppercase',
   fontSize: '0.75rem',
   color: theme.palette.text.secondary,
 }));
 
-const NavItemIcon = styled(ListItemIcon)(({ theme }) => ({
-  minWidth: 0,
-  marginRight: theme.spacing(2),
+const WorkspaceSelector = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(1.5),
+  cursor: 'pointer',
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
+  },
 }));
 
-// Update the iconMap to include our new BarChartOutlined icon
-const iconMap: { [key: string]: React.ElementType } = {
-  TravelExploreOutlinedIcon,
-  PeopleOutlinedIcon,
-  PinDropOutlinedIcon,
-  EmailOutlinedIcon,
-  ContactsOutlinedIcon,
-  SellOutlinedIcon,
-  MarkunreadMailboxOutlinedIcon,
-  ManageSearchIcon,
-  FolderIcon,
-  FolderOpenIcon,
-  TodayOutlinedIcon, // New entry for Daily Goals Report
-  // Add other icons as needed
-};
+const WorkspaceInfo = styled(Box)({
+  flex: 1,
+  marginLeft: 12,
+  overflow: 'hidden',
+});
 
-interface MenuItemType {
-  label: string;
-  iconName?: string;
-  icon?: React.ElementType;
-  path?: string;
-  open?: boolean;
-  onClick?: () => void;
-  children?: MenuItemType[];
+interface Workspace {
+  id: number;
+  name: string;
+  description?: string;
 }
 
 const PortalMenu: React.FC = () => {
-  const [openFolders, setOpenFolders] = useState<{ [key: string]: boolean }>(() => {
-    const savedFolders = localStorage.getItem('openFolders');
-    return savedFolders
-      ? JSON.parse(savedFolders)
-      : {
-        accounting: false,
-        cam: false,
-        commissions: false,
-        consignment: false,
-        helpDesk: false,
-        inventory: false,
-        it: false,
-        operations: false,
-        purchasing: false,
-        receiving: false,
-        sales: false,
-        shipping: false,
-      };
-  });
-
-  const [favorites, setFavorites] = useState<MenuItemType[]>(() => {
-    const savedFavorites = localStorage.getItem('favorites');
-    if (savedFavorites) {
-      const parsedFavorites = JSON.parse(savedFavorites) as MenuItemType[];
-      return parsedFavorites.map((item) => ({
-        ...item,
-        icon: iconMap[item.iconName || 'Folder'],
-      }));
-    }
-    return [];
-  });
-
+  const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<number>(() =>
+    JSON.parse(localStorage.getItem('selectedWorkspace') || '1')
+  );
+  const [openFolders, setOpenFolders] = useState(() => JSON.parse(localStorage.getItem('openFolders') || '{}'));
+  const [favorites, setFavorites] = useState<any[]>(() => JSON.parse(localStorage.getItem('favorites') || '[]'));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
-  const userInfo = useContext(UserInfoContext);
-  const { setUserName, setPassWord } = userInfo;
+  const { setUserName, setPassWord } = useContext(UserInfoContext);
+  const userId = Number(localStorage.getItem('userid'));
 
   useEffect(() => {
-    const favoritesToStore = favorites.map(({ icon, onClick, ...rest }) => rest);
-    localStorage.setItem('favorites', JSON.stringify(favoritesToStore));
-  }, [favorites]);
+    Modules.PortalMenu.getWorkspaces().then(setWorkspaces);
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem('openFolders', JSON.stringify(openFolders));
-  }, [openFolders]);
+    Modules.PortalMenu.getMenu(selectedWorkspace, userId).then(setMenuItems);
+  }, [selectedWorkspace, userId]);
 
-  const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
+  const handleDrawerToggle = () => setDrawerOpen(!drawerOpen);
+
+  const handleFolderToggle = (label: string) => {
+    setOpenFolders((prev: any) => ({ ...prev, [label]: !prev[label] }));
   };
 
-  const handleFolderToggle = (folder: string) => {
-    setOpenFolders((prev) => ({
-      ...prev,
-      [folder]: !prev[folder],
-    }));
-  };
-
-  const handleFavoriteToggle = (item: MenuItemType) => {
-    setFavorites((prev) => {
-      const isAlreadyFavorite = prev.some((fav) => fav.label === item.label);
-      if (isAlreadyFavorite) {
-        return prev.filter((fav) => fav.label !== item.label);
-      } else {
-        const itemToAdd = { ...item };
-        delete itemToAdd.onClick;
-        itemToAdd.iconName = getIconName(item.icon);
-        delete itemToAdd.icon;
-        return [...prev, itemToAdd];
-      }
-    });
-  };
-
-  const isFavorite = (label: string) => favorites.some((fav) => fav.label === label);
-
-  const handleNavigation = (path: string) => {
-    navigate(path);
+  const handleNavigation = (path?: string) => {
+    if (path) navigate(path);
     setDrawerOpen(false);
   };
 
-  const getFolderTitle = (folder: string) => {
-    const specialCases: { [key: string]: string } = {
-      it: 'IT',
-      cam: 'CAM',
-    };
-    return specialCases[folder] || folder.charAt(0).toUpperCase() + folder.slice(1);
+  const toggleFavorite = (item: any) => {
+    setFavorites((prev: any[]) =>
+      prev.some((fav) => fav.id === item.id)
+        ? prev.filter((fav) => fav.id !== item.id)
+        : [...prev, item]
+    );
   };
 
-  const getIconName = (icon?: React.ElementType): string => {
-    for (const [key, value] of Object.entries(iconMap)) {
-      if (value === icon) {
-        return key;
-      }
-    }
-    return 'Folder';
+  const handleWorkspaceChange = () => {
+    const currentIndex = workspaces.findIndex(ws => ws.id === selectedWorkspace);
+    const nextWorkspace = workspaces[(currentIndex + 1) % workspaces.length];
+    setSelectedWorkspace(nextWorkspace.id);
   };
 
-  // Define folders and their items. Update accounting folder to include "Daily Goals Report".
-  const folders: { [key: string]: MenuItemType[] } = {
-    accounting: [
-      { label: 'Daily Goals Report', path: ROUTE_PATHS.ACCOUNTING.DAILY_GOALS, iconName: 'TodayOutlinedIcon', icon: TodayOutlinedIcon },
-    ],
-    cam: [
-      { label: 'CAM Dashboard', path: '/cam/dashboard', icon: ContactsOutlinedIcon },
-    ],
-    commissions: [
-    ],
-    consignment: [
-    ],
-    helpDesk: [
-    ],
-    inventory: [
-    ],
-    it: [
-    ],
-    operations: [
-    ],
-    purchasing: [
-      { label: 'Drop Ship', path: ROUTE_PATHS.PURCHASING.DROPSHIP, iconName: 'PinDropOutlinedIcon', icon: PinDropOutlinedIcon },
-      { label: 'Mass Mailer', path: ROUTE_PATHS.PURCHASING.MASS_MAILER, iconName: 'EmailOutlinedIcon', icon: EmailOutlinedIcon },
-      { label: 'PO Delivery Log', path: ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG, iconName: 'MarkunreadMailboxOutlinedIcon', icon: MarkunreadMailboxOutlinedIcon },
-    ],
-    receiving: [
-    ],
-    sales: [
-      { label: 'Customer PO Search', path: ROUTE_PATHS.SALES.CUSTOMER_PO_SEARCH, iconName: 'SellOutlinedIcon', icon: ShoppingCartOutlined },
-      { label: 'Event Search', path: ROUTE_PATHS.SALES.EVENT_SEARCH, iconName: 'ManageSearchIcon', icon: ManageSearchIcon },
-      { label: 'Open SO Report', path: ROUTE_PATHS.SALES.OPEN_SO_REPORT, iconName: 'SellOutlinedIcon', icon: SellOutlinedIcon },
-      { label: 'SO Workbench', path: ROUTE_PATHS.SALES.SALES_ORDER_WB, iconName: 'HandymanOutlinedIcon', icon: HandymanOutlinedIcon },
-    ],
-    shipping: [
-    ],
-  };
-
-  const mainMenuItems: MenuItemType[] = [
-    {
-      label: 'Master Search',
-      iconName: 'TravelExploreOutlinedIcon',
-      icon: TravelExploreOutlinedIcon,
-      path: ROUTE_PATHS.MASTER_SEARCH,
-    },
-    {
-      label: 'User List',
-      iconName: 'PeopleOutlinedIcon',
-      icon: PeopleOutlinedIcon,
-      path: ROUTE_PATHS.USER_LIST,
-    },
-  ];
-
-  const menuData: { section: string; items: MenuItemType[]; showFavoriteIcon: boolean }[] = [
-    {
-      section: 'Favorites',
-      items: favorites.map((item) => ({
-        ...item,
-        icon: item.icon || iconMap[item.iconName || 'FolderIcon'],
-      })),
-      showFavoriteIcon: true,
-    },
-    {
-      section: 'Main',
-      items: mainMenuItems,
-      showFavoriteIcon: false,
-    },
-    {
-      section: 'Applications',
-      items: Object.keys(folders).map((folder) => ({
-        label: getFolderTitle(folder),
-        iconName: openFolders[folder] ? 'FolderOpenIcon' : 'FolderIcon',
-        icon: openFolders[folder] ? FolderOpenIcon : FolderIcon,
-        open: openFolders[folder] || false,
-        onClick: () => handleFolderToggle(folder),
-        children: folders[folder].map((item) => ({
-          ...item,
-          icon: item.icon || iconMap[item.iconName || 'FolderIcon'],
-        })),
-      })),
-      showFavoriteIcon: true,
-    },
-  ];
-
-  const renderMenuItems = (items: MenuItemType[], depth = 0, showFavoriteIcon = true) =>
+  const renderMenuItems = (items: any[], depth = 0, showFavorites = true): React.ReactNode =>
     items.map((item) => {
       const paddingLeft = depth * 2;
-      if (item.children) {
-        return (
-          <React.Fragment key={item.label}>
-            <ListItem disablePadding>
-              <ListItemButton onClick={item.onClick} sx={{ pl: 2 + paddingLeft, pr: 1 }}>
-                <NavItemIcon>
-                  {item.icon ? React.createElement(item.icon) : <FolderIcon />}
-                </NavItemIcon>
-                <ListItemText
-                  primary={item.label}
-                  sx={{
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                />
-                {item.open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItemButton>
-            </ListItem>
-            <Collapse in={item.open} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                {renderMenuItems(item.children, depth + 1, showFavoriteIcon)}
-              </List>
-            </Collapse>
-          </React.Fragment>
-        );
-      } else {
-        return (
-          <ListItem disablePadding key={item.label}>
-            <ListItemButton onClick={() => handleNavigation(item.path!)} sx={{ pl: 2 + paddingLeft, pr: 1 }}>
-              <NavItemIcon>
-                {item.icon ? React.createElement(item.icon) : <FolderIcon />}
-              </NavItemIcon>
-              <ListItemText
-                primary={item.label}
-                sx={{
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
-              />
-              {showFavoriteIcon && (
-                <IconButton
-                  edge="end"
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleFavoriteToggle(item);
-                  }}
-                >
-                  {isFavorite(item.label) ? <StarIcon sx={{ color: 'primary.main' }} /> : <StarBorderIcon />}
-                </IconButton>
-              )}
-            </ListItemButton>
-          </ListItem>
-        );
-      }
+      const IconComponent = getIconComponent(item.iconName);
+      const isFav = favorites.some((fav) => fav.id === item.id);
+
+      return item.itemType === 'folder' ? (
+        <React.Fragment key={item.id}>
+          <ListItemButton onClick={() => handleFolderToggle(item.label)} sx={{ pl: 2 + paddingLeft }}>
+            <ListItemIcon>{openFolders[item.label] ? <FolderOpenIcon /> : <FolderIcon />}</ListItemIcon>
+            <ListItemText primary={item.label} />
+            {openFolders[item.label] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItemButton>
+          <Collapse in={openFolders[item.label]} timeout="auto" unmountOnExit>
+            <List disablePadding>{renderMenuItems(item.children || [], depth + 1, showFavorites)}</List>
+          </Collapse>
+        </React.Fragment>
+      ) : (
+        <ListItemButton key={item.id} onClick={() => handleNavigation(item.path)} sx={{ pl: 2 + paddingLeft }}>
+          <ListItemIcon>{IconComponent && <IconComponent />}</ListItemIcon>
+          <ListItemText primary={item.label} />
+          {showFavorites && (
+            <IconButton edge="end" size="small" onClick={(e) => { e.stopPropagation(); toggleFavorite(item); }}>
+              {isFav ? <StarIcon color="primary" /> : <StarBorderIcon />}
+            </IconButton>
+          )}
+        </ListItemButton>
+      );
     });
+
+  const currentWorkspace = workspaces.find(ws => ws.id === selectedWorkspace);
 
   return (
     <>
       <CssBaseline />
-      <IconButton onClick={handleDrawerToggle} sx={{ color: 'inherit' }}>
-        <MenuIcon />
-      </IconButton>
-      <Drawer
-        variant="temporary"
-        open={drawerOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true,
-        }}
-        sx={{
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-          },
-        }}
-      >
-        <Box
-          sx={{
-            width: drawerWidth,
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-          }}
-        >
-          {/* Top Section */}
-          <Box>
-            <DrawerHeader>
-              <LogoContainer href="/">
-                <LogoImage src={fullLogo} alt="AWT" />
-              </LogoContainer>
-              <IconButton onClick={handleDrawerToggle}>
-                <ArrowBackIosIcon />
-              </IconButton>
-            </DrawerHeader>
-            <Divider />
-            <WorkspaceSelector>
-              <Avatar src="../images/avatar.png" />
-              <WorkspaceInfo>
-                <Typography variant="caption">Company</Typography>
-                <Typography variant="subtitle2">Technologies</Typography>
-              </WorkspaceInfo>
-              <IconButton>
-                <ExpandMoreIcon />
-              </IconButton>
-            </WorkspaceSelector>
-            <Divider />
-          </Box>
-          {/* Middle Section (Scrollable) */}
-          <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
-            <List>
-              {menuData.map(
-                (section) =>
-                  section.items.length > 0 && (
-                    <Box key={section.section}>
-                      <SectionTitle>{section.section}</SectionTitle>
-                      {renderMenuItems(section.items, 0, section.showFavoriteIcon)}
-                    </Box>
-                  )
-              )}
-            </List>
-          </Box>
-          {/* Bottom Icons */}
+      <IconButton onClick={handleDrawerToggle}><MenuIcon /></IconButton>
+      <Drawer variant="temporary" open={drawerOpen} onClose={handleDrawerToggle} classes={{ paper: 'drawer-paper' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <DrawerHeader>
+            <LogoContainer href="/">
+              <LogoImage src={fullLogo} alt="AWT" />
+            </LogoContainer>
+            <IconButton onClick={handleDrawerToggle}><ArrowBackIosIcon /></IconButton>
+          </DrawerHeader>
           <Divider />
-          <Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-around', p: 2 }}>
-              <Tooltip title="Settings">
-                <IconButton sx={{ color: 'text.secondary' }}>
-                  <SettingsIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Account">
-                <IconButton sx={{ color: 'text.secondary' }}>
-                  <AccountCircleIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Logout">
-                <IconButton sx={{ color: 'text.secondary' }} onClick={() => handleLogOut(navigate, setUserName, setPassWord)}>
-                  <PowerSettingsNewIcon />
-                </IconButton>
-              </Tooltip>
-            </Box>
+          <WorkspaceSelector onClick={handleWorkspaceChange}>
+            <Avatar src="../images/avatar.png" />
+            <WorkspaceInfo>
+              <Typography variant="caption">Company</Typography>
+              <Typography variant="subtitle2">{currentWorkspace?.name || 'Select Workspace'}</Typography>
+            </WorkspaceInfo>
+            <ExpandMore />
+          </WorkspaceSelector>
+          <Divider />
+          <Box className="scrollable-content">
+            <SectionTitle>Favorites</SectionTitle>
+            <List>{renderMenuItems(favorites, 0, false)}</List>
+            <Divider />
+            <SectionTitle>Main</SectionTitle>
+            <List>{renderMenuItems(menuItems.filter(i => !i.parentId && i.itemType !== 'folder'))}</List>
+            <Divider />
+            <SectionTitle>Applications</SectionTitle>
+            <List>{renderMenuItems(menuItems.filter(i => i.itemType === 'folder'))}</List>
+          </Box>
+          <Divider />
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 1 }}>
+            <Tooltip title="Settings"><IconButton><SettingsIcon /></IconButton></Tooltip>
+            <Tooltip title="Account"><IconButton><AccountCircleIcon /></IconButton></Tooltip>
+            <Tooltip title="Logout">
+              <IconButton onClick={() => handleLogOut(navigate, setUserName, setPassWord)}>
+                <PowerSettingsNewIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Box>
       </Drawer>
