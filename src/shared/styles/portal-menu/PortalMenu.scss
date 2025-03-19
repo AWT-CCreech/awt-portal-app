@@ -1,0 +1,38 @@
+// Variables
+$drawer-width: 15vw;
+$drawer-min-width: 320px;
+$drawer-max-width: 360px;
+$scrollbar-width: 8px;
+$scrollbar-bg-transparent: transparent;
+$scrollbar-thumb-bg: rgba(0, 0, 0, 0.2);
+$scrollbar-thumb-hover-bg: rgba(0, 0, 0, 0.3);
+$border-radius-small: 4px;
+
+.drawer-paper {
+    width: $drawer-width;
+    min-width: $drawer-min-width;
+    max-width: $drawer-max-width;
+    box-sizing: border-box;
+}
+
+.scrollable-content {
+    flex: 1;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+        width: $scrollbar-width;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $scrollbar-bg-transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $scrollbar-thumb-bg;
+        border-radius: $border-radius-small;
+
+        &:hover {
+            background: $scrollbar-thumb-hover-bg;
+        }
+    }
+}
