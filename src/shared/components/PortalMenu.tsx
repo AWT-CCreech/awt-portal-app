@@ -11,9 +11,10 @@ import {
   Typography,
   Tooltip,
   CssBaseline,
-  ListItemButton,
-  Avatar
+  ListItemButton
 } from '@mui/material';
+import { CellTower, Cpu } from "@phosphor-icons/react";
+import SwapHorizOutlinedIcon from '@mui/icons-material/SwapHorizOutlined';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -25,7 +26,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import UserInfoContext from '../stores/userInfo';
@@ -185,12 +185,23 @@ const PortalMenu: React.FC = () => {
           </DrawerHeader>
           <Divider />
           <WorkspaceSelector onClick={handleWorkspaceChange}>
-            <Avatar src="../images/avatar.png" />
+            {currentWorkspace?.name === 'Technologies' ? (
+              <Cpu size={32} color="#6e6e6e" weight="fill" />
+            ) : currentWorkspace?.name === 'Solutions' ? (
+              <CellTower size={32} color="#6e6e6e" weight="fill" />
+            ) : (
+              // Optionally, display a default icon or nothing if neither condition is met.
+              <CellTower size={32} color="#6e6e6e" weight="fill" />
+            )}
             <WorkspaceInfo>
               <Typography variant="caption">Company</Typography>
-              <Typography variant="subtitle2">{currentWorkspace?.name || 'Select Workspace'}</Typography>
+              <Typography variant="subtitle2">
+                {currentWorkspace?.name || 'Select Workspace'}
+              </Typography>
             </WorkspaceInfo>
-            <ExpandMore />
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <SwapHorizOutlinedIcon fontSize="medium" sx={{ verticalAlign: 'middle', mx: 1.8, position: 'relative' }} />
+            </Box>
           </WorkspaceSelector>
           <Divider />
           <Box className="scrollable-content">
@@ -199,14 +210,14 @@ const PortalMenu: React.FC = () => {
               {renderMenuItems(
                 flattenMenuItems(menuItems).filter((item) => item.isFavorite),
                 0,
-                false
+                true
               )}
             </List>
             <Divider />
             <SectionTitle>Main</SectionTitle>
             <List>
               {renderMenuItems(
-                menuItems.filter((i) => !i.parentId && i.itemType !== 'folder')
+                menuItems.filter((i) => !i.parentId && i.itemType !== 'folder'), 0, false
               )}
             </List>
             <Divider />
