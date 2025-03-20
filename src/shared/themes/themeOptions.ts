@@ -47,6 +47,7 @@ export const themeOptions: ThemeOptions = {
     divider: 'rgba(0,0,0,0.12)',
   },
   typography: {
+    // You can adjust the base font size as needed
     fontSize: 14,
   },
   components: {
@@ -55,6 +56,14 @@ export const themeOptions: ThemeOptions = {
         colorInherit: {
           backgroundColor: '#689f38',
           color: '#fff',
+        },
+      },
+    },
+    MuiCssBaseline: {
+      styleOverrides: {
+        html: {
+          // Adjust this value to scale the entire UI
+          fontSize: '0.9rem', // This reduces the default scale by 10%
         },
       },
     },
