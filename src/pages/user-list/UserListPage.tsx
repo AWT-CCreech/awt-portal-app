@@ -1,23 +1,23 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Snackbar,
-  Alert,
-  Button,
-  IconButton,
-  Tooltip,
-  Typography,
-  CircularProgress,
-  Paper,
-  TableCell,
-  TableRow,
-} from '@mui/material';
-import { Add, Delete, GetApp } from '@mui/icons-material';
+import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import Paper from '@mui/material/Paper';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import GetAppIcon from '@mui/icons-material/GetApp';
 import Modules from '../../app/api/agent';
 import PageHeader from '../../shared/components/PageHeader';
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
@@ -236,7 +236,7 @@ const UserListPage: React.FC = () => {
                 setConfirmDelete({ open: true, uid: user.id });
               }}
             >
-              <Delete />
+              <DeleteIcon />
             </IconButton>
           </Tooltip>
         </TableCell>
@@ -270,7 +270,7 @@ const UserListPage: React.FC = () => {
             <Button
               variant="contained"
               color="primary"
-              startIcon={<Add />}
+              startIcon={<AddIcon />}
               onClick={handleOpenAddUserModal}
               sx={{ mr: 1 }} // Adds right margin between buttons
             >
@@ -281,7 +281,7 @@ const UserListPage: React.FC = () => {
             <Button
               variant="contained"
               color="success"
-              startIcon={<GetApp />}
+              startIcon={<GetAppIcon />}
               onClick={handleExportExcel}
             >
               Export

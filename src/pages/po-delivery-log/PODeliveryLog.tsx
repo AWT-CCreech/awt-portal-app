@@ -1,12 +1,10 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import {
-  Box,
-  Container,
-  Typography,
-  Modal,
-  Snackbar,
-  Alert,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import Grid2 from '@mui/material/Grid2';
 import PageHeader from '../../shared/components/PageHeader';
 import { ROUTE_PATHS } from '../../routes';

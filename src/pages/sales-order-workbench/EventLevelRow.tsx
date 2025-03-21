@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { TableCell, TextField, Checkbox, Link } from '@mui/material';
+import TableCell from '@mui/material/TableCell';
+import TextField from '@mui/material/TextField';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
 import { formatAmount } from '../../shared/utils/dataManipulation';
 import { EventLevelRowData } from '../../models/SOWorkbench/EventLevelRowData';
 import { EventLevelUpdateDto } from '../../models/SOWorkbench/EventLevelUpdateDto';

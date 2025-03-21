@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { TableCell, TextField } from '@mui/material';
+import TableCell from '@mui/material/TableCell';
+import TextField from '@mui/material/TextField';
 import { formatAmount } from '../../shared/utils/dataManipulation';
 import { DetailLevelRowData } from '../../models/SOWorkbench/DetailLevelRowData';
 import { DetailLevelUpdateDto } from '../../models/SOWorkbench/DetailLevelUpdateDto';

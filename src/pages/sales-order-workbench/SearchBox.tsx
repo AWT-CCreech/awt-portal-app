@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Box,
-    TextField,
-    MenuItem,
-    Select,
-    FormControl,
-    InputLabel,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 import SearchIcon from '@mui/icons-material/Search';
 import LoadingIconButton from '../../shared/components/LoadingIconButton';
 import Modules from '../../app/api/agent';

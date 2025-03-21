@@ -2,7 +2,7 @@
 import React from 'react';
 
 // MUI Components and Icons
-import { Chip } from '@mui/material';
+import Chip from '@mui/material/Chip';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 interface IProps {

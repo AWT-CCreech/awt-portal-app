@@ -2,17 +2,16 @@ import React, { useState, useEffect } from 'react';
 import agent from '../../app/api/agent';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import SelectPayPeriodForm from './SelectPayPeriodForm';
-import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Button,
-  Paper,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+
 import '../../shared/styles/time-tracker/TimeSheet.scss';
 
 // Import Grid2 from MUI

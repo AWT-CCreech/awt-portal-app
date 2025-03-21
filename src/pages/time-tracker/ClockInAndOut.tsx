@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import agent from '../../app/api/agent';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
-import { Box, Button, Typography, IconButton, Chip } from '@mui/material';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Chip from '@mui/material/Chip';
 import Grid2 from '@mui/material/Grid2';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';

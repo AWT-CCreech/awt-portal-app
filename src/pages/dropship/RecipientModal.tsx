@@ -2,18 +2,16 @@
 import React, { useState } from 'react';
 
 // MUI Components and Icons
-import {
-  Button,
-  Modal,
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
-  Input,
-  Chip,
-  Box,
-  Typography,
-} from '@mui/material';
+import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import Input from '@mui/material/Input';
+import Chip from '@mui/material/Chip';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import Grid2 from '@mui/material/Grid2';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';

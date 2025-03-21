@@ -19,7 +19,9 @@ import Grid2 from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import Snackbar from '@mui/material/Snackbar';
 import Modal from '@mui/material/Modal';
-import { Alert, useTheme, useMediaQuery } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import useTheme from '@mui/material/styles/useTheme';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 // Models
 import OpenSalesOrderSearchInput from '../../models/OpenSOReport/SearchInput';

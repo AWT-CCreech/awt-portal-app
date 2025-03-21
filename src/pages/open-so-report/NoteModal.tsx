@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Box,
-  TableCell,
-  Typography,
-  TextField,
-  Button,
-  ButtonGroup,
-  Autocomplete,
-  Checkbox,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import TableCell from '@mui/material/TableCell';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Autocomplete from '@mui/material/Autocomplete';
+import Checkbox from '@mui/material/Checkbox';
 import Grid2 from '@mui/material/Grid2';
-import { Close, Save } from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import SaveIcon from '@mui/icons-material/Save';
 import Modules from '../../app/api/agent';
 import { CamContact } from '../../models/CamContact';
 import { NoteList } from '../../models/OpenSOReport/NoteList';
@@ -317,7 +316,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
             <Button
               variant="outlined"
               color="success"
-              startIcon={<Save />}
+              startIcon={<SaveIcon />}
               onClick={saveNote}
             >
               Save
@@ -325,7 +324,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
             <Button
               variant="outlined"
               color="error"
-              startIcon={<Close />}
+              startIcon={<CloseIcon />}
               onClick={onClose}
             >
               Close

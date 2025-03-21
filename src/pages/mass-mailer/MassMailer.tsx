@@ -23,12 +23,10 @@ import { observer } from 'mobx-react-lite';
 import { trim } from 'lodash';
 
 // MUI Components
-import {
-  Box,
-  ClickAwayListener,
-  Fab,
-  CircularProgress,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Fab from '@mui/material/Fab';
+import CircularProgress from '@mui/material/CircularProgress';
 import Grid2 from '@mui/material/Grid2';
 
 import SendIcon from '@mui/icons-material/Send';

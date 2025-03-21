@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import ClockInAndOut from './ClockInAndOut';
 import TimeSheet from './TimeSheet';
-import { Container, CircularProgress, Box } from '@mui/material';
+import Container from '@mui/material/Container';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';
 import { observer } from 'mobx-react-lite';
 import agent from '../../app/api/agent';

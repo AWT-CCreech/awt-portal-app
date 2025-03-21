@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FormEvent } from 'react';
-import { Box, TextField } from '@mui/material';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 import LoadingIconButton from '../../shared/components/LoadingIconButton';
 
 export interface CustomerPOSearchParams {

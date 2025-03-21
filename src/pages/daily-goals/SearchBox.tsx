@@ -1,14 +1,11 @@
 import React, { ChangeEvent, FormEvent } from 'react';
-import {
-    Box,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    TextField,
-    Chip,
-    SelectChangeEvent
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+import Chip from '@mui/material/Chip';
 import { DailyGoalTotals } from '../../models/DailyGoalsReport/DailyGoalTotals';
 import { formatAmount } from '../../shared/utils/dataManipulation';
 import LoadingIconButton from '../../shared/components/LoadingIconButton'; // adjust the path as needed

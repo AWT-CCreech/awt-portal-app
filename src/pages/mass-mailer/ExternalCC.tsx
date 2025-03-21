@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Chip,
-} from '@mui/material';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import Chip from '@mui/material/Chip';
 import Grid2 from '@mui/material/Grid2';
 import DeleteIcon from '@mui/icons-material/Delete';
 

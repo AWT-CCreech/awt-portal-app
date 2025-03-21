@@ -2,12 +2,11 @@
 import React from 'react';
 
 // MUI Components and Icons
-import {
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-} from '@mui/material';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import IconButton from '@mui/material/IconButton';
+
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 interface IProps {

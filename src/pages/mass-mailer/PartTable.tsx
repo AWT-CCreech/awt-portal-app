@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  Checkbox,
-  Paper,
-  TextField,
-  Typography,
-  Tooltip,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import Grid2 from '@mui/material/Grid2';
-import { Delete as DeleteIcon } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import agent from '../../app/api/agent';
 import { MassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
 import '../../shared/styles/mass-mailer/PartTable.scss';

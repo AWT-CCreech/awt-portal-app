@@ -2,8 +2,12 @@
 import React from 'react';
 
 // MUI Components and Icons
-import { TableCell, TableRow, Box } from '@mui/material';
-import { Note, LocalFireDepartment, LocalShipping } from '@mui/icons-material';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Box from '@mui/material/Box';
+import NoteIcon from '@mui/icons-material/Note';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 
 // Components
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
@@ -102,13 +106,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       <TableCell key="expectedDelivery" align="left">
         <Box className="expected-delivery">
           <span>{po.expectedDelivery ? new Date(po.expectedDelivery).toLocaleDateString() : ''}</span>
-          {ExpDeliveryAlert && <LocalFireDepartment color="error" className="alert-icon" />}
+          {ExpDeliveryAlert && <LocalFireDepartmentIcon color="error" className="alert-icon" />}
         </Box>
       </TableCell>,
       <TableCell key="poRequiredDate" align="left">
         <Box className="po-required-date">
           <span>{po.poRequiredDate ? new Date(po.poRequiredDate).toLocaleDateString() : ''}</span>
-          {DeliveryAlert && <LocalFireDepartment color="error" className="alert-icon" />}
+          {DeliveryAlert && <LocalFireDepartmentIcon color="error" className="alert-icon" />}
         </Box>
       </TableCell>,
       <TableCell key="qtyOrdered" align="left">{po.qtyOrdered}</TableCell>,
@@ -118,7 +122,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       <TableCell key="sonum" align="left">
         <Box className="po-sonum">
           <span>{po.sonum}</span>
-          {po.isDropShipment && <LocalShipping color="secondary" className="alert-icon" />}
+          {po.isDropShipment && <LocalShippingIcon color="secondary" className="alert-icon" />}
         </Box>
       </TableCell>,
       <TableCell key="customerName" align="left">{po.customerName}</TableCell>,
@@ -127,7 +131,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
       <TableCell key="notes" align="left" className="note-edit-date">
         {po.notesExist ? (
           <div className="notes-container">
-            <Note color={isNoteOld ? "error" : "primary"} /> {/* Change icon color based on age */}
+            <NoteIcon color={isNoteOld ? "error" : "primary"} /> {/* Change icon color based on age */}
             {po.noteEditDate && (
               <span className="note-edit-date">
                 {new Date(po.noteEditDate).toLocaleDateString()}

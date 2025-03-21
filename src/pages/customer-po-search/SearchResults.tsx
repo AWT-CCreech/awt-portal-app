@@ -2,7 +2,8 @@ import React from 'react';
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 import { CustomerPOSearchResult } from '../../models/CustomerPOSearch/CustomerPOSearchResult';
 import { formatAmount } from '../../shared/utils/dataManipulation';
-import { TableRow, TableCell } from '@mui/material';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
 
 interface SearchResultsProps {
     items: CustomerPOSearchResult[];

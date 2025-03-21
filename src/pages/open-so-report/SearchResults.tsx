@@ -1,12 +1,12 @@
 // src/pages/open-so-report/SearchResults.tsx
 
 import React, { useCallback, memo } from 'react';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { TrkPoLog } from '../../models/TrkPoLog';
-import SearchResultsRow from './SearchResultsRow'; // Import the row component
+import SearchResultsRow from './SearchResultsRow';
 import '../../shared/styles/open-so-report/SearchResults.scss';
 
 interface SearchResultsProps {

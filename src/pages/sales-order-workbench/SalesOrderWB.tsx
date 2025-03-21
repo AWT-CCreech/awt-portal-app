@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Container, Snackbar, Alert } from '@mui/material';
+import Container from '@mui/material/Container';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import PageHeader from '../../shared/components/PageHeader';
 import SearchBox from './SearchBox';
 import SearchResults from './SearchResults';

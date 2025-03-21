@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { TablePagination, Box, Paper } from '@mui/material';
+import TablePagination from '@mui/material/TablePagination';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import SortableTable from './SortableTable';
 import styled from 'styled-components';
 

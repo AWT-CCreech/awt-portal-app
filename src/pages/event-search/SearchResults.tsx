@@ -2,7 +2,10 @@
 import React, { useCallback } from 'react';
 
 // MUI Components and Icons
-import { Box, TableCell, TableRow, Link } from '@mui/material';
+import Box from '@mui/material/Box';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Link from '@mui/material/Link';
 
 // Components
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';

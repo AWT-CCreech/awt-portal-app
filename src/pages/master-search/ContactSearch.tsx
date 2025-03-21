@@ -8,7 +8,11 @@ import MasterSearchContact from '../../models/MasterSearch/MasterSearchContact';
 import SortableTable from '../../shared/components/SortableTable';
 
 // MUI Components and Icons
-import { Box, Paper, Divider, TableCell, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Divider from '@mui/material/Divider';
+import TableCell from '@mui/material/TableCell';
+import Typography from '@mui/material/Typography';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 

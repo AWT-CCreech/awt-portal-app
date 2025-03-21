@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import {
-  MenuItem,
-  FormControl,
-  Select,
-  InputLabel,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  Paper,
-  Typography,
-} from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import Grid2 from '@mui/material/Grid2';
 import ReportConfirmation from './ReportConfirmation';
 import { TimeTracker } from '../../models/TimeTracker/TimeTracker';

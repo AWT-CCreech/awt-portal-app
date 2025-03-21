@@ -8,17 +8,14 @@ import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSea
 import { Rep } from '../../models/Data/Rep';
 
 // MUI Components
-import {
-    Box,
-    TextField,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    SelectChangeEvent,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Grid2 from '@mui/material/Grid2';
-import { Search } from '@mui/icons-material';
+import SearchIcon from '@mui/icons-material/Search';
 
 // Shared Components
 import LoadingIconButton from '../../shared/components/LoadingIconButton';
@@ -220,7 +217,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                     >
                         <LoadingIconButton
                             text="Search"
-                            icon={Search}
+                            icon={SearchIcon}
                             loading={loading}
                             type="submit" // Ensure the button acts as a submit button
                             sx={{

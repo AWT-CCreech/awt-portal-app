@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Button } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import TableRow from '@mui/material/TableRow';
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
-import { TableRow } from '@mui/material';
 import EventLevelRow from './EventLevelRow';
 import { EventLevelRowData } from '../../models/SOWorkbench/EventLevelRowData';
 

@@ -5,22 +5,22 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
-import {
-  Box,
-  Button,
-  CssBaseline,
-  FormControl,
-  Alert,
-  TextField,
-  Typography,
-  CircularProgress,
-  IconButton,
-  InputAdornment,
-  Stack,
-  Card as MuiCard,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import FormControl from '@mui/material/FormControl';
+import Alert from '@mui/material/Alert';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Stack from '@mui/material/Stack';
+import Card from '@mui/material/Card';
 import axios from 'axios';
-import { Login, Visibility, VisibilityOff } from '@mui/icons-material';
+import LoginIcon from '@mui/icons-material/Login';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import UserInfo from '../../shared/stores/userInfo';
@@ -140,7 +140,7 @@ const LoginPage: React.FC = observer(() => {
     <>
       <CssBaseline />
       <Stack className="login-container">
-        <MuiCard className="login-card" variant="outlined">
+        <Card className="login-card" variant="outlined">
           <Box className="logo-box">
             <img src="logo.png" alt="Company Logo" />
           </Box>
@@ -187,7 +187,7 @@ const LoginPage: React.FC = observer(() => {
                         onClick={handleClickShowPassword}
                         edge="end"
                       >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -209,7 +209,7 @@ const LoginPage: React.FC = observer(() => {
                 pageLoading ? (
                   <CircularProgress size={20} color="inherit" />
                 ) : (
-                  <Login />
+                  <LoginIcon />
                 )
               }
               className="submit-button"
@@ -217,7 +217,7 @@ const LoginPage: React.FC = observer(() => {
               Login
             </Button>
           </Box>
-        </MuiCard>
+        </Card>
       </Stack>
     </>
   );

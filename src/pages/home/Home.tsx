@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Container, Button } from '@mui/material';
+import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
 import Grid2 from '@mui/material/Grid2';
 import { isAuthenticated } from '../../shared/utils/authentication';
 import { ROUTE_PATHS } from '../../routes'; // Import the path constants

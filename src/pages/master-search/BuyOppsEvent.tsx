@@ -11,14 +11,12 @@ import SortableTable from '../../shared/components/SortableTable';
 import { getDateString } from '../../shared/utils/dataManipulation';
 
 // MUI Components
-import {
-  Box,
-  Paper,
-  Divider,
-  TableCell,
-  Typography,
-  Link,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Divider from '@mui/material/Divider';
+import TableCell from '@mui/material/TableCell';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
 
 interface IProps {
   buyOppEvents: BuyOppEvent[];

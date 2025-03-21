@@ -1,12 +1,9 @@
 import React from 'react';
-import {
-    Button,
-    CircularProgress,
-    Box,
-    SxProps,
-    Theme,
-    ButtonProps,
-} from '@mui/material';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+import { ButtonProps } from '@mui/material/Button';
+
 import { SvgIconComponent } from '@mui/icons-material';
 
 interface LoadingIconButtonProps extends Omit<ButtonProps, 'onClick'> {

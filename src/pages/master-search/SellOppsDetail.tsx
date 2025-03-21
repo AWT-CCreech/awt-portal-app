@@ -2,14 +2,12 @@
 import React from 'react';
 
 // MUI Components
-import {
-  Box,
-  Paper,
-  Divider,
-  Typography,
-  TableCell,
-  Link,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import TableCell from '@mui/material/TableCell';
+import Link from '@mui/material/Link';
 
 // Models
 import SellOppDetail from '../../models/MasterSearch/SellOppDetail';

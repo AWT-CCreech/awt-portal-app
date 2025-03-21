@@ -8,13 +8,10 @@ import Modules from '../../app/api/agent';
 import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
 import { EquipReqSearchResult } from '../../models/EventSearchPage/EquipReqSearchResult';
 
-import {
-    Box,
-    Container,
-    Typography,
-    Snackbar,
-    Alert,
-} from '@mui/material';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import Grid2 from '@mui/material/Grid2';
 
 import PageHeader from '../../shared/components/PageHeader';

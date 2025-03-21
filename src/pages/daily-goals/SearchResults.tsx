@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { Box, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material';
+import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
 import { DailyGoalItem } from '../../models/DailyGoalsReport/DailyGoalItem';
 import { DailyGoalTotals } from '../../models/DailyGoalsReport/DailyGoalTotals';

@@ -1,11 +1,14 @@
 import React from 'react';
-import { Box, Container, Typography, Breadcrumbs } from '@mui/material';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Grid2 from '@mui/material/Grid2';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PortalMenu from './PortalMenu';
 import { useLocation } from 'react-router-dom';
 import { ROUTE_PATHS } from '../../routes';
-import { Home } from '@mui/icons-material';
+import HomeIcon from '@mui/icons-material/Home';
 
 interface IProps {
   pageName: string;
@@ -85,7 +88,7 @@ const PageHeader: React.FC<IProps> = ({ pageName, pageHref }) => {
           >
             {/* Home Icon and Name */}
             <Box sx={{ display: 'flex', alignItems: 'center', color: '#384959' }}>
-              <Home fontSize="small" sx={{ marginRight: '4px' }} />
+              <HomeIcon fontSize="small" sx={{ marginRight: '4px' }} />
               <Typography variant="body2">Home</Typography>
             </Box>
             {/* Conditionally render Folder Name */}

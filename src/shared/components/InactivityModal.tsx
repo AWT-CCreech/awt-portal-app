@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogActions,
-  Button,
-  Typography,
-  Box,
-  CircularProgress,
-} from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom';
 import { InactivityModalProps } from '../../models/Security/InactivityModal';
 import { handleAutoLogout } from '../utils/authentication';

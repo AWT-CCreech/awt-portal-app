@@ -1,8 +1,13 @@
 // src/pages/open-so-report/SearchResultsRow.tsx
 
 import React from 'react';
-import { TableRow, TableCell, IconButton, Link } from '@mui/material';
-import { Warning, Add, Note } from '@mui/icons-material';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import WarningIcon from '@mui/icons-material/Warning';
+import AddIcon from '@mui/icons-material/Add';
+import NoteIcon from '@mui/icons-material/Note';
 import OpenSOReport from '../../models/OpenSOReport/OpenSOReport';
 import { TrkSoNote } from '../../models/TrkSoNote';
 import { TrkPoLog } from '../../models/TrkPoLog';
@@ -111,7 +116,7 @@ const SearchResultsRow: React.FC<SearchResultsRowProps> = React.memo(
                             ? requiredDate.toLocaleDateString()
                             : ''}
                         {deliveryAlert && (
-                            <Warning
+                            <WarningIcon
                                 color="error"
                                 fontSize="small"
                                 className="alert-icon"
@@ -199,7 +204,7 @@ const SearchResultsRow: React.FC<SearchResultsRowProps> = React.memo(
                             )
                         }
                     >
-                        {hasNotes ? <Note color="primary" /> : <Add />}
+                        {hasNotes ? <NoteIcon color="primary" /> : <AddIcon />}
                     </IconButton>
                     {hasNotes && mostRecentNoteDate && (
                         <div className="notes-edit-date">
