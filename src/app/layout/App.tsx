@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useRef, useContext } from 'react';
-import { useLocation, useNavigate, useRoutes } from 'react-router-dom';
+import { useLocation, useNavigate, useRoutes } from 'react-router';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 

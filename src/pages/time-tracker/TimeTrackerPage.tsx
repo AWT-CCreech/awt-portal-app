@@ -10,7 +10,7 @@ import agent from '../../app/api/agent';
 import PageHeader from '../../shared/components/PageHeader';
 import SupervisorApproval from './SupervisorApproval';
 import AppState from '../../shared/stores/app';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const TimeTrackerPage: React.FC = () => {
   const { pageLoading } = useContext(AppState);

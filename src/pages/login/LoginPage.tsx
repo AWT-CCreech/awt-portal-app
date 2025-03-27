@@ -1,5 +1,5 @@
 import React, { useContext, FormEvent, useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import {
   Box, Button, CssBaseline, FormControl, Alert, TextField,
   Typography, CircularProgress, IconButton, InputAdornment,

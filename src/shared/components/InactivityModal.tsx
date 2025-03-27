@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { InactivityModalProps } from '../../models/Security/InactivityModal';
 
 const InactivityModal: React.FC<InactivityModalProps> = ({

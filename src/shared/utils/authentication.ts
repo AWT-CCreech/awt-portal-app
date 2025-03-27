@@ -1,4 +1,4 @@
-import { NavigateFunction } from 'react-router-dom';
+import { NavigateFunction } from 'react-router';
 
 // Returns true only if a valid, unexpired JWT exists in localStorage
 export const isAuthenticated = (): boolean => {
