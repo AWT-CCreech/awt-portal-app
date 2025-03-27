@@ -4,6 +4,7 @@ interface LoginInfo {
   password: string;
   isPasswordEncrypted: boolean;
   token?: string;
+  refreshToken?: string;
 }
 
 export default LoginInfo;
