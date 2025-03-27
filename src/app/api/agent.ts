@@ -163,8 +163,16 @@ const CamSearch = {
 const CustomerPOSearch = {
   searchByPONum: async (PONum: string): Promise<CustomerPOSearchResult[]> => {
     const params = { PONum };
-    const response = await requests.getWithParams('/CustomerPO/search', params);
-    return response as CustomerPOSearchResult[];
+    try {
+      const response = await requests.getWithParams('/CustomerPO/search', params);
+      return response as CustomerPOSearchResult[];
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        console.warn(`PO#${PONum} not found`);
+        return []; // gracefully return empty result
+      }
+      throw error; // rethrow for other errors
+    }
   },
 };
 
