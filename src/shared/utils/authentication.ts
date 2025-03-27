@@ -1,50 +1,37 @@
 import { NavigateFunction } from 'react-router-dom';
 
-// Check if the user is authenticated
-export const isAuthenticated = () => {
-  const storageUser = localStorage.getItem('username');
-  const storagePass = localStorage.getItem('password');
+// Returns true only if a valid, unexpired JWT exists in localStorage
+export const isAuthenticated = (): boolean => {
   const token = localStorage.getItem('token');
-
-  return (
-    storageUser !== '' &&
-    storagePass !== '' &&
-    storagePass !== null &&
-    storageUser !== null &&
-    token !== null &&
-    token !== ''
-  );
+  if (!token) return false;
+  try {
+    const expMs = JSON.parse(atob(token.split('.')[1])).exp * 1000;
+    return Date.now() < expMs;
+  } catch {
+    return false;
+  }
 };
 
-// Handle user logout and clear session
+// Clears session and navigates to login
 export const handleLogOut = (
   navigate: NavigateFunction,
   setUserName: Function,
   setPassWord: Function
 ): void => {
   console.log('Logging out');
-  localStorage.removeItem('token');
-  localStorage.removeItem('username');
-  localStorage.removeItem('password');
-  localStorage.removeItem('userid');
-  localStorage.removeItem('expiresAt');
-  localStorage.removeItem('lastRefresh');
+  localStorage.clear();
   setUserName('');
   setPassWord('');
-
-  // Set document title to Login when logging out
   document.title = 'AWT Portal | Login';
-
-  navigate('/login');
+  navigate('/login', { replace: true });
 };
 
-// Auto logout due to inactivity or token expiration
+// Auto‑logout (timer or token expiry)
 export const handleAutoLogout = (
   navigate: NavigateFunction,
-  onLogout: Function,
+  setUserName: Function,
   setPassWord: Function
 ) => {
-  console.log('Auto logout triggered due to inactivity');
-  onLogout(); // Clear session and perform any additional logout logic
-  navigate('/login'); // Redirect to the login page
+  console.log('Auto logout triggered');
+  handleLogOut(navigate, setUserName, setPassWord);
 };
