@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
+import LoginInfo from '../../models/Login/LoginInfo';
 import { AccountNumbers } from '../../models/Data/AccountNumbers';
 import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
 import { ItemCategories } from '../../models/Data/ItemCategories';
@@ -17,7 +18,6 @@ import MasterSearchContact from '../../models/MasterSearch/MasterSearchContact';
 import MasterSearchInput from '../../models/MasterSearch/SearchInput';
 import SellOppDetail from '../../models/MasterSearch/SellOppDetail';
 import SellOppEvent from '../../models/MasterSearch/SellOppEvent';
-import LoginInfo from '../../models/Login/LoginInfo';
 import { MassMailerEmailTemplate } from '../../models/MassMailer/MassMailerEmailTemplate';
 import { MassMailerPartItem } from '../../models/MassMailer/MassMailerPartItem';
 import { MassMailerVendor } from '../../models/MassMailer/MassMailerVendor';
@@ -112,11 +112,9 @@ const requests = {
 /**
  * Request interceptor to attach JWT token to every outgoing request.
  */
-axios.interceptors.request.use((config) => {
+axios.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
@@ -124,29 +122,23 @@ axios.interceptors.request.use((config) => {
  * Response interceptor to handle token refresh.
  */
 axios.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+  response => response,
+  async error => {
+    const original = error.config;
+    if (error.response?.status === 401 && !original._retry) {
+      original._retry = true;
+      const token = localStorage.getItem('token');
+      const refreshToken = localStorage.getItem('refreshToken');
       try {
-        const currentToken = localStorage.getItem('token');
-        const refreshResponse = await axios.post('/Login/refresh', { token: currentToken });
-        const newToken = refreshResponse.data.token;
+        const { Token: newToken, RefreshToken: newRefresh } = await requests.post('/Token/RefreshToken', { token, refreshToken });
         localStorage.setItem('token', newToken);
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return axios(originalRequest);
-      } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
-
-        // If refresh fails, clear session and redirect to /login
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        localStorage.removeItem('password');
-        localStorage.removeItem('userid');
-        localStorage.removeItem('expiresAt');
+        localStorage.setItem('refreshToken', newRefresh);
+        original.headers.Authorization = `Bearer ${newToken}`;
+        return axios(original);
+      } catch {
+        Modules.UserLogins.logout(refreshToken!);
+        localStorage.clear();
         window.location.href = '/login';
-        return Promise.reject(refreshError);
       }
     }
     return Promise.reject(error);
@@ -372,25 +364,20 @@ const PODeliveryLogService = {
  * Portal: Endpoints for portal-related operations.
  */
 const PortalMenu = {
-  getMenu: async (workspaceId: number, userId: number): Promise<PortalMenuItemDto[]> => {
-    return requests.get(`/Portal/${workspaceId}/menu/${userId}`);
-  },
+  getMenu: async (workspaceId: number, userId: number): Promise<PortalMenuItemDto[]> =>
+    requests.get(`/Portal/${workspaceId}/menu/${userId}`),
 
-  getRoutes: async (workspaceId: number): Promise<PortalRouteDto[]> => {
-    return requests.get(`/Portal/${workspaceId}/routes`);
-  },
+  getRoutes: async (workspaceId: number): Promise<PortalRouteDto[]> =>
+    requests.get(`/Portal/${workspaceId}/routes`),
 
-  getWorkspaces: async (): Promise<WorkspaceDto[]> => {
-    return requests.get('/Portal/workspaces');
-  },
+  getWorkspaces: async (): Promise<WorkspaceDto[]> =>
+    requests.get('/Portal/workspaces'),
 
-  addFavorite: async (userId: number, itemId: number): Promise<void> => {
-    return requests.postNoBody(`/Portal/favorites/${userId}/${itemId}`);
-  },
+  addFavorite: async (userId: number, itemId: number): Promise<void> =>
+    requests.post(`/Portal/favorites/${userId}/${itemId}`, {}),
 
-  removeFavorite: async (userId: number, itemId: number): Promise<void> => {
-    return requests.delete(`/Portal/favorites/${userId}/${itemId}`);
-  }
+  removeFavorite: async (userId: number, itemId: number): Promise<void> =>
+    requests.delete(`/Portal/favorites/${userId}/${itemId}`),
 };
 
 /**
@@ -458,9 +445,9 @@ const UserList = {
  * UserLogins: Endpoints for user authentication.
  */
 const UserLogins = {
-  authenticate: (loginInfo: LoginInfo): Promise<LoginInfo> => requests.post('/Login', loginInfo),
-  refreshToken: (tokenRefreshRequest: { token: string }): Promise<{ token: string }> =>
-    requests.post('/Token/RefreshToken', tokenRefreshRequest)
+  authenticate: (loginInfo: LoginInfo) => requests.post('/Login', loginInfo),
+  refreshToken: (payload: { token: string; refreshToken: string }) => requests.post('/Token/RefreshToken', payload),
+  logout: (refreshToken: string) => requests.post('/Token/Logout', { refreshToken }),
 };
 
 /**
