@@ -15,9 +15,9 @@
     "typescriptreact",
     "javascriptreact"
   ],
+  "eslint.runtime": "C:\\Users\\ccreech\\AppData\\Local\\fnm_multishells\\26124_1743103837280\\node.exe",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
-  },
-  "prettier.requireConfig": true
+  }
 }
