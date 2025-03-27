@@ -8,7 +8,6 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom';
 import { InactivityModalProps } from '../../models/Security/InactivityModal';
-import { handleAutoLogout } from '../utils/authentication';
 
 const InactivityModal: React.FC<InactivityModalProps> = ({
   open,
@@ -17,93 +16,59 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
   onLogout,
 }) => {
   const [secondsLeft, setSecondsLeft] = useState(countdown);
-  const [shouldLogout, setShouldLogout] = useState(false);
-  const hasLoggedOut = useRef(false);
-  const navigate = useNavigate();
+  const logoutTriggered = useRef(false);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout | null = null;
-    const currentToken = localStorage.getItem('token');
+    if (!open) return;
+    setSecondsLeft(countdown);
+    logoutTriggered.current = false;
 
-    if (open && currentToken) {
-      setSecondsLeft(countdown);
-      hasLoggedOut.current = false;
+    const token = localStorage.getItem('token');
+    const expiresAt = token ? JSON.parse(atob(token.split('.')[1])).exp * 1000 : 0;
+    if (Date.now() >= expiresAt) {
+      logoutTriggered.current = true;
+      onLogout();
+      return;
+    }
 
-      const tokenPayload = JSON.parse(atob(currentToken.split('.')[1]));
-      const expiresAt = tokenPayload.exp * 1000;
-
-      if (Date.now() >= expiresAt) {
-        setShouldLogout(true);
-        return;
-      }
-
-      timer = setInterval(() => {
-        setSecondsLeft((prevSeconds) => {
-          if (prevSeconds <= 1) {
-            clearInterval(timer!);
-
-            if (!hasLoggedOut.current) {
-              setShouldLogout(true);
-            }
-
-            return 0;
+    const interval = setInterval(() => {
+      setSecondsLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          if (!logoutTriggered.current) {
+            logoutTriggered.current = true;
+            onLogout();
           }
-          return prevSeconds - 1;
-        });
-      }, 1000);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [open, countdown, onLogout]);
+
+  const handleStay = async () => {
+    if (!logoutTriggered.current) {
+      await onStayLoggedIn();
+      logoutTriggered.current = true;
     }
+  };
 
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [open, countdown]);
-
-  useEffect(() => {
-    if (shouldLogout && !hasLoggedOut.current) {
-      handleAutoLogout(navigate, onLogout, () => { });
-      hasLoggedOut.current = true;
-    }
-  }, [shouldLogout, navigate, onLogout]);
-
-  const handleStayLoggedIn = () => {
-    if (!hasLoggedOut.current) {
-      onStayLoggedIn();
-      hasLoggedOut.current = true;
+  const handleLogoutNow = () => {
+    if (!logoutTriggered.current) {
+      logoutTriggered.current = true;
+      onLogout();
     }
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={() => { }}
-      disableEscapeKeyDown
-      PaperProps={{
-        sx: {
-          padding: 2,
-          borderRadius: 3,
-          boxShadow: 3,
-        },
-      }}
-      slotProps={{
-        backdrop: { style: { pointerEvents: 'none' } },
-      }}
-    >
+    <Dialog open={open} disableEscapeKeyDown>
       <DialogContent>
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          textAlign="center"
-        >
-          <Typography variant="h5" gutterBottom>
-            Are you still there?
-          </Typography>
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            sx={{ marginBottom: 2 }}
-          >
-            For your security, you will be logged out in
+        <Box textAlign="center" py={3}>
+          <Typography variant="h5" gutterBottom>Are you still there?</Typography>
+          <Typography variant="body2" color="textSecondary" mb={2}>
+            You will be logged out in {secondsLeft}s
           </Typography>
           <Box position="relative" display="inline-flex">
             <CircularProgress
@@ -111,40 +76,16 @@ const InactivityModal: React.FC<InactivityModalProps> = ({
               value={(secondsLeft / countdown) * 100}
               size={80}
             />
-            <Box
-              top={0}
-              left={0}
-              bottom={0}
-              right={0}
-              position="absolute"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Typography variant="h6" component="div" color="text.primary">
-                {secondsLeft}s
-              </Typography>
+            <Box position="absolute" top={0} left={0} right={0} bottom={0}
+              display="flex" alignItems="center" justifyContent="center">
+              <Typography variant="h6">{secondsLeft}</Typography>
             </Box>
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions sx={{ justifyContent: 'center', gap: 2 }}>
-        <Button
-          onClick={handleStayLoggedIn}
-          color="primary"
-          variant="contained"
-          sx={{ borderRadius: 2, paddingX: 3 }}
-        >
-          Keep Working
-        </Button>
-        <Button
-          onClick={() => setShouldLogout(true)}
-          color="error"
-          variant="outlined"
-          sx={{ borderRadius: 2, paddingX: 3 }}
-        >
-          Logout Now
-        </Button>
+      <DialogActions sx={{ justifyContent: 'center', gap: 2, pb: 2 }}>
+        <Button variant="contained" onClick={handleStay}>Keep Working</Button>
+        <Button variant="outlined" color="error" onClick={handleLogoutNow}>Logout Now</Button>
       </DialogActions>
     </Dialog>
   );
