@@ -1,28 +1,14 @@
-import React, {
-  useContext,
-  FormEvent,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import FormControl from '@mui/material/FormControl';
-import Alert from '@mui/material/Alert';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
-import Stack from '@mui/material/Stack';
-import Card from '@mui/material/Card';
-import axios from 'axios';
-import LoginIcon from '@mui/icons-material/Login';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import React, { useContext, FormEvent, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Box, Button, CssBaseline, FormControl, Alert, TextField,
+  Typography, CircularProgress, IconButton, InputAdornment,
+  Stack, Card
+} from '@mui/material';
+import { Visibility, VisibilityOff, Login as LoginIcon } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
+import axios from 'axios';
+
 import UserInfo from '../../shared/stores/userInfo';
 import AppState from '../../shared/stores/app';
 import LoginInfo from '../../models/Login/LoginInfo';
@@ -38,98 +24,68 @@ const LoginPage: React.FC = observer(() => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-
-  // Local state for inputs
   const [localUsername, setLocalUsername] = useState('');
   const [localPassword, setLocalPassword] = useState('');
 
   const handleAutoLogout = useCallback(() => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    localStorage.removeItem('password');
-    localStorage.removeItem('userid');
-    localStorage.removeItem('expiresAt');
+    localStorage.clear();
     setUserName('');
     setPassWord('');
     navigate('/login');
   }, [setUserName, setPassWord, navigate]);
 
   useEffect(() => {
-    const tokenExpiry = localStorage.getItem('expiresAt');
-    if (tokenExpiry) {
-      const expiryTime = parseInt(tokenExpiry, 10);
-      const currentTime = Date.now();
-
-      if (expiryTime > currentTime) {
-        const timeout = setTimeout(
-          () => handleAutoLogout(),
-          expiryTime - currentTime
-        );
-        return () => clearTimeout(timeout);
-      } else {
-        handleAutoLogout();
-      }
+    const expiresAt = localStorage.getItem('expiresAt');
+    if (expiresAt) {
+      const timeout = setTimeout(handleAutoLogout, parseInt(expiresAt, 10) - Date.now());
+      return () => clearTimeout(timeout);
     }
   }, [pageLoading, handleAutoLogout]);
 
-  const handleClickShowPassword = () => setShowPassword((prev) => !prev);
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setPageLoading(true);
-    setErrorMessage(''); // Clear any previous error messages
+    setErrorMessage('');
 
-    const loginPayload: LoginInfo = {
+    const payload: LoginInfo = {
       userid: '',
       username: localUsername,
       password: localPassword,
       isPasswordEncrypted: false,
       token: '',
+      refreshToken: ''
     };
 
     try {
-      const response = await agent.UserLogins.authenticate(loginPayload);
+      const response = await agent.UserLogins.authenticate(payload);
 
-      if (response && response.token) {
-        const token = response.token;
-        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-        const expiresAt = tokenPayload.exp * 1000;
+      if (response.token) {
+        const { token, refreshToken, username, userid } = response;
+        const expMs = JSON.parse(atob(token.split('.')[1])).exp * 1000;
 
         localStorage.setItem('token', token);
-        localStorage.setItem('username', response.username);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('username', username);
         localStorage.setItem('password', response.password);
-        localStorage.setItem('userid', response.userid);
-        localStorage.setItem('expiresAt', expiresAt.toString());
+        localStorage.setItem('userid', userid);
+        localStorage.setItem('expiresAt', expMs.toString());
 
-        setUserName(response.username);
+        setUserName(username);
         setPassWord(response.password);
 
         navigate('/');
       } else {
         setErrorMessage('Incorrect username or password');
       }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          if (error.response.status === 401) {
-            setErrorMessage('Incorrect username or password');
-          } else if (error.response.status >= 500) {
-            setErrorMessage('Server error. Please try again later.');
-          } else {
-            setErrorMessage(
-              `Error: ${error.response.data.message || 'An unexpected error occurred.'}`
-            );
-          }
-        } else if (error.request) {
-          setErrorMessage(
-            'Unable to reach the server. Please check your internet connection and try again.'
-          );
-        } else {
-          setErrorMessage('An unexpected error occurred. Please try again.');
-        }
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        setErrorMessage(
+          err.response.status === 401
+            ? 'Incorrect username or password'
+            : err.response.data.message || 'Server error — try again later.'
+        );
       } else {
-        // Handle non-Axios errors
-        setErrorMessage('An unexpected error occurred. Please try again.');
+        setErrorMessage('Network error — please try again.');
       }
     } finally {
       setPageLoading(false);
@@ -140,79 +96,45 @@ const LoginPage: React.FC = observer(() => {
     <>
       <CssBaseline />
       <Stack className="login-container">
-        <Card className="login-card" variant="outlined">
-          <Box className="logo-box">
-            <img src="logo.png" alt="Company Logo" />
-          </Box>
-          <Typography component="h1" variant="h4" className="login-title">
-            AWT Portal
-          </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            className="login-form"
-          >
-            <FormControl>
+        <Card className="login-card">
+          <Box className="logo-box"><img src="logo.png" alt="Logo" /></Box>
+          <Typography variant="h4" className="login-title">AWT Portal</Typography>
+          <Box component="form" onSubmit={handleSubmit} className="login-form">
+            <FormControl fullWidth margin="normal">
               <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="username"
                 label="Username"
-                name="username"
-                autoComplete="username"
-                autoFocus
+                required
                 value={localUsername}
-                onChange={(e) => setLocalUsername(e.target.value)}
+                onChange={e => setLocalUsername(e.target.value)}
               />
             </FormControl>
-            <FormControl>
+            <FormControl fullWidth margin="normal">
               <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
                 label="Password"
                 type={showPassword ? 'text' : 'password'}
-                id="password"
-                autoComplete="current-password"
+                required
                 value={localPassword}
-                onChange={(e) => setLocalPassword(e.target.value)}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
+                onChange={e => setLocalPassword(e.target.value)}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowPassword(prev => !prev)}>
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }
                 }}
               />
             </FormControl>
-            {errorMessage && (
-              <Alert severity="error" className="login-error-alert">
-                {errorMessage}
-              </Alert>
-            )}
+            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              color="primary"
               disabled={pageLoading}
-              endIcon={
-                pageLoading ? (
-                  <CircularProgress size={20} color="inherit" />
-                ) : (
-                  <LoginIcon />
-                )
-              }
-              className="submit-button"
+              endIcon={pageLoading ? <CircularProgress size={20} /> : <LoginIcon />}
             >
               Login
             </Button>
