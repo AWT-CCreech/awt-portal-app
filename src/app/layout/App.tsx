@@ -7,67 +7,47 @@ import theme from '../../shared/themes/theme';
 import UserInfoContext from '../../shared/stores/userInfo';
 import InactivityModal from '../../shared/components/InactivityModal';
 import agent from '../../app/api/agent';
-import { isAuthenticated, handleAutoLogout } from '../../shared/utils/authentication';
+import { isAuthenticated, handleLogOut } from '../../shared/utils/authentication';
 import { routes } from '../../routes';
 import setDocumentTitle from '../../shared/utils/setDocumentTitle';
 import { usePopover } from '../../shared/hooks/use-popover';
 
-const MODAL_INACTIVITY_MS = 30 * 60 * 1000; // 30 minutes
-const MODAL_COUNTDOWN_S = 60;               // 60‑second warning
+const MODAL_INACTIVITY_MS = 30 * 60 * 1000;
+const MODAL_COUNTDOWN_S = 60;
 
 const App: React.FC = () => {
   const { open: isModalOpen, handleOpen, handleClose } = usePopover<HTMLElement>();
-  const inactivityTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { setUserName, setPassWord } = useContext(UserInfoContext);
 
-  const handleLogout = useCallback(() => {
-    handleAutoLogout(navigate, setUserName, setPassWord);
-  }, [navigate, setUserName, setPassWord]);
+  const handleLogout = useCallback(async () => {
+    handleClose();
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken) await agent.UserLogins.logout(refreshToken);
+    handleLogOut(navigate, setUserName, setPassWord);
+  }, [navigate, setUserName, setPassWord, handleClose]);
 
-  const refreshToken = useCallback(async () => {
-    try {
-      const currentToken = localStorage.getItem('token');
-      if (currentToken) {
-        const { token: newToken } = await agent.UserLogins.refreshToken({ token: currentToken });
-        localStorage.setItem('token', newToken);
-        const payload = JSON.parse(atob(newToken.split('.')[1]));
-        localStorage.setItem('expiresAt', (payload.exp * 1000).toString());
-        localStorage.setItem('lastRefresh', Date.now().toString());
-      }
-    } catch {
-      handleLogout();
-    }
-  }, [handleLogout]);
-
-  const resetInactivityTimeout = useCallback(() => {
+  const resetTimer = useCallback(() => {
     if (!isAuthenticated()) return;
-    if (inactivityTimeoutRef.current) clearTimeout(inactivityTimeoutRef.current);
-
-    inactivityTimeoutRef.current = setTimeout(() => {
-      handleOpen();
-    }, MODAL_INACTIVITY_MS);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(handleOpen, MODAL_INACTIVITY_MS);
   }, [handleOpen]);
 
   useEffect(() => {
     if (!isAuthenticated()) return;
-
     setDocumentTitle(location.pathname);
     const events = ['mousemove', 'keydown', 'scroll', 'click'];
-    events.forEach(evt => window.addEventListener(evt, resetInactivityTimeout));
-
+    events.forEach(evt => window.addEventListener(evt, resetTimer));
     return () => {
-      events.forEach(evt => window.removeEventListener(evt, resetInactivityTimeout));
-      if (inactivityTimeoutRef.current) clearTimeout(inactivityTimeoutRef.current);
+      events.forEach(evt => window.removeEventListener(evt, resetTimer));
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [location.pathname, resetInactivityTimeout]);
+  }, [location.pathname, resetTimer]);
 
-  useEffect(() => {
-    resetInactivityTimeout();
-  }, [resetInactivityTimeout]);
-
-  const routing = useRoutes(routes);
+  useEffect(resetTimer, [resetTimer]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -78,13 +58,17 @@ const App: React.FC = () => {
           countdown={MODAL_COUNTDOWN_S}
           onStayLoggedIn={async () => {
             handleClose();
-            await refreshToken();
-            resetInactivityTimeout();
+            const token = localStorage.getItem('token')!;
+            const refreshToken = localStorage.getItem('refreshToken')!;
+            const response = await agent.UserLogins.refreshToken({ token, refreshToken });
+            localStorage.setItem('token', response.Token);
+            localStorage.setItem('refreshToken', response.RefreshToken);
+            resetTimer();
           }}
           onLogout={handleLogout}
         />
       )}
-      {routing}
+      {useRoutes(routes)}
     </ThemeProvider>
   );
 };
