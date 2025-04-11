@@ -5,9 +5,12 @@ import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
 import { ItemCategories } from '../../models/Data/ItemCategories';
 import { Rep } from '../../models/Data/Rep';
 import { CamContact } from '../../models/CamContact';
+import { createDefaultSearchScansDto, SearchScansDto } from '../../models/ScanHistoryModels/SearchScansDto';
+import { createDefaultUpdateScanDto, UpdateScanDto } from '../../models/ScanHistoryModels/UpdateScansDto';
 import { CustomerPOSearchResult } from '../../models/CustomerPOSearch/CustomerPOSearchResult';
 import { DailyGoalDetail } from '../../models/DailyGoalsReport/DailyGoalDetail';
 import { DailyGoalsReport } from '../../models/DailyGoalsReport/DailyGoalsReport';
+import { defaultCopyScansDto, CopyScansDto } from '../../models/ScanHistoryModels/CopyScansDto';
 import { DetailLevelUpdateDto } from '../../models/SOWorkbench/DetailLevelUpdateDto';
 import { EventLevelUpdateDto } from '../../models/SOWorkbench/EventLevelUpdateDto';
 import { EquipReqSearchCriteria } from '../../models/EventSearchPage/EquipReqSearchCriteria';
@@ -407,6 +410,40 @@ const SalesOrderWorkbench = {
 };
 
 /**
+ * ScanHistory: Endpoints for scan history operations.
+ */
+const ScanHistory = {
+  searchScans: async (searchDto: SearchScansDto): Promise<any> => {
+    // Convert Date objects to strings as needed (e.g., ISO strings).
+    const params = {
+      ...searchDto,
+      scanDateRangeStart: searchDto.scanDateRangeStart.toISOString(),
+      scanDateRangeEnd: searchDto.scanDateRangeEnd.toISOString(),
+    };
+    return requests.getWithParams('/ScanHistory/Search', params);
+  },
+  deleteScans: async (selectedIds: number[]): Promise<any> => {
+    console.log(`DELETE Request to: /ScanHistory/Delete with body:`, selectedIds);
+    // Using axios.delete with a config object to include a request body.
+    return axios.delete('/ScanHistory/Delete', { data: selectedIds })
+      .then(responseBody)
+      .then((data) => {
+        console.log('DELETE Response from /ScanHistory/Delete', data);
+        return data;
+      });
+  },
+  updateScans: async (updateDtos: UpdateScanDto[]): Promise<any> => {
+    return requests.put('/ScanHistory/Update', updateDtos);
+  },
+  copyScans: async (copyRequest: CopyScansDto): Promise<any> => {
+    return requests.post('/ScanHistory/Copy', copyRequest);
+  },
+  addTestScans: async (selectedIds: number[]): Promise<any> => {
+    return requests.post('/ScanHistory/AddTestScans', selectedIds);
+  }
+};
+
+/**
  * TimeTrackers: Endpoints for time tracking.
  */
 const TimeTrackers = {
@@ -476,6 +513,7 @@ const Modules = {
   PODeliveryLogService,
   PortalMenu,
   SalesOrderWorkbench,
+  ScanHistory,
   TimeTrackers,
   Users,
   UserList,
