@@ -1,4 +1,3 @@
-import React from 'react';
 import { RouteObject } from 'react-router';
 
 // Import page components
@@ -15,6 +14,7 @@ import PrivateRoute from './shared/components/PrivateRoute';
 import TimeTrackerPage from './pages/time-tracker/TimeTrackerPage';
 import EventSearch from './pages/event-search/EventSearch';
 import SalesOrderWB from './pages/sales-order-workbench/SalesOrderWB';
+import ScanHistory from './pages/scan-history/ScanHistory';
 import DailyGoalsReportPage from './pages/daily-goals/DailyGoalsReport';
 import DailyGoalsDetail from './pages/daily-goals/DailyGoalsDetail';
 import CustomerPOSearchPage from './pages/customer-po-search/CustomerPOSearch';
@@ -27,6 +27,9 @@ export const ROUTE_PATHS = {
     DROPSHIP: '/purchasing/dropship',
     MASS_MAILER: '/purchasing/massmailer',
     PO_DELIVERY_LOG: '/purchasing/podeliverylog',
+  },
+  OPERATIONS: {
+    SCAN_HISTORY: '/operations/scanhistory',
   },
   SALES: {
     CUSTOMER_PO_SEARCH: '/sales/customerposearch',
@@ -83,6 +86,10 @@ export const routes: RouteObject[] = [
       {
         path: ROUTE_PATHS.SALES.SALES_ORDER_WB,
         element: <SalesOrderWB />,
+      },
+      {
+        path: ROUTE_PATHS.OPERATIONS.SCAN_HISTORY,
+        element: <ScanHistory />
       },
       {
         path: ROUTE_PATHS.MASTER_SEARCH,
