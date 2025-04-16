@@ -414,12 +414,30 @@ const SalesOrderWorkbench = {
  */
 const ScanHistory = {
   searchScans: async (searchDto: SearchScansDto): Promise<any> => {
-    // Convert Date objects to strings as needed (e.g., ISO strings).
-    const params = {
-      ...searchDto,
+    // Build the query parameters object only adding nonempty values.
+    const params: any = {
+      // Dates are required so always include them as ISO strings.
       scanDateRangeStart: searchDto.scanDateRangeStart.toISOString(),
       scanDateRangeEnd: searchDto.scanDateRangeEnd.toISOString(),
+      limit: searchDto.limit,
+      // snField has a default value ("SerialNo") so always include.
+      snField: searchDto.snField,
     };
+
+    // Only add optional string parameters if they are nonempty.
+    if (searchDto.soNo.trim() !== "") params.soNo = searchDto.soNo;
+    if (searchDto.poNo.trim() !== "") params.poNo = searchDto.poNo;
+    if (searchDto.rmano.trim() !== "") params.rmano = searchDto.rmano;
+    if (searchDto.partNo.trim() !== "") params.partNo = searchDto.partNo;
+    if (searchDto.serialNo.trim() !== "") params.serialNo = searchDto.serialNo;
+    if (searchDto.mnsCo.trim() !== "") params.mnsCo = searchDto.mnsCo;
+    if (searchDto.scanUser.trim() !== "") params.scanUser = searchDto.scanUser;
+    if (searchDto.orderType.trim() !== "") params.orderType = searchDto.orderType;
+    if (searchDto.rtvId !== undefined && searchDto.rtvId !== null) {
+      params.rtvId = searchDto.rtvId;
+    }
+    // You may log the params to verify the output.
+    console.log("SearchScans params:", params);
     return requests.getWithParams('/ScanHistory/Search', params);
   },
   deleteScans: async (selectedIds: number[]): Promise<any> => {
