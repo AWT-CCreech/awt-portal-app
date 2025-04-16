@@ -10,6 +10,8 @@ import HandymanOutlinedIcon from '@mui/icons-material/HandymanOutlined';
 import TodayOutlinedIcon from '@mui/icons-material/TodayOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import FolderIcon from '@mui/icons-material/Folder';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+import QrCodeScannerOutlinedIcon from '@mui/icons-material/QrCodeScannerOutlined';
 
 const iconMap: { [key: string]: React.ElementType } = {
     TravelExploreOutlinedIcon,
@@ -24,6 +26,8 @@ const iconMap: { [key: string]: React.ElementType } = {
     TodayOutlinedIcon,
     ShoppingCartOutlinedIcon,
     FolderIcon,
+    SearchOutlinedIcon,
+    QrCodeScannerOutlinedIcon
 };
 
 export const getIconComponent = (iconName?: string): React.ElementType => {
