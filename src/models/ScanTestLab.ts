@@ -1,0 +1,30 @@
+export interface ScanTestLab {
+    rowId: number;
+    scanHistId?: number;
+    scanDate?: Date;
+    userName?: string;
+    scannerId?: string;
+    partNo?: string;
+    partNo2?: string;
+    partNoClean?: string;
+    serialNo?: string;
+    serialNoB?: string;
+    heciCode?: string;
+    tag?: number;
+    status?: string;
+    orderType?: string;
+    orderNo?: number;
+    testResult?: string;
+    notes?: string;
+    emailShipping?: boolean;
+    emailReceiving?: boolean;
+    emailPurchasing?: boolean;
+    emailSales?: boolean;
+    createdOn?: Date;
+    createdBy?: string;
+    redTagAction?: string;
+    redTagStatus?: string;
+    editBy?: string;
+    editDate?: Date;
+    fn?: boolean;
+}
