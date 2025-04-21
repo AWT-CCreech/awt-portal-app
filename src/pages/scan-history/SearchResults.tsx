@@ -1,9 +1,8 @@
+// src/pages/scan-history/SearchResults.tsx
 import React, { useCallback } from 'react';
-import { TableRow, TableCell, Link, Box } from '@mui/material';
+import { TableRow, TableCell, Link, Box, Typography } from '@mui/material';
 import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
-import Grid2 from '@mui/material/Grid2';
 
-// Import the ScanHistory front end model
 import { ScanHistory } from '../../models/ScanHistory';
 
 interface SearchResultsProps {
@@ -13,55 +12,66 @@ interface SearchResultsProps {
 
 const SearchResults: React.FC<SearchResultsProps> = React.memo(
     ({ results, containerHeight = '60vh' }) => {
-        // Define the table columns and the header names
-        const allColumns = [
+        // Now we collapse scanDate + userName into one "userInfo" column
+        const columns = [
             'rowId',
-            'scanDate',
-            'scannerId',
             'orderType',
-            'userName',
-            'soNo',
-            'poNo',
-            'rmano',
+            'orderNo',    // logical column, not a real property
+            'userInfo',   // combined user+date
             'partNo',
             'serialNo',
             'notes',
         ];
 
-        const allColumnNames = [
-            'Row ID',
-            'Scan Date',
-            'Scanner',
-            'Order Type',
-            'User Name',
-            'SO No',
-            'PO No',
-            'RMA No',
-            'Part No',
-            'Serial No',
+        const columnNames = [
+            'Row ID',
+            'Order Type',
+            'Order No',
+            'User / Date',
+            'Part No',
+            'Serial No',
             'Notes',
         ];
 
-        // Callback to render each row in the table
         const renderRow = useCallback(
             (record: ScanHistory): React.ReactElement => {
-                // Optional: If a row should be clickable to open details, add an event handler.
-                const rowClickHandler = () => {
-                    // For example, open a details view (adjust URL as needed)
-                    window.open(`/scan-history/details/${record.rowId}`, '_blank');
+                // Compute Order No as before
+                const orderNo = (() => {
+                    switch (record.orderType) {
+                        case 'SO':
+                            return record.soNo ?? '';
+                        case 'PO':
+                            return record.poNo ?? '';
+                        case 'RMA':
+                            return record.rmano ?? '';
+                        case 'RTV/C':
+                            return record.rtvRmaNo ?? record.rtvid?.toString() ?? '';
+                        default:
+                            return '';
+                    }
+                })();
+
+                // Format the scan date
+                const formattedDate = record.scanDate
+                    ? new Date(record.scanDate).toLocaleDateString()
+                    : '';
+
+                const openDetail = () => {
+                    window.open(`/scanhistory/details/${record.rowId}`, '_blank');
                 };
 
                 return (
                     <TableRow key={record.rowId} hover>
+                        {/* Row ID */}
                         <TableCell
                             align="left"
-                            style={{
+                            sx={{
                                 cursor: record.rowId ? 'pointer' : 'default',
                                 whiteSpace: 'nowrap',
                                 textOverflow: 'ellipsis',
                                 overflow: 'hidden',
                             }}
-                            onClick={record.rowId ? rowClickHandler : undefined}
+                            onClick={record.rowId ? openDetail : undefined}
                         >
                             {record.rowId ? (
                                 <Link underline="hover" target="_blank" rel="noopener noreferrer">
@@ -71,17 +81,38 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
                                 ''
                             )}
                         </TableCell>
-                        <TableCell align="left">
-                            {record.scanDate ? new Date(record.scanDate).toLocaleDateString() : ''}
-                        </TableCell>
-                        <TableCell align="left">{record.scannerId || ''}</TableCell>
+
+                        {/* Order Type */}
                         <TableCell align="left">{record.orderType || ''}</TableCell>
-                        <TableCell align="left">{record.userName || ''}</TableCell>
-                        <TableCell align="left">{record.soNo || ''}</TableCell>
-                        <TableCell align="left">{record.poNo || ''}</TableCell>
-                        <TableCell align="left">{record.rmano || ''}</TableCell>
+
+                        {/* Computed Order No */}
+                        <TableCell align="left">{orderNo}</TableCell>
+
+                        {/* Combined User / Date */}
+                        <TableCell align="left">
+                            <Box>
+                                <Typography variant="body1">
+                                    {record.userName || ''}
+                                </Typography>
+                                {formattedDate && (
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                        sx={{ fontStyle: 'italic', lineHeight: 1 }}
+                                    >
+                                        {formattedDate}
+                                    </Typography>
+                                )}
+                            </Box>
+                        </TableCell>
+
+                        {/* Part No */}
                         <TableCell align="left">{record.partNo || ''}</TableCell>
+
+                        {/* Serial No */}
                         <TableCell align="left">{record.serialNo || ''}</TableCell>
+
+                        {/* Notes */}
                         <TableCell align="left">{record.notes || ''}</TableCell>
                     </TableRow>
                 );
@@ -100,8 +131,8 @@ const SearchResults: React.FC<SearchResultsProps> = React.memo(
             >
                 <PaginatedSortableTable
                     tableData={results}
-                    columns={allColumns}
-                    columnNames={allColumnNames}
+                    columns={columns}
+                    columnNames={columnNames}
                     func={renderRow}
                     headerBackgroundColor="#384959"
                     hoverColor="#f5f5f5"
