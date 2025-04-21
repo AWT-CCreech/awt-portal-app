@@ -1,16 +1,14 @@
+// src/models/ScanHistoryModels/SearchScansDto.ts
 export interface SearchScansDto {
     scanDateRangeStart: Date;
     scanDateRangeEnd: Date;
-    soNo: string;
-    poNo: string;
-    rmano: string;
-    rtvId?: number;
+    orderNum: string;
+    orderType: string;
     partNo: string;
     serialNo: string;
     snField: string;
     mnsCo: string;
     scanUser: string;
-    orderType: string;
     limit: number;
 }
 
@@ -22,16 +20,13 @@ export function createDefaultSearchScansDto(): SearchScansDto {
     return {
         scanDateRangeStart: oneYearAgo,
         scanDateRangeEnd: today,
-        soNo: "",
-        poNo: "",
-        rmano: "",
-        rtvId: undefined,
-        partNo: "",
-        serialNo: "",
-        snField: "SerialNo",
-        mnsCo: "",
-        scanUser: "",
-        orderType: "",
+        orderNum: '',
+        orderType: '',
+        partNo: '',
+        serialNo: '',
+        snField: 'SerialNo',
+        mnsCo: '',
+        scanUser: '',
         limit: 1000,
     };
 }
