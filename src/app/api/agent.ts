@@ -423,42 +423,39 @@ const ScanHistory = {
       // snField has a default value ("SerialNo") so always include.
       snField: searchDto.snField,
     };
+    if (searchDto.orderNum.trim() !== '') params.orderNum = searchDto.orderNum;
+    if (searchDto.orderType.trim() !== '') params.orderType = searchDto.orderType;
+    if (searchDto.partNo.trim() !== '') params.partNo = searchDto.partNo;
+    if (searchDto.serialNo.trim() !== '') params.serialNo = searchDto.serialNo;
+    if (searchDto.mnsCo.trim() !== '') params.mnsCo = searchDto.mnsCo;
+    if (searchDto.scanUser.trim() !== '') params.scanUser = searchDto.scanUser;
 
-    // Only add optional string parameters if they are nonempty.
-    if (searchDto.soNo.trim() !== "") params.soNo = searchDto.soNo;
-    if (searchDto.poNo.trim() !== "") params.poNo = searchDto.poNo;
-    if (searchDto.rmano.trim() !== "") params.rmano = searchDto.rmano;
-    if (searchDto.partNo.trim() !== "") params.partNo = searchDto.partNo;
-    if (searchDto.serialNo.trim() !== "") params.serialNo = searchDto.serialNo;
-    if (searchDto.mnsCo.trim() !== "") params.mnsCo = searchDto.mnsCo;
-    if (searchDto.scanUser.trim() !== "") params.scanUser = searchDto.scanUser;
-    if (searchDto.orderType.trim() !== "") params.orderType = searchDto.orderType;
-    if (searchDto.rtvId !== undefined && searchDto.rtvId !== null) {
-      params.rtvId = searchDto.rtvId;
-    }
-    // You may log the params to verify the output.
     console.log("SearchScans params:", params);
     return requests.getWithParams('/ScanHistory/Search', params);
   },
+
   deleteScans: async (selectedIds: number[]): Promise<any> => {
     console.log(`DELETE Request to: /ScanHistory/Delete with body:`, selectedIds);
-    // Using axios.delete with a config object to include a request body.
-    return axios.delete('/ScanHistory/Delete', { data: selectedIds })
+    return axios
+      .delete('/ScanHistory/Delete', { data: selectedIds })
       .then(responseBody)
-      .then((data) => {
+      .then(data => {
         console.log('DELETE Response from /ScanHistory/Delete', data);
         return data;
       });
   },
-  updateScans: async (updateDtos: UpdateScanDto[]): Promise<any> => {
+
+  updateScans: async (updateDtos: any[]): Promise<any> => {
     return requests.put('/ScanHistory/Update', updateDtos);
   },
-  copyScans: async (copyRequest: CopyScansDto): Promise<any> => {
+
+  copyScans: async (copyRequest: any): Promise<any> => {
     return requests.post('/ScanHistory/Copy', copyRequest);
   },
+
   addTestScans: async (selectedIds: number[]): Promise<any> => {
     return requests.post('/ScanHistory/AddTestScans', selectedIds);
-  }
+  },
 };
 
 /**
@@ -480,7 +477,8 @@ const TimeTrackers = {
  */
 const Users = {
   getActive: (): Promise<User[]> => requests.get('/Users/active'),
-  getMassMailer: (): Promise<MassMailerUser[]> => requests.get('/Users/massmailer')
+  getMassMailer: (): Promise<MassMailerUser[]> => requests.get('/Users/massmailer'),
+  getWarehouseUsers: (): Promise<User[]> => requests.get('/Operations/ScanUsers')
 };
 
 /**
