@@ -43,7 +43,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
                 }}
             >
                 <TextField
-                    label="PO Number"
+                    label="Customer PO"
                     value={searchParams.poNumber}
                     onChange={handleInputChange}
                     required

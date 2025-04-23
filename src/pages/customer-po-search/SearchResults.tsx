@@ -22,7 +22,7 @@ const columns = [
 ];
 
 const columnNames = [
-    'Customer PO No.',
+    'Customer PO',
     'Event ID',
     'Sale ID',
     'Quote ID',
