@@ -414,15 +414,14 @@ const SalesOrderWorkbench = {
  */
 const ScanHistory = {
   searchScans: async (searchDto: SearchScansDto): Promise<any> => {
-    // Build the query parameters object only adding nonempty values.
     const params: any = {
-      // Dates are required so always include them as ISO strings.
       scanDateRangeStart: searchDto.scanDateRangeStart.toISOString(),
       scanDateRangeEnd: searchDto.scanDateRangeEnd.toISOString(),
       limit: searchDto.limit,
-      // snField has a default value ("SerialNo") so always include.
-      snField: searchDto.snField,
     };
+    if (searchDto.snField.trim() !== '') {
+      params.snField = searchDto.snField;
+    }
     if (searchDto.orderNum.trim() !== '') params.orderNum = searchDto.orderNum;
     if (searchDto.orderType.trim() !== '') params.orderType = searchDto.orderType;
     if (searchDto.partNo.trim() !== '') params.partNo = searchDto.partNo;
