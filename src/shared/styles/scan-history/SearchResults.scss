@@ -1,0 +1,9 @@
+// color variables
+$scan-date-text-color: #666 !default;
+$scan-date-font-style: italic !default;
+
+// class for little date line
+.scan-history__date {
+    font-style: $scan-date-font-style;
+    color: $scan-date-text-color;
+}
