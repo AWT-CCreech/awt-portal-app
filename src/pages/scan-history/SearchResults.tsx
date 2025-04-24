@@ -1,144 +1,134 @@
-// src/pages/scan-history/SearchResults.tsx
-import React, { useCallback } from 'react';
-import { TableRow, TableCell, Link, Box, Typography } from '@mui/material';
-import PaginatedSortableTable from '../../shared/components/PaginatedSortableTable';
-
+import * as React from 'react';
+import {
+    GridColDef,
+    GridCallbackDetails,
+    GridRowSelectionModel,
+    GridRowId,
+    GridValueGetter,
+} from '@mui/x-data-grid';
+import { SharedDataGrid } from '../../shared/components/SharedDataGrid';
 import { ScanHistory } from '../../models/ScanHistory';
+import '../../shared/styles/scan-history/SearchResults.scss';
+
+type RowType = ScanHistory & { id: number };
 
 interface SearchResultsProps {
     results: ScanHistory[];
+    selectedIds: number[];
+    onToggleSelect: (id: number) => void;
+    onSelectAll: (checked: boolean) => void;
     containerHeight?: string;
+    headerBgColor?: string;
+    headerTextColor?: string;
+    sortIconColor?: string;
+    menuIconColor?: string;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = React.memo(
-    ({ results, containerHeight = '60vh' }) => {
-        // Now we collapse scanDate + userName into one "userInfo" column
-        const columns = [
-            'rowId',
-            'orderType',
-            'orderNo',    // logical column, not a real property
-            'userInfo',   // combined user+date
-            'partNo',
-            'serialNo',
-            'notes',
-        ];
+    ({
+        results,
+        selectedIds,
+        onToggleSelect,
+        onSelectAll,
+        containerHeight = '60vh',
+        headerBgColor = '#384959',
+        headerTextColor = '#fff',
+        sortIconColor = headerTextColor,
+        menuIconColor = headerTextColor,
+    }) => {
+        // inject `id`
+        const rows = React.useMemo<RowType[]>(
+            () => results.map(r => ({ ...r, id: r.rowId })),
+            [results]
+        );
 
-        const columnNames = [
-            'Row ID',
-            'Order Type',
-            'Order No',
-            'User / Date',
-            'Part No',
-            'Serial No',
-            'Notes',
-        ];
+        // order no helper
+        const getOrderNo: GridValueGetter<RowType, string> = (_v, row) => {
+            switch (row.orderType) {
+                case 'SO':
+                    return row.soNo ?? '';
+                case 'PO':
+                    return row.poNo ?? '';
+                case 'RMA':
+                    return row.rmano ?? '';
+                case 'RTV/C':
+                    return row.rtvRmaNo ?? row.rtvid?.toString() ?? '';
+                default:
+                    return '';
+            }
+        };
 
-        const renderRow = useCallback(
-            (record: ScanHistory): React.ReactElement => {
-                // Compute Order No as before
-                const orderNo = (() => {
-                    switch (record.orderType) {
-                        case 'SO':
-                            return record.soNo ?? '';
-                        case 'PO':
-                            return record.poNo ?? '';
-                        case 'RMA':
-                            return record.rmano ?? '';
-                        case 'RTV/C':
-                            return record.rtvRmaNo ?? record.rtvid?.toString() ?? '';
-                        default:
-                            return '';
-                    }
-                })();
+        // format date
+        const formatDate: GridValueGetter<RowType, string> = (_v, row) =>
+            row.scanDate ? new Date(row.scanDate).toLocaleDateString() : '';
 
-                // Format the scan date
-                const formattedDate = record.scanDate
-                    ? new Date(record.scanDate).toLocaleDateString()
-                    : '';
+        const columns: GridColDef<RowType>[] = React.useMemo(
+            () => [
+                { field: 'orderType', headerName: 'Order Type', width: 120 },
+                {
+                    field: 'orderNo',
+                    headerName: 'Order No',
+                    width: 120,
+                    valueGetter: getOrderNo,
+                },
+                { field: 'userName', headerName: 'User', width: 150, sortable: true },
+                {
+                    field: 'scanDate',
+                    headerName: 'Date',
+                    width: 130,
+                    sortable: true,
+                    valueGetter: formatDate,
+                },
+                { field: 'partNo', headerName: 'Part No', width: 150 },
+                { field: 'serialNo', headerName: 'Serial No', width: 150 },
+                { field: 'serialNoB', headerName: 'Serial No B', width: 150 },
+                { field: 'heciCode', headerName: 'Heci Code', width: 150 },
+            ],
+            [getOrderNo, formatDate]
+        );
 
-                const openDetail = () => {
-                    window.open(`/scanhistory/details/${record.rowId}`, '_blank');
-                };
+        // selection logic
+        const gridSelectionModel: GridRowSelectionModel = React.useMemo(
+            () =>
+                ({ type: 'include', ids: new Set(selectedIds) as Set<GridRowId> } as any),
+            [selectedIds]
+        );
 
-                return (
-                    <TableRow key={record.rowId} hover>
-                        {/* Row ID */}
-                        <TableCell
-                            align="left"
-                            sx={{
-                                cursor: record.rowId ? 'pointer' : 'default',
-                                whiteSpace: 'nowrap',
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden',
-                            }}
-                            onClick={record.rowId ? openDetail : undefined}
-                        >
-                            {record.rowId ? (
-                                <Link underline="hover" target="_blank" rel="noopener noreferrer">
-                                    {record.rowId}
-                                </Link>
-                            ) : (
-                                ''
-                            )}
-                        </TableCell>
-
-                        {/* Order Type */}
-                        <TableCell align="left">{record.orderType || ''}</TableCell>
-
-                        {/* Computed Order No */}
-                        <TableCell align="left">{orderNo}</TableCell>
-
-                        {/* Combined User / Date */}
-                        <TableCell align="left">
-                            <Box>
-                                <Typography variant="body1">
-                                    {record.userName || ''}
-                                </Typography>
-                                {formattedDate && (
-                                    <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                        sx={{ fontStyle: 'italic', lineHeight: 1 }}
-                                    >
-                                        {formattedDate}
-                                    </Typography>
-                                )}
-                            </Box>
-                        </TableCell>
-
-                        {/* Part No */}
-                        <TableCell align="left">{record.partNo || ''}</TableCell>
-
-                        {/* Serial No */}
-                        <TableCell align="left">{record.serialNo || ''}</TableCell>
-
-                        {/* Notes */}
-                        <TableCell align="left">{record.notes || ''}</TableCell>
-                    </TableRow>
-                );
+        const handleRowSelectionChange = React.useCallback(
+            (newModel: GridRowSelectionModel, _details: GridCallbackDetails) => {
+                const newIds = Array.from(newModel.ids) as number[];
+                if (newIds.length === rows.length) {
+                    onSelectAll(true);
+                    return;
+                }
+                if (newIds.length === 0 && selectedIds.length > 0) {
+                    onSelectAll(false);
+                    return;
+                }
+                const added = newIds.filter(id => !selectedIds.includes(id));
+                const removed = selectedIds.filter(id => !newIds.includes(id));
+                if (added.length) onToggleSelect(added[0]);
+                else if (removed.length) onToggleSelect(removed[0]);
             },
-            []
+            [onToggleSelect, onSelectAll, selectedIds, rows.length]
         );
 
         return (
-            <Box
-                sx={{
-                    height: containerHeight,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflow: 'auto',
-                }}
-            >
-                <PaginatedSortableTable
-                    tableData={results}
-                    columns={columns}
-                    columnNames={columnNames}
-                    func={renderRow}
-                    headerBackgroundColor="#384959"
-                    hoverColor="#f5f5f5"
-                    tableHeight="100vh"
-                />
-            </Box>
+            <SharedDataGrid<RowType>
+                rows={rows}
+                columns={columns}
+                pageSize={10}
+                pageSizeOptions={[10, 25, 50]}
+                checkboxSelection
+                disableRowSelectionOnClick
+                rowSelectionModel={gridSelectionModel}
+                onRowSelectionModelChange={handleRowSelectionChange}
+                height={containerHeight}
+                headerBgColor={headerBgColor}
+                headerTextColor={headerTextColor}
+                sortIconColor={sortIconColor}
+                menuIconColor={menuIconColor}
+            />
         );
     }
 );
