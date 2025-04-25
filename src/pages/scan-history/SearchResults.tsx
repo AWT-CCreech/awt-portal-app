@@ -6,7 +6,7 @@ import {
     GridRowId,
     GridValueGetter,
 } from '@mui/x-data-grid';
-import { SharedDataGrid } from '../../shared/components/SharedDataGrid';
+import { SharedDataGrid } from '../../shared/components/CustomDataGrid';
 import { ScanHistory } from '../../models/ScanHistory';
 import '../../shared/styles/scan-history/SearchResults.scss';
 
