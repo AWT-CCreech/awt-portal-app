@@ -1,5 +1,11 @@
-import React, { useEffect, useCallback, useRef, useContext } from 'react';
-import { useLocation, useNavigate, useRoutes } from 'react-router';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useContext,
+} from 'react';
+import { useNavigate, useLocation, useRoutes } from 'react-router';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -10,64 +16,112 @@ import agent from '../../app/api/agent';
 import { isAuthenticated, handleLogOut } from '../../shared/utils/authentication';
 import { routes } from '../../routes';
 import setDocumentTitle from '../../shared/utils/setDocumentTitle';
-import { usePopover } from '../../shared/hooks/use-popover';
 
-const MODAL_INACTIVITY_MS = 30 * 60 * 1000;
-const MODAL_COUNTDOWN_S = 60;
+const MODAL_COUNTDOWN_S = 60;  // seconds
 
 const App: React.FC = () => {
-  const { open: isModalOpen, handleOpen, handleClose } = usePopover<HTMLElement>();
+  const [modalOpen, setModalOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { setUserName, setPassWord } = useContext(UserInfoContext);
 
+  // central logout logic
   const handleLogout = useCallback(async () => {
-    handleClose();
+    setModalOpen(false);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (refreshToken) await agent.UserLogins.logout(refreshToken);
+
+    const rt = localStorage.getItem('refreshToken');
+    if (rt) {
+      try { await agent.UserLogins.logout(rt); } catch { }
+    }
     handleLogOut(navigate, setUserName, setPassWord);
-  }, [navigate, setUserName, setPassWord, handleClose]);
+  }, [navigate, setUserName, setPassWord]);
 
-  const resetTimer = useCallback(() => {
-    if (!isAuthenticated()) return;
+  // schedule the inactivity warning at (tokenExp - countdown)
+  const scheduleWarning = useCallback(() => {
+    if (!isAuthenticated()) {
+      return handleLogout();
+    }
+
+    const raw = localStorage.getItem('token');
+    if (!raw) {
+      return handleLogout();
+    }
+
+    let expMs: number;
+    try {
+      expMs = JSON.parse(atob(raw.split('.')[1])).exp * 1000;
+    } catch {
+      return handleLogout();
+    }
+
+    const now = Date.now();
+    const msUntilWarning = expMs - now - MODAL_COUNTDOWN_S * 1000;
+
+    if (msUntilWarning <= 0) {
+      setModalOpen(true);
+      return;
+    }
+
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(handleOpen, MODAL_INACTIVITY_MS);
-  }, [handleOpen]);
+    timeoutRef.current = setTimeout(() => {
+      setModalOpen(true);
+    }, msUntilWarning);
+  }, [handleLogout]);
 
+  // reset on user activity
   useEffect(() => {
     if (!isAuthenticated()) return;
+
     setDocumentTitle(location.pathname);
-    const events = ['mousemove', 'keydown', 'scroll', 'click'];
-    events.forEach(evt => window.addEventListener(evt, resetTimer));
+    const events: Array<keyof WindowEventMap> = [
+      'mousemove', 'keydown', 'scroll', 'click',
+    ];
+    events.forEach(e => window.addEventListener(e, scheduleWarning));
     return () => {
-      events.forEach(evt => window.removeEventListener(evt, resetTimer));
+      events.forEach(e => window.removeEventListener(e, scheduleWarning));
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [location.pathname, resetTimer]);
+  }, [location.pathname, scheduleWarning]);
 
-  useEffect(resetTimer, [resetTimer]);
+  // start the first schedule on mount
+  useEffect(() => {
+    scheduleWarning();
+  }, [scheduleWarning]);
+
+  // user clicked “Keep Working”
+  const handleStayLoggedIn = useCallback(async () => {
+    setModalOpen(false);
+
+    const token = localStorage.getItem('token')!;
+    const refreshToken = localStorage.getItem('refreshToken')!;
+
+    try {
+      const resp = await agent.UserLogins.refreshToken({
+        token,
+        refreshToken,
+      });
+      localStorage.setItem('token', resp.Token);
+      localStorage.setItem('refreshToken', resp.RefreshToken);
+    } catch {
+      return handleLogout();
+    }
+
+    scheduleWarning();
+  }, [handleLogout, scheduleWarning]);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {isAuthenticated() && (
-        <InactivityModal
-          open={isModalOpen}
-          countdown={MODAL_COUNTDOWN_S}
-          onStayLoggedIn={async () => {
-            handleClose();
-            const token = localStorage.getItem('token')!;
-            const refreshToken = localStorage.getItem('refreshToken')!;
-            const response = await agent.UserLogins.refreshToken({ token, refreshToken });
-            localStorage.setItem('token', response.Token);
-            localStorage.setItem('refreshToken', response.RefreshToken);
-            resetTimer();
-          }}
-          onLogout={handleLogout}
-        />
-      )}
+
+      <InactivityModal
+        open={modalOpen}
+        countdown={MODAL_COUNTDOWN_S}
+        onStayLoggedIn={handleStayLoggedIn}
+        onLogout={handleLogout}
+      />
+
       {useRoutes(routes)}
     </ThemeProvider>
   );
