@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-interface PopoverController<T> {
-  anchorRef: React.MutableRefObject<T | null>;
+export interface PopoverController<T> {
+  anchorRef: React.RefObject<T | null>;
   handleOpen: () => void;
   handleClose: () => void;
   handleToggle: () => void;
@@ -9,8 +9,8 @@ interface PopoverController<T> {
 }
 
 export function usePopover<T = HTMLElement>(): PopoverController<T> {
-  const anchorRef = React.useRef<T>(null);
-  const [open, setOpen] = React.useState<boolean>(false);
+  const anchorRef: React.RefObject<T | null> = React.useRef<T | null>(null);
+  const [open, setOpen] = React.useState(false);
 
   const handleOpen = React.useCallback(() => {
     setOpen(true);
@@ -21,8 +21,8 @@ export function usePopover<T = HTMLElement>(): PopoverController<T> {
   }, []);
 
   const handleToggle = React.useCallback(() => {
-    setOpen((prevState) => !prevState);
+    setOpen(o => !o);
   }, []);
 
-  return { anchorRef, handleClose, handleOpen, handleToggle, open };
+  return { anchorRef, open, handleOpen, handleClose, handleToggle };
 }
