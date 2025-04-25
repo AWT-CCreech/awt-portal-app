@@ -6,7 +6,7 @@ import {
 } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 
-export interface SharedDataGridProps<T extends GridValidRowModel>
+export interface CustomDataGridProps<T extends GridValidRowModel>
     extends Omit<DataGridProps<T>, 'rows' | 'columns'> {
     /** The rows to render */
     rows: T[];
@@ -29,7 +29,7 @@ export interface SharedDataGridProps<T extends GridValidRowModel>
 }
 
 export function SharedDataGrid<T extends GridValidRowModel>(
-    props: SharedDataGridProps<T>
+    props: CustomDataGridProps<T>
 ) {
     const {
         rows,
