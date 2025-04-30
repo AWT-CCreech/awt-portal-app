@@ -6,7 +6,7 @@ import { ItemCategories } from '../../models/Data/ItemCategories';
 import { Rep } from '../../models/Data/Rep';
 import { CamContact } from '../../models/CamContact';
 import { createDefaultSearchScansDto, SearchScansDto } from '../../models/ScanHistoryModels/SearchScansDto';
-import { createDefaultUpdateScanDto, UpdateScanDto } from '../../models/ScanHistoryModels/UpdateScansDto';
+import { createDefaultUpdateScanDto, UpdateScanDto } from '../../models/ScanHistoryModels/UpdateScanDto';
 import { CustomerPOSearchResult } from '../../models/CustomerPOSearch/CustomerPOSearchResult';
 import { DailyGoalDetail } from '../../models/DailyGoalsReport/DailyGoalDetail';
 import { DailyGoalsReport } from '../../models/DailyGoalsReport/DailyGoalsReport';
@@ -444,11 +444,11 @@ const ScanHistory = {
       });
   },
 
-  updateScans: async (updateDtos: any[]): Promise<any> => {
+  updateScans: async (updateDtos: UpdateScanDto[]): Promise<any> => {
     return requests.put('/ScanHistory/Update', updateDtos);
   },
 
-  copyScans: async (copyRequest: any): Promise<any> => {
+  copyScans: async (copyRequest: CopyScansDto): Promise<any> => {
     return requests.post('/ScanHistory/Copy', copyRequest);
   },
 
