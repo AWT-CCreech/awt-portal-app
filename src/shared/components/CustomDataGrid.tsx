@@ -1,18 +1,20 @@
 import * as React from 'react';
 import {
     DataGrid,
-    GridValidRowModel,
     DataGridProps,
+    GridValidRowModel,
+    GridColDef,
 } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 
 export interface CustomDataGridProps<T extends GridValidRowModel>
+    // inherit every DataGrid prop except we’ll override rows & columns
     extends Omit<DataGridProps<T>, 'rows' | 'columns'> {
-    /** The rows to render */
+    /** Rows to display */
     rows: T[];
     /** Column definitions */
-    columns: import('@mui/x-data-grid').GridColDef<T>[];
-    /** Height of the grid container (enables scrolling + sticky header) */
+    columns: GridColDef<T>[];
+    /** Container height (enables virtual scrolling + sticky header) */
     height?: string | number;
     /** Background color for all header elements */
     headerBgColor?: string;
@@ -28,7 +30,7 @@ export interface CustomDataGridProps<T extends GridValidRowModel>
     pageSizeOptions?: number[];
 }
 
-export function SharedDataGrid<T extends GridValidRowModel>(
+export function CustomDataGrid<T extends GridValidRowModel>(
     props: CustomDataGridProps<T>
 ) {
     const {
