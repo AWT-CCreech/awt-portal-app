@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, {
+    useState,
+    useCallback,
+    useEffect,
+    useContext,
+    useMemo
+} from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Snackbar from '@mui/material/Snackbar';
@@ -12,6 +18,7 @@ import Modules from '../../app/api/agent';
 import Fab from '@mui/material/Fab';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GetAppIcon from '@mui/icons-material/GetApp';
+import CopyAllOutlinedIcon from '@mui/icons-material/CopyAllOutlined';
 import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -22,16 +29,35 @@ import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import ExcelJS from 'exceljs';
 
-import { SearchScansDto, createDefaultSearchScansDto } from '../../models/ScanHistoryModels/SearchScansDto';
+import UserInfoContext from '../../shared/stores/userInfo';
+
+import {
+    SearchScansDto,
+    createDefaultSearchScansDto
+} from '../../models/ScanHistoryModels/SearchScansDto';
 import { ScanHistory } from '../../models/ScanHistory';
+import { UpdateScanDto } from '../../models/ScanHistoryModels/UpdateScanDto';
+import {
+    defaultCopyScansDto,
+    CopyScansDto
+} from '../../models/ScanHistoryModels/CopyScansDto';
 import { User } from '../../models/User';
 
 const ScanHistoryPage: React.FC = () => {
+    const { username } = useContext(UserInfoContext);
+
+    // ─── STATE ─────────────────────────────────────────────────────────────────
     const [scanUsers, setScanUsers] = useState<User[]>([]);
-    const [searchParams, setSearchParams] = useState<SearchScansDto>(createDefaultSearchScansDto());
+    const [searchParams, setSearchParams] = useState<SearchScansDto>(
+        createDefaultSearchScansDto()
+    );
     const [results, setResults] = useState<ScanHistory[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -40,28 +66,32 @@ const ScanHistoryPage: React.FC = () => {
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [confirmOpen, setConfirmOpen] = useState(false);
 
-    // Export state
     const [loadingExport, setLoadingExport] = useState(false);
     const [exportError, setExportError] = useState<string | null>(null);
     const [exportSuccess, setExportSuccess] = useState<string | null>(null);
 
+    const [copyOpen, setCopyOpen] = useState(false);
+    const [copyOrderType, setCopyOrderType] = useState<string>('');
+    const [copyOrderNum, setCopyOrderNum] = useState<string>('');
+    const [loadingCopy, setLoadingCopy] = useState(false);
+    const [copyError, setCopyError] = useState<string | null>(null);
+    const [copySuccess, setCopySuccess] = useState<string | null>(null);
+
+    // ─── FETCH USERS ─────────────────────────────────────────────────────────────
     useEffect(() => {
-        Modules.Users.getWarehouseUsers()
-            .then(users => setScanUsers(users))
-            .catch(err => console.error('Failed to load scan users', err));
+        Modules.Users.getWarehouseUsers().then(setScanUsers).catch(console.error);
     }, []);
 
+    // ─── FETCH SCANS ─────────────────────────────────────────────────────────────
     const fetchScans = useCallback(async () => {
         setLoading(true);
         setError(null);
-        setSuccess(null);
         try {
             const data = await Modules.ScanHistory.searchScans(searchParams);
             setResults(Array.isArray(data) ? data : []);
-            setSuccess('Scan search completed successfully.');
             setSelectedIds([]);
-        } catch (err: any) {
-            console.error('Error fetching scan history:', err);
+            setSuccess('Scan search completed.');
+        } catch {
             setResults([]);
             setError('Failed to fetch scan history.');
         } finally {
@@ -80,16 +110,34 @@ const ScanHistoryPage: React.FC = () => {
         );
     };
 
+    // ─── UPDATE ─────────────────────────────────────────────────────────────────
+    const handleUpdate = useCallback(
+        async (dto: UpdateScanDto) => {
+            setLoading(true);
+            setError(null);
+            try {
+                await Modules.ScanHistory.updateScans([dto]);
+                setSuccess(`Updated row ${dto.rowId}.`);
+                await fetchScans();
+            } catch {
+                setError(`Failed to update row ${dto.rowId}.`);
+            } finally {
+                setLoading(false);
+            }
+        },
+        [fetchScans]
+    );
+
+    // ─── DELETE ─────────────────────────────────────────────────────────────────
     const handleDeleteClick = () => {
         if (selectedIds.length) setConfirmOpen(true);
     };
-
     const handleConfirmDelete = async () => {
         setConfirmOpen(false);
         setLoading(true);
         try {
             await Modules.ScanHistory.deleteScans(selectedIds);
-            setSuccess(`Deleted ${selectedIds.length} scan${selectedIds.length > 1 ? 's' : ''}.`);
+            setSuccess(`Deleted ${selectedIds.length} scan(s).`);
             await fetchScans();
         } catch {
             setError('Failed to delete scans.');
@@ -98,15 +146,13 @@ const ScanHistoryPage: React.FC = () => {
         }
     };
 
+    // ─── EXPORT ─────────────────────────────────────────────────────────────────
     const handleExport = useCallback(async () => {
         setLoadingExport(true);
         setExportError(null);
-        setExportSuccess(null);
-
         try {
-            const workbook = new ExcelJS.Workbook();
-            const sheet = workbook.addWorksheet('ScanHistory');
-
+            const wb = new ExcelJS.Workbook();
+            const sheet = wb.addWorksheet('ScanHistory');
             sheet.columns = [
                 { header: 'Order Type', key: 'orderType', width: 15 },
                 { header: 'Order No', key: 'orderNo', width: 15 },
@@ -115,19 +161,23 @@ const ScanHistoryPage: React.FC = () => {
                 { header: 'Part No', key: 'partNo', width: 20 },
                 { header: 'Serial No', key: 'serialNo', width: 20 },
                 { header: 'Serial No B', key: 'serialNoB', width: 20 },
-                { header: 'Heci Code', key: 'heciCode', width: 20 },
+                { header: 'Heci Code', key: 'heciCode', width: 20 }
             ];
-
             results
                 .filter(r => selectedIds.includes(r.rowId))
-                .forEach(r => {
+                .forEach(r =>
                     sheet.addRow({
                         orderType: r.orderType,
                         orderNo:
-                            r.orderType === 'SO' ? r.soNo
-                                : r.orderType === 'PO' ? r.poNo
-                                    : r.orderType === 'RMA' ? r.rmano
-                                        : r.orderType === 'RTV/C' ? (r.rtvRmaNo ?? r.rtvid) : '',
+                            r.orderType === 'SO'
+                                ? r.soNo
+                                : r.orderType === 'PO'
+                                    ? r.poNo
+                                    : r.orderType === 'RMA'
+                                        ? r.rmano
+                                        : r.orderType === 'RTV/C'
+                                            ? r.rtvRmaNo ?? r.rtvid
+                                            : '',
                         userName: r.userName,
                         scanDate: r.scanDate
                             ? new Date(r.scanDate).toLocaleDateString()
@@ -135,65 +185,95 @@ const ScanHistoryPage: React.FC = () => {
                         partNo: r.partNo,
                         serialNo: r.serialNo,
                         serialNoB: r.serialNoB ?? '',
-                        heciCode: r.heciCode ?? '',
-                    });
-                });
-
+                        heciCode: r.heciCode ?? ''
+                    })
+                );
             sheet.getRow(1).eachCell(cell => {
                 cell.font = { bold: true };
                 cell.fill = {
                     type: 'pattern',
                     pattern: 'solid',
-                    fgColor: { argb: 'FFD3D3D3' },
-                };
-                cell.border = {
-                    top: { style: 'thin' },
-                    left: { style: 'thin' },
-                    bottom: { style: 'thin' },
-                    right: { style: 'thin' },
+                    fgColor: { argb: 'FFD3D3D3' }
                 };
             });
-
-            const buffer = await workbook.xlsx.writeBuffer();
-            const blob = new Blob([buffer], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            const buf = await wb.xlsx.writeBuffer();
+            const blob = new Blob([buf], {
+                type:
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             });
-            const url = window.URL.createObjectURL(blob);
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `ScanHistory_${new Date().toISOString().split('T')[0]}.xlsx`;
+            a.download = `ScanHistory_${new Date()
+                .toISOString()
+                .slice(0, 10)}.xlsx`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
+            URL.revokeObjectURL(url);
 
-            setExportSuccess('Excel file exported successfully!');
-        } catch (err) {
-            console.error('Export error', err);
-            setExportError('Failed to export to Excel.');
+            setExportSuccess('Excel exported!');
+        } catch {
+            setExportError('Failed to export.');
         } finally {
             setLoadingExport(false);
         }
     }, [results, selectedIds]);
 
-    const grouped = selectedIds
-        .map(id => results.find(r => r.rowId === id))
-        .filter((r): r is ScanHistory => Boolean(r))
-        .reduce<Record<string, ScanHistory[]>>((acc, rec) => {
-            const key = rec.orderType || 'Unknown';
-            (acc[key] = acc[key] || []).push(rec);
-            return acc;
-        }, {});
-
-    const computeOrderNo = (r: ScanHistory) => {
-        switch (r.orderType) {
-            case 'SO': return r.soNo ?? '';
-            case 'PO': return r.poNo ?? '';
-            case 'RMA': return r.rmano ?? '';
-            case 'RTV/C': return r.rtvRmaNo ?? r.rtvid?.toString() ?? '';
-            default: return '';
+    // ─── COPY ───────────────────────────────────────────────────────────────────
+    const handleCopyClick = () => setCopyOpen(true);
+    const handleConfirmCopy = async () => {
+        setLoadingCopy(true);
+        setCopyError(null);
+        try {
+            const payload: CopyScansDto = {
+                ...defaultCopyScansDto,
+                selectedIDs: selectedIds,
+                toOrderType: copyOrderType,
+                toOrderNum: copyOrderNum,
+                requestedBy: username
+            };
+            await Modules.ScanHistory.copyScans(payload);
+            setCopySuccess(
+                `Copied ${selectedIds.length} scan(s) → ${copyOrderType} #${copyOrderNum}`
+            );
+            setCopyOpen(false);
+            setCopyOrderType('');
+            setCopyOrderNum('');
+            await fetchScans();
+        } catch {
+            setCopyError('Failed to copy scans.');
+        } finally {
+            setLoadingCopy(false);
         }
     };
+
+    // ─── GROUP FOR DELETE MODAL ──────────────────────────────────────────────────
+    const grouped = useMemo(() => {
+        return results
+            .filter(r => selectedIds.includes(r.rowId))
+            .reduce<Record<string, ScanHistory[]>>((acc, r) => {
+                const key = r.orderType || 'Unknown';
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(r);
+                return acc;
+            }, {});
+    }, [results, selectedIds]);
+
+    function computeOrderNo(r: ScanHistory) {
+        switch (r.orderType) {
+            case 'SO':
+                return r.soNo ?? '';
+            case 'PO':
+                return r.poNo ?? '';
+            case 'RMA':
+                return r.rmano ?? '';
+            case 'RTV/C':
+                return (r.rtvRmaNo ?? r.rtvid)?.toString() ?? '';
+            default:
+                return '';
+        }
+    }
 
     return (
         <div>
@@ -213,7 +293,6 @@ const ScanHistoryPage: React.FC = () => {
                             loading={loading}
                         />
                     </Grid2>
-
                     <Grid2 size={{ xs: 12, sm: 12, md: 12 }}>
                         {searched && results.length > 0 ? (
                             <SearchResults
@@ -221,9 +300,14 @@ const ScanHistoryPage: React.FC = () => {
                                 selectedIds={selectedIds}
                                 onToggleSelect={toggleSelect}
                                 onSelectAll={checked =>
-                                    setSelectedIds(checked ? results.map(r => r.rowId) : [])
+                                    setSelectedIds(
+                                        checked ? results.map(r => r.rowId) : []
+                                    )
                                 }
                                 containerHeight="60vh"
+                                orderTypeOptions={['SO', 'PO', 'RMA', 'RTV/C']}
+                                scanUsers={scanUsers}
+                                onUpdate={handleUpdate}
                             />
                         ) : searched && !loading ? (
                             <Typography variant="h6" align="center" mt={2}>
@@ -237,16 +321,31 @@ const ScanHistoryPage: React.FC = () => {
             {selectedIds.length > 0 && (
                 <>
                     <Fab
+                        color="secondary"
+                        aria-label="copy"
+                        onClick={handleCopyClick}
+                        disabled={loadingCopy}
+                        sx={{ position: 'fixed', bottom: 24, right: 168 }}
+                    >
+                        {loadingCopy ? (
+                            <CircularProgress size={24} color="inherit" />
+                        ) : (
+                            <CopyAllOutlinedIcon />
+                        )}
+                    </Fab>
+
+                    <Fab
                         color="primary"
                         aria-label="export"
                         onClick={handleExport}
                         disabled={loadingExport}
                         sx={{ position: 'fixed', bottom: 24, right: 96 }}
                     >
-                        {loadingExport
-                            ? <CircularProgress size={24} color="inherit" />
-                            : <GetAppIcon />
-                        }
+                        {loadingExport ? (
+                            <CircularProgress size={24} color="inherit" />
+                        ) : (
+                            <GetAppIcon />
+                        )}
                     </Fab>
 
                     <Fab
@@ -260,12 +359,14 @@ const ScanHistoryPage: React.FC = () => {
                 </>
             )}
 
+            {/* Delete Confirmation */}
             <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
                 <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogContent dividers>
                     <Typography gutterBottom>
-                        Are you sure you want to delete these scans?
+                        Please double-check the scans you’re about to delete:
                     </Typography>
+
                     {Object.entries(grouped).map(([orderType, items]) => (
                         <Box
                             key={orderType}
@@ -302,46 +403,69 @@ const ScanHistoryPage: React.FC = () => {
                 </DialogActions>
             </Dialog>
 
-            <Snackbar
-                open={Boolean(success)}
-                autoHideDuration={3000}
-                onClose={() => setSuccess(null)}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-                <Alert onClose={() => setSuccess(null)} severity="success" sx={{ width: '100%' }}>
-                    {success}
-                </Alert>
-            </Snackbar>
-            <Snackbar
-                open={Boolean(error)}
-                autoHideDuration={3000}
-                onClose={() => setError(null)}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-                <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
-                    {error}
-                </Alert>
-            </Snackbar>
-            <Snackbar
-                open={Boolean(exportSuccess)}
-                autoHideDuration={3000}
-                onClose={() => setExportSuccess(null)}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-                <Alert onClose={() => setExportSuccess(null)} severity="success" sx={{ width: '100%' }}>
-                    {exportSuccess}
-                </Alert>
-            </Snackbar>
-            <Snackbar
-                open={Boolean(exportError)}
-                autoHideDuration={3000}
-                onClose={() => setExportError(null)}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-                <Alert onClose={() => setExportError(null)} severity="error" sx={{ width: '100%' }}>
-                    {exportError}
-                </Alert>
-            </Snackbar>
+            {/* Copy Dialog */}
+            <Dialog open={copyOpen} onClose={() => setCopyOpen(false)}>
+                <DialogTitle>Copy Scans To…</DialogTitle>
+                <DialogContent sx={{ display: 'flex', gap: 2, pt: 1 }}>
+                    <FormControl fullWidth>
+                        <InputLabel>Order Type</InputLabel>
+                        <Select
+                            label="Order Type"
+                            value={copyOrderType}
+                            onChange={(e: SelectChangeEvent) =>
+                                setCopyOrderType(e.target.value)
+                            }
+                        >
+                            {['SO', 'PO', 'RMA', 'RTV/C'].map(opt => (
+                                <MenuItem key={opt} value={opt}>
+                                    {opt}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <TextField
+                        fullWidth
+                        label="Order No"
+                        value={copyOrderNum}
+                        onChange={e => setCopyOrderNum(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setCopyOpen(false)}>Cancel</Button>
+                    <Button
+                        onClick={handleConfirmCopy}
+                        disabled={!copyOrderType || !copyOrderNum || loadingCopy}
+                    >
+                        Copy
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Snackbars */}
+            {[
+                { msg: success, onClose: () => setSuccess(null), sev: 'success' },
+                { msg: error, onClose: () => setError(null), sev: 'error' },
+                {
+                    msg: exportSuccess,
+                    onClose: () => setExportSuccess(null),
+                    sev: 'success'
+                },
+                { msg: exportError, onClose: () => setExportError(null), sev: 'error' },
+                { msg: copySuccess, onClose: () => setCopySuccess(null), sev: 'success' },
+                { msg: copyError, onClose: () => setCopyError(null), sev: 'error' }
+            ].map(({ msg, onClose, sev }, i) => (
+                <Snackbar
+                    key={i}
+                    open={!!msg}
+                    autoHideDuration={3000}
+                    onClose={onClose}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                >
+                    <Alert onClose={onClose} severity={sev as any} sx={{ width: '100%' }}>
+                        {msg}
+                    </Alert>
+                </Snackbar>
+            ))}
         </div>
     );
 };
