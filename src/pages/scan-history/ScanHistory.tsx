@@ -38,16 +38,10 @@ import ExcelJS from 'exceljs';
 
 import UserInfoContext from '../../shared/stores/userInfo';
 
-import {
-    SearchScansDto,
-    createDefaultSearchScansDto
-} from '../../models/ScanHistoryModels/SearchScansDto';
+import { SearchScansDto, createDefaultSearchScansDto } from '../../models/ScanHistoryModels/SearchScansDto';
 import { ScanHistory } from '../../models/ScanHistory';
 import { UpdateScanDto } from '../../models/ScanHistoryModels/UpdateScanDto';
-import {
-    defaultCopyScansDto,
-    CopyScansDto
-} from '../../models/ScanHistoryModels/CopyScansDto';
+import { defaultCopyScansDto, CopyScansDto } from '../../models/ScanHistoryModels/CopyScansDto';
 import { User } from '../../models/User';
 
 const ScanHistoryPage: React.FC = () => {
