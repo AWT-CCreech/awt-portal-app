@@ -32,29 +32,42 @@ const ScanHistoryPage: React.FC = () => {
     const { username } = useContext(UserInfoContext);
 
     // ─── State ────────────────────────────────────────────────────────────────────
+    // Data & params
     const [scanUsers, setScanUsers] = useState<User[]>([]);
     const [searchParams, setSearchParams] = useState<SearchScansDto>(createDefaultSearchScansDto());
     const [results, setResults] = useState<ScanHistory[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [searched, setSearched] = useState(false);
 
+    // Selection
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
+    // Loading states
+    const [loading, setLoading] = useState(false);
+    const [loadingExport, setLoadingExport] = useState(false);
+    const [loadingCopy, setLoadingCopy] = useState(false);
+
+    // “Searched” flag
+    const [searched, setSearched] = useState(false);
+
+    // Success & error messages
     const [successMsg, setSuccessMsg] = useState<string | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-    const [loadingExport, setLoadingExport] = useState(false);
+    // Export feedback
     const [exportSuccess, setExportSuccess] = useState<string | null>(null);
     const [exportError, setExportError] = useState<string | null>(null);
 
-    const [confirmOpen, setConfirmOpen] = useState(false);
+    // Delete dialog
+    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
+    // Copy dialog & its fields
     const [copyOpen, setCopyOpen] = useState(false);
     const [copyOrderType, setCopyOrderType] = useState<string>('');
     const [copyOrderNum, setCopyOrderNum] = useState<string>('');
-    const [loadingCopy, setLoadingCopy] = useState(false);
     const [copySuccess, setCopySuccess] = useState<string | null>(null);
     const [copyError, setCopyError] = useState<string | null>(null);
+
+    // Derived
+    const dialogsOpen = confirmDeleteOpen || copyOpen;
 
     // ─── Helpers ──────────────────────────────────────────────────────────────────
     const computeOrderNo = (r: ScanHistory) => {
@@ -117,10 +130,10 @@ const ScanHistoryPage: React.FC = () => {
 
     // ─── Delete ───────────────────────────────────────────────────────────────────
     const handleDeleteClick = () => {
-        if (selectedIds.length) setConfirmOpen(true);
+        if (selectedIds.length) setConfirmDeleteOpen(true);
     };
     const handleConfirmDelete = async () => {
-        setConfirmOpen(false);
+        setConfirmDeleteOpen(false);
         setLoading(true);
         try {
             await Modules.ScanHistory.deleteScans(selectedIds);
@@ -266,7 +279,7 @@ const ScanHistoryPage: React.FC = () => {
                 </Grid2>
             </Container>
 
-            {selectedIds.length > 0 && (
+            {selectedIds.length > 0 && !dialogsOpen && (
                 <Box
                     sx={{
                         position: 'fixed',
@@ -298,9 +311,10 @@ const ScanHistoryPage: React.FC = () => {
                 </Box>
             )}
 
+
             <DeleteConfirmationDialog
-                open={confirmOpen}
-                onClose={() => setConfirmOpen(false)}
+                open={confirmDeleteOpen}
+                onClose={() => setConfirmDeleteOpen(false)}
                 onConfirm={handleConfirmDelete}
                 items={results.filter(r => selectedIds.includes(r.rowId))}
                 computeOrderNo={computeOrderNo}
