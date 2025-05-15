@@ -71,6 +71,17 @@ const ScanHistoryPage: React.FC = () => {
     const [copyError, setCopyError] = useState<string | null>(null);
     const [copySuccess, setCopySuccess] = useState<string | null>(null);
 
+    // ─── HELPERS ────────────────────────────────────────────────────────────────
+    function computeOrderNo(r: ScanHistory) {
+        switch (r.orderType) {
+            case 'SO': return r.soNo ?? '';
+            case 'PO': return r.poNo ?? '';
+            case 'RMA': return r.rmano ?? '';
+            case 'RTV/C': return (r.rtvRmaNo ?? r.rtvid)?.toString() ?? '';
+            default: return '';
+        }
+    }
+
     // ─── FETCH USERS ─────────────────────────────────────────────────────────────
     useEffect(() => {
         Modules.Users.getWarehouseUsers().then(setScanUsers).catch(console.error);
@@ -162,20 +173,9 @@ const ScanHistoryPage: React.FC = () => {
                 .forEach(r =>
                     sheet.addRow({
                         orderType: r.orderType,
-                        orderNo:
-                            r.orderType === 'SO'
-                                ? r.soNo
-                                : r.orderType === 'PO'
-                                    ? r.poNo
-                                    : r.orderType === 'RMA'
-                                        ? r.rmano
-                                        : r.orderType === 'RTV/C'
-                                            ? r.rtvRmaNo ?? r.rtvid
-                                            : '',
+                        orderNo: computeOrderNo(r),
                         userName: r.userName,
-                        scanDate: r.scanDate
-                            ? new Date(r.scanDate).toLocaleDateString()
-                            : '',
+                        scanDate: r.scanDate ? new Date(r.scanDate).toLocaleDateString() : '',
                         partNo: r.partNo,
                         serialNo: r.serialNo,
                         serialNoB: r.serialNoB ?? '',
@@ -192,20 +192,16 @@ const ScanHistoryPage: React.FC = () => {
             });
             const buf = await wb.xlsx.writeBuffer();
             const blob = new Blob([buf], {
-                type:
-                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `ScanHistory_${new Date()
-                .toISOString()
-                .slice(0, 10)}.xlsx`;
+            a.download = `ScanHistory_${new Date().toISOString().slice(0, 10)}.xlsx`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-
             setExportSuccess('Excel exported!');
         } catch {
             setExportError('Failed to export.');
@@ -229,7 +225,7 @@ const ScanHistoryPage: React.FC = () => {
             };
             await Modules.ScanHistory.copyScans(payload);
             setCopySuccess(
-                `Copied ${selectedIds.length} scan(s) → ${copyOrderType} #${copyOrderNum}`
+                `Copied ${selectedIds.length} scan(s) → ${copyOrderType}#${copyOrderNum}`
             );
             setCopyOpen(false);
             setCopyOrderType('');
@@ -242,6 +238,14 @@ const ScanHistoryPage: React.FC = () => {
         }
     };
 
+    // Memoize first selected scan for dialog header
+    const sourceScan = useMemo(
+        () => results.find(r => selectedIds.includes(r.rowId)),
+        [results, selectedIds]
+    );
+    const sourceOrderType = sourceScan?.orderType ?? '';
+    const sourceOrderNum = sourceScan ? computeOrderNo(sourceScan) : '';
+
     // ─── GROUP FOR DELETE MODAL ──────────────────────────────────────────────────
     const grouped = useMemo(() => {
         return results
@@ -253,21 +257,6 @@ const ScanHistoryPage: React.FC = () => {
                 return acc;
             }, {});
     }, [results, selectedIds]);
-
-    function computeOrderNo(r: ScanHistory) {
-        switch (r.orderType) {
-            case 'SO':
-                return r.soNo ?? '';
-            case 'PO':
-                return r.poNo ?? '';
-            case 'RMA':
-                return r.rmano ?? '';
-            case 'RTV/C':
-                return (r.rtvRmaNo ?? r.rtvid)?.toString() ?? '';
-            default:
-                return '';
-        }
-    }
 
     return (
         <div>
@@ -313,13 +302,40 @@ const ScanHistoryPage: React.FC = () => {
             </Container>
 
             {selectedIds.length > 0 && (
-                <>
+                <Box
+                    sx={{
+                        position: 'fixed',
+                        bottom: 24,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        zIndex: theme => theme.zIndex.tooltip + 1,
+                    }}
+                >
+                    <Fab color="error" aria-label="delete" onClick={handleDeleteClick}>
+                        <DeleteIcon />
+                    </Fab>
+                    <Fab
+                        color="primary"
+                        size="large"
+                        aria-label="export"
+                        onClick={handleExport}
+                        disabled={loadingExport}
+                        sx={{ width: 72, height: 72 }}
+                    >
+                        {loadingExport ? (
+                            <CircularProgress size={32} color="inherit" />
+                        ) : (
+                            <GetAppIcon fontSize="large" />
+                        )}
+                    </Fab>
                     <Fab
                         color="secondary"
                         aria-label="copy"
                         onClick={handleCopyClick}
                         disabled={loadingCopy}
-                        sx={{ position: 'fixed', bottom: 24, right: 168 }}
                     >
                         {loadingCopy ? (
                             <CircularProgress size={24} color="inherit" />
@@ -327,30 +343,7 @@ const ScanHistoryPage: React.FC = () => {
                             <CopyAllOutlinedIcon />
                         )}
                     </Fab>
-
-                    <Fab
-                        color="primary"
-                        aria-label="export"
-                        onClick={handleExport}
-                        disabled={loadingExport}
-                        sx={{ position: 'fixed', bottom: 24, right: 96 }}
-                    >
-                        {loadingExport ? (
-                            <CircularProgress size={24} color="inherit" />
-                        ) : (
-                            <GetAppIcon />
-                        )}
-                    </Fab>
-
-                    <Fab
-                        color="error"
-                        aria-label="delete"
-                        onClick={handleDeleteClick}
-                        sx={{ position: 'fixed', bottom: 24, right: 24 }}
-                    >
-                        <DeleteIcon />
-                    </Fab>
-                </>
+                </Box>
             )}
 
             {/* Delete Confirmation */}
@@ -360,7 +353,6 @@ const ScanHistoryPage: React.FC = () => {
                     <Typography gutterBottom>
                         Please double-check the scans you’re about to delete:
                     </Typography>
-
                     {Object.entries(grouped).map(([orderType, items]) => (
                         <Box
                             key={orderType}
@@ -399,8 +391,19 @@ const ScanHistoryPage: React.FC = () => {
 
             {/* Copy Dialog */}
             <Dialog open={copyOpen} onClose={() => setCopyOpen(false)}>
-                <DialogTitle>Copy Scans To…</DialogTitle>
-                <DialogContent sx={{ display: 'flex', gap: 2, pt: 1 }}>
+                <DialogTitle>Duplicate Scans</DialogTitle>
+                <DialogContent
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                        pt: 2,
+                        minWidth: 360
+                    }}
+                >
+                    <Typography variant="subtitle1">
+                        Copying scans from <strong>{sourceOrderType}#{sourceOrderNum}</strong> to:
+                    </Typography>
                     <FormControl fullWidth>
                         <InputLabel>Order Type</InputLabel>
                         <Select
@@ -430,7 +433,7 @@ const ScanHistoryPage: React.FC = () => {
                         onClick={handleConfirmCopy}
                         disabled={!copyOrderType || !copyOrderNum || loadingCopy}
                     >
-                        Copy
+                        {loadingCopy ? <CircularProgress size={24} /> : 'Copy'}
                     </Button>
                 </DialogActions>
             </Dialog>
