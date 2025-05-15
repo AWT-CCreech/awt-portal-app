@@ -30,6 +30,7 @@ const Home: React.FC = () => {
         {btn(ROUTE_PATHS.PURCHASING.PO_DELIVERY_LOG, 'PO Delivery Log')}
         {btn(ROUTE_PATHS.SALES.OPEN_SO_REPORT, 'Open SO Report')}
         {btn(ROUTE_PATHS.SALES.SALES_ORDER_WB, 'SO Workbench')}
+        {btn(ROUTE_PATHS.OPERATIONS.SCAN_HISTORY, 'Scan History')}
         {btn(ROUTE_PATHS.USER_LIST, 'User List')}
       </Grid2>
     </Container>
