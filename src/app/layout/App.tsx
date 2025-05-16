@@ -13,6 +13,8 @@ import theme from '../../shared/themes/theme';
 import UserInfoContext from '../../shared/stores/userInfo';
 import InactivityModal from '../../shared/components/InactivityModal';
 import agent from '../../app/api/agent';
+import { TokenRefreshRequest } from '../../models/Auth/TokenRefreshRequest';
+import { TokenRefreshResponse } from '../../models/Auth/TokenRefreshResponse';
 import { isAuthenticated, handleLogOut } from '../../shared/utils/authentication';
 import { routes } from '../../routes';
 import setDocumentTitle from '../../shared/utils/setDocumentTitle';
@@ -93,17 +95,20 @@ const App: React.FC = () => {
   // user clicked “Keep Working”
   const handleStayLoggedIn = useCallback(async () => {
     setModalOpen(false);
+    const token = localStorage.getItem('token');
+    const refreshToken = localStorage.getItem('refreshToken');
 
-    const token = localStorage.getItem('token')!;
-    const refreshToken = localStorage.getItem('refreshToken')!;
+    if (!token || !refreshToken) {
+      return handleLogout();
+    }
 
     try {
-      const resp = await agent.UserLogins.refreshToken({
-        token,
-        refreshToken,
-      });
-      localStorage.setItem('token', resp.Token);
-      localStorage.setItem('refreshToken', resp.RefreshToken);
+      const { token: newJwt, refreshToken: newRt } =
+        await agent.UserLogins.refreshToken({ token, refreshToken });
+
+      console.log('Refreshed JWT:', newJwt);
+      localStorage.setItem('token', newJwt);
+      localStorage.setItem('refreshToken', newRt);
     } catch {
       return handleLogout();
     }

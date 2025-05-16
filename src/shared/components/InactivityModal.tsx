@@ -6,13 +6,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-
-export interface InactivityModalProps {
-  open: boolean;
-  countdown: number;
-  onStayLoggedIn: () => void;
-  onLogout: () => void;
-}
+import { InactivityModalProps } from '../../models/Security/InactivityModalProps';
 
 const InactivityModal: React.FC<InactivityModalProps> = ({
   open,

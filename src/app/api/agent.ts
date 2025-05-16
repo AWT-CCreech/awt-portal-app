@@ -1,5 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
-import LoginInfo from '../../models/Login/LoginInfo';
+import { TokenRefreshRequest } from '../../models/Auth/TokenRefreshRequest';
+import { TokenRefreshResponse } from '../../models/Auth/TokenRefreshResponse';
+import { LoginRequest } from '../../models/Auth/LoginRequest';
+import { LoginResponse } from '../../models/Auth/LoginResponse';
 import { AccountNumbers } from '../../models/Data/AccountNumbers';
 import { ActiveSalesTeams } from '../../models/Data/ActiveSalesTeams';
 import { ItemCategories } from '../../models/Data/ItemCategories';
@@ -56,56 +59,61 @@ const responseBody = (response: AxiosResponse) => response.data;
  * A collection of wrapper methods for GET, POST, PUT, and DELETE requests.
  */
 const requests = {
-  get: async (url: string) => {
+  get: async <T>(url: string): Promise<T> => {
     console.log(`GET Request to: ${url}`);
-    return axios.get(url)
+    return axios.get<T>(url)
       .then(responseBody)
-      .then((data) => {
+      .then(data => {
         console.log(`GET Response from: ${url}`, data);
         return data;
       });
   },
-  getWithParams: async (url: string, params: object) => {
+
+  getWithParams: async <T>(url: string, params: object): Promise<T> => {
     console.log(`GET Request to: ${url} with params:`, params);
-    return axios.get(url, { params })
+    return axios.get<T>(url, { params })
       .then(responseBody)
-      .then((data) => {
+      .then(data => {
         console.log(`GET Response from: ${url}`, data);
         return data;
       });
   },
-  post: async (url: string, body: object) => {
+
+  post: async <T>(url: string, body: object): Promise<T> => {
     console.log(`POST Request to: ${url} with body:`, body);
-    return axios.post(url, body)
+    return axios.post<T>(url, body)
       .then(responseBody)
-      .then((data) => {
+      .then(data => {
         console.log(`POST Response from: ${url}`, data);
         return data;
       });
   },
-  postNoBody: async (url: string) => {
+
+  postNoBody: async <T>(url: string): Promise<T> => {
     console.log(`POST Request to: ${url} with no body`);
-    return axios.post(url)
+    return axios.post<T>(url)
       .then(responseBody)
-      .then((data) => {
+      .then(data => {
         console.log(`POST Response from: ${url}`, data);
         return data;
       });
   },
-  put: async (url: string, body: object) => {
+
+  put: async <T>(url: string, body: object): Promise<T> => {
     console.log(`PUT Request to: ${url} with body:`, body);
-    return axios.put(url, body)
+    return axios.put<T>(url, body)
       .then(responseBody)
-      .then((data) => {
+      .then(data => {
         console.log(`PUT Response from: ${url}`, data);
         return data;
       });
   },
-  delete: async (url: string) => {
+
+  delete: async <T>(url: string): Promise<T> => {
     console.log(`DELETE Request to: ${url}`);
-    return axios.delete(url)
+    return axios.delete<T>(url)
       .then(responseBody)
-      .then((data) => {
+      .then(data => {
         console.log(`DELETE Response from: ${url}`, data);
         return data;
       });
@@ -130,16 +138,31 @@ axios.interceptors.response.use(
     const original = error.config;
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true;
-      const token = localStorage.getItem('token');
-      const refreshToken = localStorage.getItem('refreshToken');
+      const rawToken = localStorage.getItem('token');
+      const rawRefreshToken = localStorage.getItem('refreshToken');
+
       try {
-        const { Token: newToken, RefreshToken: newRefresh } = await requests.post('/Token/RefreshToken', { token, refreshToken });
+        // guarantee these are strings, not null
+        if (!rawToken || !rawRefreshToken) {
+          // bail out (e.g. force logout) if either is missing
+          Modules.UserLogins.logout(rawRefreshToken!);
+          localStorage.clear();
+          window.location.href = '/login';
+          return;
+        }
+
+        const { token: newToken, refreshToken: newRefresh } =
+          await UserLogins.refreshToken({
+            token: rawToken,
+            refreshToken: rawRefreshToken
+          });
+
         localStorage.setItem('token', newToken);
         localStorage.setItem('refreshToken', newRefresh);
         original.headers.Authorization = `Bearer ${newToken}`;
         return axios(original);
       } catch {
-        Modules.UserLogins.logout(refreshToken!);
+        Modules.UserLogins.logout(rawRefreshToken!);
         localStorage.clear();
         window.location.href = '/login';
       }
@@ -252,7 +275,10 @@ const EventSearchPage = {
       toDate: params.toDate ? params.toDate.toISOString().split('T')[0] : null,
     };
     try {
-      const response = await requests.getWithParams('/EventSearch/EquipmentRequestSearch', formattedParams);
+      const response = await requests.getWithParams<EquipReqSearchResult[]>(
+        '/EventSearch/EquipmentRequestSearch',
+        formattedParams
+      );
       return response;
     } catch (error) {
       console.error('Error fetching Event Page data', error);
@@ -505,9 +531,14 @@ const UserList = {
  * UserLogins: Endpoints for user authentication.
  */
 const UserLogins = {
-  authenticate: (loginInfo: LoginInfo) => requests.post('/Login', loginInfo),
-  refreshToken: (payload: { token: string; refreshToken: string }) => requests.post('/Token/RefreshToken', payload),
-  logout: (refreshToken: string) => requests.post('/Token/Logout', { refreshToken }),
+  authenticate: (loginRequest: LoginRequest): Promise<LoginResponse> =>
+    requests.post<LoginResponse>('/Login', loginRequest),
+
+  refreshToken: (payload: TokenRefreshRequest): Promise<TokenRefreshResponse> =>
+    requests.post<TokenRefreshResponse>('/Token/RefreshToken', payload),
+
+  logout: (refreshToken: string): Promise<void> =>
+    requests.post<void>('/Token/Logout', { refreshToken }),
 };
 
 /**

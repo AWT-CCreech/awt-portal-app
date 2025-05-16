@@ -1,23 +1,30 @@
-import React, { useContext, FormEvent, useState, useEffect, useCallback } from 'react';
+import React, { FormEvent, useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
-import {
-  Box, Button, CssBaseline, FormControl, Alert, TextField,
-  Typography, CircularProgress, IconButton, InputAdornment,
-  Stack, Card
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import FormControl from '@mui/material/FormControl';
+import Alert from '@mui/material/Alert';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Stack from '@mui/material/Stack';
+import Card from '@mui/material/Card';
 import { Visibility, VisibilityOff, Login as LoginIcon } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
 import axios from 'axios';
 
 import UserInfo from '../../shared/stores/userInfo';
 import AppState from '../../shared/stores/app';
-import LoginInfo from '../../models/Login/LoginInfo';
+import { LoginRequest } from '../../models/Auth/LoginRequest';
 import agent from '../../app/api/agent';
 import '../../shared/styles/login/LoginPage.scss';
 
 const LoginPage: React.FC = observer(() => {
   const userInfo = useContext(UserInfo);
-  const { setUserName, setPassWord } = userInfo;
+  const { setUserName } = userInfo;
   const appState = useContext(AppState);
   const { pageLoading, setPageLoading } = appState;
 
@@ -30,14 +37,16 @@ const LoginPage: React.FC = observer(() => {
   const handleAutoLogout = useCallback(() => {
     localStorage.clear();
     setUserName('');
-    setPassWord('');
     navigate('/login');
-  }, [setUserName, setPassWord, navigate]);
+  }, [setUserName, navigate]);
 
   useEffect(() => {
     const expiresAt = localStorage.getItem('expiresAt');
     if (expiresAt) {
-      const timeout = setTimeout(handleAutoLogout, parseInt(expiresAt, 10) - Date.now());
+      const timeout = setTimeout(
+        handleAutoLogout,
+        parseInt(expiresAt, 10) - Date.now()
+      );
       return () => clearTimeout(timeout);
     }
   }, [pageLoading, handleAutoLogout]);
@@ -47,37 +56,26 @@ const LoginPage: React.FC = observer(() => {
     setPageLoading(true);
     setErrorMessage('');
 
-    const payload: LoginInfo = {
-      userid: '',
+    const payload: LoginRequest = {
       username: localUsername,
       password: localPassword,
-      isPasswordEncrypted: false,
-      token: '',
-      refreshToken: ''
+      isPasswordEncrypted: false
     };
 
     try {
       const response = await agent.UserLogins.authenticate(payload);
+      const { token, refreshToken, username, userid } = response;
+      const expMs = JSON.parse(atob(token.split('.')[1])).exp * 1000;
 
-      if (response.token) {
-        const { token, refreshToken, username, userid } = response;
-        const expMs = JSON.parse(atob(token.split('.')[1])).exp * 1000;
+      localStorage.setItem('token', token);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('username', username);
+      localStorage.setItem('userid', userid);
+      localStorage.setItem('expiresAt', expMs.toString());
 
-        localStorage.setItem('token', token);
-        localStorage.setItem('refreshToken', refreshToken);
-        localStorage.setItem('username', username);
-        localStorage.setItem('password', response.password);
-        localStorage.setItem('userid', userid);
-        localStorage.setItem('expiresAt', expMs.toString());
-
-        setUserName(username);
-        setPassWord(response.password);
-
-        navigate('/');
-      } else {
-        setErrorMessage('Incorrect username or password');
-      }
-    } catch (err) {
+      setUserName(username);
+      navigate('/');
+    } catch (err: any) {
       if (axios.isAxiosError(err) && err.response) {
         setErrorMessage(
           err.response.status === 401
@@ -97,8 +95,12 @@ const LoginPage: React.FC = observer(() => {
       <CssBaseline />
       <Stack className="login-container">
         <Card className="login-card">
-          <Box className="logo-box"><img src="logo.png" alt="Logo" /></Box>
-          <Typography variant="h4" className="login-title">AWT Portal</Typography>
+          <Box className="logo-box">
+            <img src="logo.png" alt="Logo" />
+          </Box>
+          <Typography variant="h4" className="login-title">
+            AWT Portal
+          </Typography>
           <Box component="form" onSubmit={handleSubmit} className="login-form">
             <FormControl fullWidth margin="normal">
               <TextField
@@ -115,16 +117,17 @@ const LoginPage: React.FC = observer(() => {
                 required
                 value={localPassword}
                 onChange={e => setLocalPassword(e.target.value)}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => setShowPassword(prev => !prev)}>
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(prev => !prev)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
                 }}
               />
             </FormControl>
